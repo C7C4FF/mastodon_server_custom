@@ -224,6 +224,8 @@
   "account_edit.profile_tab.button_label": "사용자 지정",
   "account_edit.profile_tab.hint.description": "이 설정은 공식 앱을 사용하는 {server} 사용자가 보는 내용을 설정하지만 다른 서버나 서드파티 앱 사용자에게는 다르게 나타날 수 있습니다.",
   "account_edit.profile_tab.hint.title": "서로 다르게 표시됨",
+  "account_edit.profile_tab.private_account.description": "새 팔로워가 나를 팔로우하려면 내 승인이 필요합니다.",
+  "account_edit.profile_tab.private_account.title": "계정을 비공개로 전환",
   "account_edit.profile_tab.show_featured.description": "'추천'은 다른 계정을 소개할 수 있는 선택적인 탭입니다.",
   "account_edit.profile_tab.show_featured.title": "'추천' 탭 보이기",
   "account_edit.profile_tab.show_media.description": "'미디어' 탭은 이미지나 비디오가 들어간 게시물을 보여주는 선택적인 탭입니다.",

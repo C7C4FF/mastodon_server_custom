@@ -1,45 +1,19 @@
-import { FormattedMessage } from 'react-intl';
-
 import { createSelector } from '@reduxjs/toolkit';
 
 import { animated, useSpring } from '@react-spring/web';
 
-import { me } from 'mastodon/initial_state';
 import { useAppSelector } from 'mastodon/store';
 import type { RootState } from 'mastodon/store';
 
 const selector = createSelector(
   (state: RootState) => state.compose.get('privacy') as string,
-  (state: RootState) => !!state.accounts.getIn([me, 'locked']),
-  (privacy, locked) => ({
-    needsLockWarning: privacy === 'private' && !locked,
+  (privacy) => ({
     directMessageWarning: privacy === 'direct',
   }),
 );
 
 export const Warning = () => {
-  const { needsLockWarning, directMessageWarning } = useAppSelector(selector);
-
-  if (needsLockWarning) {
-    return (
-      <WarningMessage>
-        <FormattedMessage
-          id='compose_form.lock_disclaimer'
-          defaultMessage='Your account is not {locked}. Anyone can follow you to view your follower-only posts.'
-          values={{
-            locked: (
-              <a href='/settings/privacy#account_unlocked'>
-                <FormattedMessage
-                  id='compose_form.lock_disclaimer.lock'
-                  defaultMessage='locked'
-                />
-              </a>
-            ),
-          }}
-        />
-      </WarningMessage>
-    );
-  }
+  const { directMessageWarning } = useAppSelector(selector);
 
   if (directMessageWarning) {
     return null;

@@ -121,6 +121,25 @@ export const ProfileDisplayModal: FC<DialogModalProps> = ({ onClose }) => {
             />
           }
         />
+
+        <ToggleField
+          checked={profile.locked}
+          onChange={handleToggleChange}
+          disabled={isPending}
+          name='locked'
+          label={
+            <FormattedMessage
+              id='account_edit.profile_tab.private_account.title'
+              defaultMessage='Make account private'
+            />
+          }
+          hint={
+            <FormattedMessage
+              id='account_edit.profile_tab.private_account.description'
+              defaultMessage='New followers will need your approval before they can follow you.'
+            />
+          }
+        />
       </div>
 
       <Callout

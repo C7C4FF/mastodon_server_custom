@@ -36,6 +36,9 @@ export const expandTimelineByParams = createAppThunk(
         extra.exclude_direct = true;
         extra.exclude_mentions = true;
       }
+      if (params.replies) {
+        extra.exclude_direct = true;
+      }
       if (!params.boosts) {
         extra.exclude_reblogs = true;
       }

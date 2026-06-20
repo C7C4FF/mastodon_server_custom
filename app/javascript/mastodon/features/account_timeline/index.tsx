@@ -94,6 +94,17 @@ const InnerTimeline: FC<{
   const timeline = useAppSelector((state) => selectTimelineByKey(state, key));
   const { blockedBy, hidden, suspended } = useAccountVisibility(accountId);
   const forceEmptyState = blockedBy || hidden || suspended;
+  const statusIds = useAppSelector((state) => {
+    const items = forceEmptyState ? emptyList : (timeline?.items ?? emptyList);
+
+    if (!withReplies) {
+      return items;
+    }
+
+    return items.filter(
+      (statusId) => state.statuses.getIn([statusId, 'visibility']) !== 'direct',
+    );
+  });
   const account = useAccount(accountId);
   const columnRef = useRef<ColumnRef>(null);
 
@@ -147,7 +158,7 @@ const InnerTimeline: FC<{
         scrollKey='account_timeline'
         // We want to have this component when timeline is undefined (loading),
         // because if we don't the prepended component will re-render with every filter change.
-        statusIds={forceEmptyState ? emptyList : (timeline?.items ?? emptyList)}
+        statusIds={statusIds}
         featuredStatusIds={pinnedStatusIds}
         isLoading={isLoading}
         hasMore={!forceEmptyState && !!timeline?.hasMore}

@@ -2766,7 +2766,11 @@ a.account__display-name {
   z-index: 10000;
 
   .dropdown-menu {
+    border: 2px solid var(--color-border-secondary);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 18%);
     min-width: 292px;
+    overflow: hidden;
   }
 }
 

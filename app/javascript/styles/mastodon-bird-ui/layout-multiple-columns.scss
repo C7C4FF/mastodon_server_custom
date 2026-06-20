@@ -959,6 +959,7 @@ body.layout-multiple-columns {
 }
 
 .layout-multiple-columns .emoji-mart-anchor-bar,
+.layout-multiple-columns .column-link.column-link--logo img,
 .layout-multiple-columns .column-link.column-link--logo svg {
   display: none;
 }
@@ -3954,6 +3955,31 @@ body .compose-form .compose-form__uploads {
 .layout-multiple-columns .compose-form__actions .icon-button.active {
   background-color: transparent;
   color: var(--color-accent);
+}
+
+.layout-multiple-columns .compose-form__buttons .icon-button {
+  align-items: center;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: inline-flex;
+  height: 24px !important;
+  justify-content: center;
+  line-height: 1 !important;
+  padding: 2px;
+  width: 24px !important;
+}
+
+.layout-multiple-columns .compose-form__buttons .icon-button__icon {
+  align-items: center;
+  display: inline-flex;
+  height: 20px;
+  justify-content: center;
+  line-height: 1;
+  width: 20px;
+}
+
+.layout-multiple-columns .compose-form__buttons .icon-button__icon > .icon {
+  display: block;
 }
 
 /* Footer items */

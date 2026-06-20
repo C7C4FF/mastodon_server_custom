@@ -80,11 +80,13 @@
   text-decoration: underline;
 
   &:global(.button) {
+    background-color: var(--color-bg-brand-softest);
     color: var(--color-text-primary);
 
     &:active,
     &:hover,
     &:focus {
+      background-color: var(--color-bg-secondary);
       text-decoration: underline;
     }
   }
