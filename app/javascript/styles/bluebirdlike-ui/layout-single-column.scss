@@ -1,4 +1,4 @@
-/* Mastodon Bird UI by @rolle@mementomori.social
+/* Bluebirdlike UI, based on Mastodon Bird UI by @rolle@mementomori.social
    3.0.0 */
 
 /* CSS variables */
@@ -1006,6 +1006,7 @@ div[data-popper-placement] .reblog-button__item button:disabled {
 
 @media (width >= 1175px) {
   .layout-single-column .columns-area__panels__main {
+    background-color: var(--color-bg);
     max-width: calc(var(--width-main-panel) + calc(var(--gap-default) * 4));
     padding-left: calc(var(--gap-default) * 2);
     padding-right: calc(var(--gap-default) * 2);
@@ -1470,6 +1471,7 @@ body .notification-ungrouped--unread::before {
 
 /* Main panel column */
 .layout-single-column .columns-area__panels__main > div {
+  background-color: var(--color-bg);
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
 }

@@ -1,2 +1,2 @@
 default: styles/application.scss
-mastodon-bird-ui: styles/mastodon-bird-ui.scss
+bluebirdlike-ui: styles/bluebirdlike-ui.scss

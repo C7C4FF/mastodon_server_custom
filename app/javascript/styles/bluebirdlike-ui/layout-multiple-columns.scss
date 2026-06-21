@@ -1,4 +1,4 @@
-/* Mastodon Bird UI by @rolle@mementomori.social
+/* Bluebirdlike UI, based on Mastodon Bird UI by @rolle@mementomori.social
    3.0.0 */
 
 /* CSS variables */
@@ -946,6 +946,7 @@ body.layout-multiple-columns {
 
 @media (width >= 1175px) {
   .layout-multiple-columns .columns-area__panels__main {
+    background-color: var(--color-bg);
     max-width: calc(var(--width-main-panel) + calc(var(--gap-default) * 4));
     padding-left: calc(var(--gap-default) * 2);
     padding-right: calc(var(--gap-default) * 2);
@@ -1423,6 +1424,7 @@ body .content-warning::before {
 
 /* Main panel column */
 .layout-multiple-columns .columns-area__panels__main > div {
+  background-color: var(--color-bg);
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
 }

@@ -19,7 +19,7 @@ defaults: &defaults
   show_staff_badge: true
   preview_sensitive_media: false
   noindex: true
-  theme: 'mastodon-bird-ui'
+  theme: 'bluebirdlike-ui'
   thumbnail_description: ''
   trends: false
   trendable_by_default: false

@@ -4,6 +4,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import * as sass from 'sass';
 import yaml from 'js-yaml';
 import type { Plugin } from 'vite';
 
@@ -60,12 +61,35 @@ export function MastodonThemes(): Plugin {
           return;
         }
 
-        // Rewrite the URL to the entrypoint if it matches a theme.
-        if (isThemeFile(req.url ?? '', themes)) {
-          const themeName = pathToThemeName(req.url ?? '');
-          req.url = `/packs-dev/${themes[themeName]}`;
+        if (!isThemeFile(req.url ?? '', themes)) {
+          next();
+          return;
         }
-        next();
+
+        const themeName = pathToThemeName(req.url ?? '');
+        const themePath = themes[themeName];
+        if (!themePath) {
+          next();
+          return;
+        }
+
+        try {
+          const result = sass.compile(path.resolve(jsRoot, themePath), {
+            loadPaths: [jsRoot, path.resolve(jsRoot, 'styles')],
+            style: 'expanded',
+          });
+          const css = result.css.replace(
+            /url\((['"]?)@\//g,
+            'url($1/packs-dev/',
+          );
+
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.end(css);
+        } catch (error) {
+          next(error);
+        }
       });
     },
     async handleHotUpdate({ modules, server }) {
@@ -134,7 +158,7 @@ async function loadThemesFromConfig(root: string) {
     if (
       typeof themePath !== 'string' ||
       themePath.split('.').length !== 2 || // Ensure it has exactly one period
-      !themePath.endsWith('css')
+      !themePath.match(/s?css$/)
     ) {
       console.warn(`Invalid theme path "${themePath}" in themes.yml, skipping`);
       continue;
