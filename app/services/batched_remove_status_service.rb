@@ -80,17 +80,19 @@ class BatchedRemoveStatusService < BaseService
   end
 
   def unpush_from_public_timelines(status, pipeline)
-    return unless status.public_visibility? && status.id > @status_id_cutoff
+    return unless (status.public_visibility? || status.local_timeline_private_visibility?) && status.id > @status_id_cutoff
 
     payload = { event: :delete, payload: status.id.to_s }.to_json
 
-    pipeline.publish('timeline:public', payload)
+    pipeline.publish('timeline:public', payload) if status.public_visibility?
     pipeline.publish(status.local? ? 'timeline:public:local' : 'timeline:public:remote', payload)
 
     if status.media_attachments.any?
-      pipeline.publish('timeline:public:media', payload)
+      pipeline.publish('timeline:public:media', payload) if status.public_visibility?
       pipeline.publish(status.local? ? 'timeline:public:local:media' : 'timeline:public:remote:media', payload)
     end
+
+    return unless status.public_visibility?
 
     status.tags.map { |tag| tag.name.downcase }.each do |hashtag|
       pipeline.publish("timeline:hashtag:#{hashtag}", payload)

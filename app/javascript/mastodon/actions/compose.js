@@ -278,8 +278,14 @@ export function submitCompose(successCallback) {
         insertIfOnline('home');
       }
 
-      if (statusId === null && response.data.in_reply_to_id === null && response.data.visibility === 'public') {
+      const isNewTopLevelStatus = statusId === null && response.data.in_reply_to_id === null;
+      const isLocalTimelineVisible = response.data.visibility === 'public' || (response.data.visibility === 'private' && response.data.mentions.length === 0);
+
+      if (isNewTopLevelStatus && isLocalTimelineVisible) {
         insertIfOnline('community');
+      }
+
+      if (isNewTopLevelStatus && response.data.visibility === 'public') {
         insertIfOnline('public');
         insertIfOnline(`account:${response.data.account.id}`);
       }

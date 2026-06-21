@@ -87,6 +87,12 @@ RSpec.describe PublicFeed do
           expect(subject).to include(local_status.id)
           expect(subject).to_not include(remote_status.id)
         end
+
+        it 'does not include local followers-only statuses' do
+          private_status = Fabricate(:status, account: local_account, visibility: :private)
+
+          expect(subject).to_not include(private_status.id)
+        end
       end
 
       context 'with a viewer' do
@@ -95,6 +101,19 @@ RSpec.describe PublicFeed do
         it 'does not include remote instances statuses' do
           expect(subject).to include(local_status.id)
           expect(subject).to_not include(remote_status.id)
+        end
+
+        it 'includes local followers-only statuses without active mentions' do
+          private_status = Fabricate(:status, account: local_account, visibility: :private)
+
+          expect(subject).to include(private_status.id)
+        end
+
+        it 'does not include local followers-only statuses with active mentions' do
+          private_mention = Fabricate(:status, account: local_account, visibility: :private)
+          Fabricate(:mention, status: private_mention)
+
+          expect(subject).to_not include(private_mention.id)
         end
 
         it 'is not affected by personal domain blocks' do
@@ -431,6 +450,12 @@ RSpec.describe PublicFeed do
           it 'does not include remote instances statuses' do
             expect(subject).to include(local_status.id)
             expect(subject).to_not include(remote_status.id)
+          end
+
+          it 'does not include local followers-only statuses' do
+            private_status = Fabricate(:status, account: local_account, visibility: :private)
+
+            expect(subject).to_not include(private_status.id)
           end
         end
 

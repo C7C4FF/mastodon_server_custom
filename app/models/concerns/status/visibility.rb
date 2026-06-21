@@ -12,6 +12,7 @@ module Status::Visibility
     scope :distributable_visibility, -> { where(visibility: %i(public unlisted)) }
     scope :list_eligible_visibility, -> { where(visibility: %i(public unlisted private)) }
     scope :not_direct_visibility, -> { where.not(visibility: :direct) }
+    scope :without_active_mentions, -> { where.not(id: Mention.active.select(:status_id)) }
 
     validates :visibility, exclusion: { in: %w(direct limited) }, if: :reblog?
 
@@ -33,6 +34,10 @@ module Status::Visibility
   end
 
   alias sign? distributable?
+
+  def local_timeline_private_visibility?
+    local? && private_visibility? && active_mentions.empty?
+  end
 
   private
 

@@ -22,6 +22,7 @@ class FanOutOnWriteService < BaseService
     fan_out_to_local_recipients!
     fan_out_to_public_recipients! if broadcastable?
     fan_out_to_public_streams! if broadcastable?
+    fan_out_to_local_public_streams! if local_timeline_broadcastable?
   end
 
   private
@@ -66,6 +67,10 @@ class FanOutOnWriteService < BaseService
   def fan_out_to_public_streams!
     broadcast_to_hashtag_streams!
     broadcast_to_public_streams!
+  end
+
+  def fan_out_to_local_public_streams!
+    broadcast_to_local_public_streams!
   end
 
   def deliver_to_self!
@@ -166,6 +171,13 @@ class FanOutOnWriteService < BaseService
     end
   end
 
+  def broadcast_to_local_public_streams!
+    return if @status.reply? && @status.in_reply_to_account_id != @account.id
+
+    redis.publish('timeline:public:local', anonymous_payload)
+    redis.publish('timeline:public:local:media', anonymous_payload) if @status.with_media?
+  end
+
   def deliver_to_conversation!
     AccountConversation.add_status(@account, @status) unless update?
   end
@@ -191,6 +203,10 @@ class FanOutOnWriteService < BaseService
 
   def broadcastable?
     @status.public_visibility? && !@status.reblog? && !@account.silenced?
+  end
+
+  def local_timeline_broadcastable?
+    @status.local_timeline_private_visibility? && !@status.reblog? && !@account.silenced?
   end
 
   def subscribed_to_streaming_api?(account_id)

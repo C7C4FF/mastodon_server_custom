@@ -73,6 +73,10 @@ class PublicFeed
     (options[:local] && !options[:remote]) || !user_has_access_to_feed?(remote_feed_setting)
   end
 
+  def include_local_private_statuses?
+    local_only? && account?
+  end
+
   def remote_only?
     (options[:remote] && !options[:local]) || !user_has_access_to_feed?(local_feed_setting)
   end
@@ -86,7 +90,13 @@ class PublicFeed
   end
 
   def public_scope
-    Status.public_visibility.joins(:account).merge(Account.without_suspended.without_silenced)
+    timeline_visibility_scope.joins(:account).merge(Account.without_suspended.without_silenced)
+  end
+
+  def timeline_visibility_scope
+    return Status.public_visibility unless include_local_private_statuses?
+
+    Status.public_visibility.or(Status.private_visibility.local.without_active_mentions)
   end
 
   def local_only_scope

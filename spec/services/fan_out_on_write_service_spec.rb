@@ -106,6 +106,25 @@ RSpec.describe FanOutOnWriteService do
 
       expect_no_broadcasting
     end
+
+    context 'without mentions' do
+      let(:status) { Fabricate(:status, account: alice, visibility: visibility, text: 'Hello #hoge') }
+
+      it 'broadcasts to local public streams only', :inline_jobs do
+        subject.call(status)
+
+        expected_payload = { event: 'update', payload: include(id: status.id.to_s, visibility: 'private', content: /<p>Hello/) }
+
+        expect(redis)
+          .to have_received(:publish).with('timeline:public:local', match_json_values(expected_payload))
+        expect(redis)
+          .to have_received(:publish).with('timeline:public:local:media', match_json_values(expected_payload))
+        expect(redis)
+          .to_not have_received(:publish).with('timeline:public', anything)
+        expect(redis)
+          .to_not have_received(:publish).with('timeline:hashtag:hoge', anything)
+      end
+    end
   end
 
   context 'when status is direct' do

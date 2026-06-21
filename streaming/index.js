@@ -717,6 +717,11 @@ const startServer = async () => {
         return;
       }
 
+      if (payload.visibility === 'private' && !req.accountId) {
+        log.debug(`Message ${payload.id} filtered by visibility`);
+        return;
+      }
+
       // Filter based on language:
       // @ts-expect-error
       if (Array.isArray(req.chosenLanguages) && req.chosenLanguages.indexOf(payload.language) === -1) {
