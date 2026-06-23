@@ -101,11 +101,11 @@ module CustomBrandingTheme
       },
     },
     {
-      title: 'Bluebirdlike 변수',
+      title: '보조 텍스트 색',
       fields: {
         branding_color_dim: {
           label: '--color-dim',
-          hint: 'Bluebirdlike UI의 dim 텍스트와 아이콘 계열 색입니다.',
+          hint: '흐리게 표시되는 텍스트와 아이콘 계열 색입니다.',
         },
         branding_color_light_text: {
           label: '--color-light-text',
