@@ -78,6 +78,30 @@ class InstancePresenter < ActiveModelSerializers::Model
     @thumbnail ||= Rails.cache.fetch('site_uploads/thumbnail') { SiteUpload.find_by(var: 'thumbnail') }
   end
 
+  def logo
+    @logo ||= Rails.cache.fetch('site_uploads/logo') { SiteUpload.find_by(var: 'logo') }
+  end
+
+  def logo_light
+    @logo_light ||= Rails.cache.fetch('site_uploads/logo_light') { SiteUpload.find_by(var: 'logo_light') }
+  end
+
+  def logo_dark
+    @logo_dark ||= Rails.cache.fetch('site_uploads/logo_dark') { SiteUpload.find_by(var: 'logo_dark') }
+  end
+
+  def background
+    @background ||= Rails.cache.fetch('site_uploads/background') { SiteUpload.find_by(var: 'background') }
+  end
+
+  def background_light
+    @background_light ||= Rails.cache.fetch('site_uploads/background_light') { SiteUpload.find_by(var: 'background_light') }
+  end
+
+  def background_dark
+    @background_dark ||= Rails.cache.fetch('site_uploads/background_dark') { SiteUpload.find_by(var: 'background_dark') }
+  end
+
   def mascot
     @mascot ||= Rails.cache.fetch('site_uploads/mascot') { SiteUpload.find_by(var: 'mascot') }
   end

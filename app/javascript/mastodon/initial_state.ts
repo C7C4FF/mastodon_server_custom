@@ -9,6 +9,9 @@ interface InitialStateMeta {
   auto_play_gif: boolean;
   activity_api_enabled: boolean;
   admin: string;
+  background: string | null;
+  background_dark: string | null;
+  background_light: string | null;
   boost_modal?: boolean;
   quick_boosting?: boolean;
   delete_modal?: boolean;
@@ -21,6 +24,9 @@ interface InitialStateMeta {
   expand_spoilers?: boolean;
   limited_federation_mode: boolean;
   locale: string;
+  logo: string | null;
+  logo_dark: string | null;
+  logo_light: string | null;
   mascot: string | null;
   me?: string;
   moved_to_account_id?: string;
@@ -107,6 +113,9 @@ function getMeta<K extends keyof InitialStateMeta>(
 
 export const activityApiEnabled = getMeta('activity_api_enabled');
 export const autoPlayGif = getMeta('auto_play_gif');
+export const background = getMeta('background');
+export const backgroundDark = getMeta('background_dark');
+export const backgroundLight = getMeta('background_light');
 export const boostModal = getMeta('boost_modal');
 export const quickBoosting = getMeta('quick_boosting');
 export const deleteModal = getMeta('delete_modal');
@@ -120,6 +129,9 @@ export const emojiStyle = getMeta('emoji_style') ?? 'auto';
 export const expandSpoilers = getMeta('expand_spoilers');
 export const forceSingleColumn = !getMeta('advanced_layout');
 export const limitedFederationMode = getMeta('limited_federation_mode');
+export const logo = getMeta('logo');
+export const logoDark = getMeta('logo_dark');
+export const logoLight = getMeta('logo_light');
 export const mascot = getMeta('mascot');
 export const me = getMeta('me');
 export const movedToAccountId = getMeta('moved_to_account_id');

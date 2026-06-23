@@ -78,6 +78,7 @@ namespace :admin do
 
   namespace :settings do
     resource :branding, only: [:show, :update], controller: 'branding'
+    resource :branding_assets, only: [:show, :update], controller: 'branding_assets'
     resource :registrations, only: [:show, :update], controller: 'registrations'
     resource :content_retention, only: [:show, :update], controller: 'content_retention'
     resource :about, only: [:show, :update], controller: 'about'

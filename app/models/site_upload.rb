@@ -54,6 +54,50 @@ class SiteUpload < ApplicationRecord
       }.freeze,
     }.freeze,
 
+    logo: {
+      'display': {
+        format: 'png',
+        geometry: '600x200>',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+    logo_light: {
+      'display': {
+        format: 'png',
+        geometry: '600x200>',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+    logo_dark: {
+      'display': {
+        format: 'png',
+        geometry: '600x200>',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+
+    background: {
+      '2560': {
+        format: 'jpg',
+        geometry: '2560x1440#',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+    background_light: {
+      '2560': {
+        format: 'jpg',
+        geometry: '2560x1440#',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+    background_dark: {
+      '2560': {
+        format: 'jpg',
+        geometry: '2560x1440#',
+        file_geometry_parser: FastGeometryParser,
+      }.freeze,
+    }.freeze,
+
     mascot: {}.freeze,
   }.freeze
 

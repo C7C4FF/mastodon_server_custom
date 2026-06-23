@@ -23,6 +23,12 @@ class Form::AdminSettings
     profile_directory
     thumbnail
     thumbnail_description
+    logo
+    logo_light
+    logo_dark
+    background
+    background_light
+    background_dark
     mascot
     trends
     trendable_by_default
@@ -47,6 +53,23 @@ class Form::AdminSettings
     landing_page
     wrapstodon
     email_footer_text
+    branding_timeline_panel_opacity
+    branding_color_base
+    branding_color_base_hover
+    branding_color_base_soft
+    branding_color_text_primary
+    branding_color_text_secondary
+    branding_color_text_tertiary
+    branding_color_dim
+    branding_color_light_text
+    branding_color_base_light
+    branding_color_base_hover_light
+    branding_color_base_soft_light
+    branding_color_text_primary_light
+    branding_color_text_secondary_light
+    branding_color_text_tertiary_light
+    branding_color_dim_light
+    branding_color_light_text_light
   ).freeze
 
   INTEGER_KEYS = %i(
@@ -54,6 +77,7 @@ class Form::AdminSettings
     content_cache_retention_period
     backups_retention_period
     min_age
+    branding_timeline_panel_opacity
   ).freeze
 
   BOOLEAN_KEYS = %i(
@@ -74,6 +98,12 @@ class Form::AdminSettings
 
   UPLOAD_KEYS = %i(
     thumbnail
+    logo
+    logo_light
+    logo_dark
+    background
+    background_light
+    background_dark
     mascot
     app_icon
     favicon
@@ -110,10 +140,12 @@ class Form::AdminSettings
   validates :remote_topic_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@remote_topic_feed_access) }
   validates :media_cache_retention_period, :content_cache_retention_period, :backups_retention_period, numericality: { only_integer: true }, allow_blank: true, if: -> { defined?(@media_cache_retention_period) || defined?(@content_cache_retention_period) || defined?(@backups_retention_period) }
   validates :min_age, numericality: { only_integer: true }, allow_blank: true, if: -> { defined?(@min_age) }
+  validates :branding_timeline_panel_opacity, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_blank: true, if: -> { defined?(@branding_timeline_panel_opacity) }
   validates :site_short_description, length: { maximum: DESCRIPTION_LIMIT }, if: -> { defined?(@site_short_description) }
   validates :thumbnail_description, length: { maximum: DESCRIPTION_LIMIT }, if: -> { defined?(@thumbnail_description) }
   validates :status_page_url, url: true, allow_blank: true
   validate :validate_site_uploads
+  validate :validate_branding_theme_colors
   validates :landing_page, inclusion: { in: LANDING_PAGE }, if: -> { defined?(@landing_page) }
 
   KEYS.each do |key|
@@ -185,7 +217,19 @@ class Form::AdminSettings
     elsif INTEGER_KEYS.include?(key)
       value.blank? ? value : Integer(value)
     else
-      value
+      value.is_a?(String) ? value.strip : value
+    end
+  end
+
+  def validate_branding_theme_colors
+    CustomBrandingTheme.color_setting_keys.each do |key|
+      next unless instance_variable_defined?(:"@#{key}")
+
+      value = instance_variable_get(:"@#{key}").to_s.strip
+      value = "##{value}" if value.match?(/\A[0-9a-fA-F]{6}\z/)
+      next if value.blank? || CustomBrandingTheme.valid_hex?(value)
+
+      errors.add(key, :invalid)
     end
   end
 

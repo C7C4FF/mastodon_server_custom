@@ -42,6 +42,8 @@ const messages = defineMessages({
 });
 
 async function loaded() {
+  setupThemeableLogos();
+
   const { messages: localeData } = getLocale();
 
   const locale = document.documentElement.lang;
@@ -596,6 +598,30 @@ function applyRailsA11yPatches() {
     if (groupHint) {
       groupWrapper.setAttribute('aria-describedby', hintId);
     }
+  });
+}
+
+function setupThemeableLogos() {
+  const updateLogos = () => {
+    const variant = isDarkMode() ? 'logoDark' : 'logoLight';
+
+    document
+      .querySelectorAll<HTMLImageElement>('img[data-logo-light][data-logo-dark]')
+      .forEach((logo) => {
+        const nextSource = logo.dataset[variant];
+
+        if (nextSource && logo.src !== nextSource) {
+          logo.src = nextSource;
+        }
+      });
+  };
+
+  updateLogos();
+
+  const observer = new MutationObserver(updateLogos);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-color-scheme'],
   });
 }
 

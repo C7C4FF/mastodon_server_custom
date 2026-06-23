@@ -2,6 +2,7 @@
   = render_navigation renderer: :links do |primary|
     :ruby
       primary.item :branding, safe_join([material_symbol('edit'), t('admin.settings.branding.title')]), admin_settings_branding_path
+      primary.item :branding_assets, safe_join([material_symbol('photo_library'), t('admin.settings.branding_assets.title')]), admin_settings_branding_assets_path
       primary.item :about, safe_join([material_symbol('description'), t('admin.settings.about.title')]), admin_settings_about_path
       primary.item :registrations, safe_join([material_symbol('group'), t('admin.settings.registrations.title')]), admin_settings_registrations_path
       primary.item :discovery, safe_join([material_symbol('search'), t('admin.settings.discovery.title')]), admin_settings_discovery_path

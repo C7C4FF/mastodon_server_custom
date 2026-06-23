@@ -5,6 +5,8 @@
 .app-body {
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  background-color: var(--color-bg-secondary);
+  background-repeat: no-repeat;
 }
 
 .animated-number {

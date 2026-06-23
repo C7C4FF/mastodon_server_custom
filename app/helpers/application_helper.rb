@@ -183,6 +183,7 @@ module ApplicationHelper
   def body_classes
     output = []
     output << content_for(:body_classes)
+    output << "theme-#{current_theme}"
     output.compact_blank.join(' ')
   end
 

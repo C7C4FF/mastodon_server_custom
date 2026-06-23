@@ -39,10 +39,13 @@
     %meta{ name: 'style-nonce', content: request.content_security_policy_nonce, property: 'csp-nonce', nonce: request.content_security_policy_nonce }
 
     = custom_stylesheet
+    = custom_branding_theme_stylesheet
 
     = yield :header_tags
+    = public_background_stylesheet
 
-  %body{ class: body_classes }
+  %body{ class: class_names(body_classes, public_background_body_class) }
+    = public_background_layer
     = content_for?(:content) ? yield(:content) : yield
 
     .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }

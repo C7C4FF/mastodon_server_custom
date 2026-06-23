@@ -24,6 +24,53 @@ const setAnnouncementEndsAttributes = (target: HTMLInputElement) => {
   }
 };
 
+const normalizeHexColor = (value: string) => {
+  const trimmedValue = value.trim();
+  const normalizedValue = trimmedValue.startsWith('#')
+    ? trimmedValue
+    : `#${trimmedValue}`;
+
+  return /^#[0-9a-fA-F]{6}$/.test(normalizedValue)
+    ? normalizedValue.toLowerCase()
+    : null;
+};
+
+const findBrandingColorInputs = (target: Element) => {
+  const row = target.closest('[data-branding-color-row]');
+
+  if (!row) return {};
+
+  return {
+    picker: row.querySelector<HTMLInputElement>('[data-branding-color-picker]'),
+    hex: row.querySelector<HTMLInputElement>('[data-branding-color-hex]'),
+  };
+};
+
+on('input', '[data-branding-color-picker]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement)) return;
+
+  const { hex } = findBrandingColorInputs(target);
+
+  if (hex) hex.value = target.value.toLowerCase();
+});
+
+on('input', '[data-branding-color-hex]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement)) return;
+
+  const color = normalizeHexColor(target.value);
+  const { picker } = findBrandingColorInputs(target);
+
+  if (color && picker) picker.value = color;
+});
+
+on('change', '[data-branding-color-hex]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement)) return;
+
+  const color = normalizeHexColor(target.value);
+
+  if (color) target.value = color;
+});
+
 on(
   'change',
   'input[type="datetime-local"]#announcement_starts_at',
