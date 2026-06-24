@@ -197,7 +197,43 @@ module CustomBrandingTheme
     lines << 'body.has-custom-public-background {'
     lines << "  --custom-timeline-panel-opacity: #{opacity}%;"
     lines << '}'
+    lines << ''
+    lines << icon_color_css
 
     lines.join("\n")
+  end
+
+  def icon_color_css
+    <<~CSS.strip
+      body.layout-single-column .column-link .icon,
+      body.layout-multiple-columns .column-link .icon,
+      body.layout-single-column .ui__navigation-bar__item .icon,
+      body.layout-multiple-columns .ui__navigation-bar__item .icon,
+      body.layout-single-column .icon-with-badge .icon,
+      body.layout-multiple-columns .icon-with-badge .icon {
+        background-image: none !important;
+        color: var(--color-light-text);
+      }
+
+      body.layout-single-column .column-link.active .icon,
+      body.layout-multiple-columns .column-link.active .icon,
+      body.layout-single-column .ui__navigation-bar__item.active .icon,
+      body.layout-multiple-columns .ui__navigation-bar__item.active .icon,
+      body.layout-single-column .active .icon-with-badge .icon,
+      body.layout-multiple-columns .active .icon-with-badge .icon {
+        color: var(--color-text-brand);
+      }
+
+      body.layout-single-column .column-link .icon path,
+      body.layout-multiple-columns .column-link .icon path,
+      body.layout-single-column .ui__navigation-bar__item .icon path,
+      body.layout-multiple-columns .ui__navigation-bar__item .icon path,
+      body.layout-single-column .icon-with-badge .icon path,
+      body.layout-multiple-columns .icon-with-badge .icon path {
+        display: block !important;
+        fill: currentColor;
+        stroke: currentColor;
+      }
+    CSS
   end
 end
