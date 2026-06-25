@@ -211,8 +211,7 @@ module CustomBrandingTheme
       body.layout-multiple-columns .ui__navigation-bar__item .icon,
       body.layout-single-column .icon-with-badge .icon,
       body.layout-multiple-columns .icon-with-badge .icon {
-        background-image: none !important;
-        color: var(--color-light-text);
+        color: var(lines << icon_color_css) !important;
       }
 
       body.layout-single-column .column-link.active .icon,
@@ -221,7 +220,7 @@ module CustomBrandingTheme
       body.layout-multiple-columns .ui__navigation-bar__item.active .icon,
       body.layout-single-column .active .icon-with-badge .icon,
       body.layout-multiple-columns .active .icon-with-badge .icon {
-        color: var(--color-text-brand);
+        color: var(--color-light-text) !important;
       }
 
       body.layout-single-column .column-link .icon path,
@@ -230,9 +229,25 @@ module CustomBrandingTheme
       body.layout-multiple-columns .ui__navigation-bar__item .icon path,
       body.layout-single-column .icon-with-badge .icon path,
       body.layout-multiple-columns .icon-with-badge .icon path {
-        display: block !important;
-        fill: currentColor;
-        stroke: currentColor;
+        fill: currentColor !important;
+      }
+
+      body.layout-single-column .column-link .icon [stroke]:not([stroke="none"]),
+      body.layout-multiple-columns .column-link .icon [stroke]:not([stroke="none"]),
+      body.layout-single-column .ui__navigation-bar__item .icon [stroke]:not([stroke="none"]),
+      body.layout-multiple-columns .ui__navigation-bar__item .icon [stroke]:not([stroke="none"]),
+      body.layout-single-column .icon-with-badge .icon [stroke]:not([stroke="none"]),
+      body.layout-multiple-columns .icon-with-badge .icon [stroke]:not([stroke="none"]) {
+        stroke: currentColor !important;
+      }
+
+      body.layout-single-column .column-link .icon [fill="none"],
+      body.layout-multiple-columns .column-link .icon [fill="none"],
+      body.layout-single-column .ui__navigation-bar__item .icon [fill="none"],
+      body.layout-multiple-columns .ui__navigation-bar__item .icon [fill="none"],
+      body.layout-single-column .icon-with-badge .icon [fill="none"],
+      body.layout-multiple-columns .icon-with-badge .icon [fill="none"] {
+        fill: none !important;
       }
     CSS
   end
