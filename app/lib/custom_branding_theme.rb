@@ -122,7 +122,7 @@ module CustomBrandingTheme
         inner_html: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><polyline points="22, 6 12, 13 2, 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>',
       },
       active: {
-        inner_html: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><polyline points="22, 6 12, 13 2, 6" fill="none" stroke="#232543" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>',
+        inner_html: '<path d="M3 3h18c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2z" fill="currentColor" stroke="none"></path><polyline points="19, 7 12, 12 5, 7" fill="none" stroke="__ICON_CUTOUT_COLOR__" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>',
       },
     },
 
@@ -307,13 +307,16 @@ module CustomBrandingTheme
     end
   end
 
-  def navigation_icon_data_uri(icon, state, color)
+  def navigation_icon_data_uri(icon, state, color, cutout_color = nil)
     icon_state = icon[state] || icon[:default]
     normalized_color = normalize_hex(color, DEFAULTS[:branding_color_light_text])
+    normalized_cutout_color = normalize_hex(cutout_color || '#232543', '#232543')
+
+    inner_html = icon_state[:inner_html].gsub('__ICON_CUTOUT_COLOR__', normalized_cutout_color)
 
     svg = <<~SVG
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="#{icon[:view_box]}" aria-hidden="true" color="#{normalized_color}" fill="none" stroke="none">
-        #{icon_state[:inner_html]}
+        #{inner_html}
       </svg>
     SVG
 
@@ -384,14 +387,17 @@ module CustomBrandingTheme
     dark_icon_color = values[:branding_color_light_text] || DEFAULTS[:branding_color_light_text]
     light_icon_color = values[:branding_color_light_text_light] || DEFAULTS[:branding_color_light_text_light]
 
+    dark_cutout_color = '#232543'
+    light_cutout_color = '#ffffff'
+
     lines = []
 
     NAVIGATION_ICONS.each do |icon_class, icon|
-      dark_default_icon = navigation_icon_data_uri(icon, :default, dark_icon_color)
-      dark_active_icon = navigation_icon_data_uri(icon, :active, dark_icon_color)
+      dark_default_icon = navigation_icon_data_uri(icon, :default, dark_icon_color, dark_cutout_color)
+      dark_active_icon = navigation_icon_data_uri(icon, :active, dark_icon_color, dark_cutout_color)
 
-      light_default_icon = navigation_icon_data_uri(icon, :default, light_icon_color)
-      light_active_icon = navigation_icon_data_uri(icon, :active, light_icon_color)
+      light_default_icon = navigation_icon_data_uri(icon, :default, light_icon_color, light_cutout_color)
+      light_active_icon = navigation_icon_data_uri(icon, :active, light_icon_color, light_cutout_color)
 
       lines << "#{direct_link_selector(icon_class)} {"
       lines << "  background-image: url(\"#{dark_default_icon}\") !important;"
