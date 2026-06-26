@@ -65,6 +65,88 @@ module CustomBrandingTheme
     OPACITY_SETTING => 80
   ).freeze
 
+  NAVIGATION_ICONS = {
+    'icon-home' => {
+      view_box: '0 0 512 512',
+      default: {
+        inner_html: '<path d="M80 212v236a16 16 0 0016 16h96V328a24 24 0 0124-24h80a24 24 0 0124 24v136h96a16 16 0 0016-16V212" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="38"></path><path d="M480 256L266.89 52c-5-5.28-16.69-5.34-21.78 0L32 256M400 179V64h-48v69" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="38"></path>',
+      },
+      active: {
+        inner_html: '<path d="M261.56 101.28a8 8 0 00-11.06 0L66.4 277.15a8 8 0 00-2.47 5.79L63.9 448a32 32 0 0032 32H192a16 16 0 0016-16V328a8 8 0 018-8h80a8 8 0 018 8v136a16 16 0 0016 16h96.06a32 32 0 0032-32V282.94a8 8 0 00-2.47-5.79z" fill="currentColor"></path><path d="M490.91 244.15l-74.8-71.56V64a16 16 0 00-16-16h-48a16 16 0 00-16 16v32l-57.92-55.38C272.77 35.14 264.71 32 256 32c-8.68 0-16.72 3.14-22.14 8.63l-212.7 203.5c-6.22 6-7 15.87-1.34 22.37A16 16 0 0043 267.56L250.5 69.28a8 8 0 0111.06 0l207.52 198.28a16 16 0 0022.59-.44c6.14-6.36 5.63-16.86-.76-22.97z" fill="currentColor"></path>',
+      },
+    },
+
+    'icon-globe' => {
+      view_box: '0 0 512 512',
+      default: {
+        inner_html: '<path fill="currentColor" d="M 512.00 383.82 L 512.00 385.55 C 509.71 419.39 473.05 422.09 447.81 418.87 Q 423.66 415.79 400.31 408.70 Q 358.58 396.03 318.76 378.21 Q 218.90 333.52 129.46 270.53 C 92.32 244.38 56.82 216.22 27.43 182.58 C 14.63 167.94 1.88 149.41 0.00 128.96 L 0.00 125.94 C 3.19 91.33 40.56 90.05 66.57 93.40 Q 81.64 95.34 88.25 97.23 C 99.02 100.32 103.61 112.14 97.29 121.55 C 92.20 129.11 85.23 129.19 76.43 127.41 C 64.10 124.92 44.84 121.70 32.89 126.36 A 1.55 1.54 74.3 0 0 31.93 128.08 C 34.07 139.90 43.53 152.31 51.28 161.22 Q 68.49 181.02 88.94 198.55 Q 89.49 199.02 89.73 198.34 Q 110.62 140.43 161.78 107.51 C 234.44 60.76 331.69 75.26 388.09 139.91 C 446.04 206.35 446.71 303.97 388.97 370.93 Q 388.58 371.38 389.14 371.58 Q 413.92 380.31 439.48 385.26 C 451.88 387.65 467.05 389.92 479.11 385.65 A 1.51 1.50 -14.2 0 0 480.10 384.00 C 477.90 369.69 463.57 354.46 454.60 343.62 C 440.99 327.16 463.05 306.29 479.15 323.40 C 495.03 340.29 510.01 360.98 512.00 383.82 Z M 115.39 210.46 Q 136.86 228.57 159.38 244.15 C 223.66 288.63 294.05 327.49 367.32 354.98 A 1.46 1.44 30.8 0 0 368.93 354.58 Q 400.10 318.66 405.76 270.75 Q 407.08 259.64 406.38 249.56 C 401.05 172.60 342.31 113.52 265.72 106.81 Q 255.74 105.94 245.77 106.92 C 185.42 112.87 134.96 151.32 114.89 208.65 Q 114.52 209.72 115.39 210.46 Z M 295.33 328.94 A 0.34 0.34 0.0 0 0 295.16 329.58 L 299.51 331.72 A 0.34 0.34 0.0 0 0 300.00 331.41 L 300.00 329.51 A 0.34 0.34 0.0 0 0 299.68 329.17 L 295.33 328.94 Z"></path><path fill="currentColor" d="M 307.69 408.30 C 316.86 412.38 316.05 421.82 306.19 424.66 C 209.45 452.48 109.79 396.22 85.13 298.09 Q 83.95 293.40 84.37 291.18 C 85.73 284.03 93.55 284.22 98.50 287.80 Q 197.11 359.12 307.69 408.30 Z M 263.31 410.94 Q 262.74 410.51 262.12 410.23 Q 199.27 381.56 142.55 342.19 Q 129.49 333.13 117.25 323.09 A 0.18 0.18 0.0 0 0 116.97 323.31 C 142.74 377.01 195.57 410.10 255.44 411.80 Q 261.32 411.97 263.93 411.40 Q 264.37 411.30 264.00 411.06 Q 263.69 410.85 263.31 410.94 Z"></path>',
+      },
+      active: {
+        inner_html: '<path d="M96.85 286.62a8 8 0 00-12.53 8.25C102.07 373.28 172.3 432 256 432a175.31 175.31 0 0052.41-8 8 8 0 00.79-15 1120 1120 0 01-109.48-55.61 1126.24 1126.24 0 01-102.87-66.77zM492.72 339.51c-4.19-5.58-9.11-11.44-14.7-17.53a15.83 15.83 0 00-26.56 5.13c0 .16-.11.31-.17.47a15.75 15.75 0 003.15 16.06c22.74 25 26.42 38.51 25.48 41.36-2 2.23-17.05 6.89-58.15-3.53q-8.83-2.24-19.32-5.46-6.76-2.08-13.79-4.49a176.76 176.76 0 0019.54-27.25c.17-.29.35-.58.52-.88A175.39 175.39 0 00432 256a178.87 178.87 0 00-1-19c-9.57-88.17-84.4-157-175-157a175.37 175.37 0 00-106.4 35.89 177.4 177.4 0 00-45.83 51.84c-.16.29-.34.58-.51.87a175.48 175.48 0 00-13.83 30.52q-5.59-4.87-10.79-9.67c-5.39-5-10.17-9.63-14.42-14-29.57-30.26-33.09-45.61-32.16-48.45 2-2.23 15.54-5.87 48.62 1.31A15.82 15.82 0 0096.22 123l.36-.44a15.74 15.74 0 00-8.67-25.43A237.38 237.38 0 0064.13 93c-30.72-3.53-50.83 2.52-59.78 18-3.24 5.58-6.35 15.09-2.72 28.6C7 159.66 26.14 184 53.23 209.5c8.63 8.13 18.06 16.37 28.12 24.64 7.32 6 15 12.06 22.9 18.08q7.91 6 16.15 12T137.1 276c25.41 17.61 52.26 34.52 78.59 49.69q14.34 8.26 28.64 16t28.37 14.81c21.9 11 43.35 20.92 63.86 29.43q13.19 5.48 25.81 10.16c11.89 4.42 23.37 8.31 34.31 11.59l1.1.33c25.73 7.66 47.42 11.69 64.48 12H464c21.64 0 36.3-6.38 43.58-19 9.09-15.62 4.08-36.32-14.86-61.5z" fill="currentColor"></path>',
+      },
+    },
+
+    'icon-bell' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<path d="M18 8.4c0-1.697-.632-3.325-1.757-4.525C15.117 2.675 13.59 2 12 2c-1.591 0-3.117.674-4.243 1.875C6.632 5.075 6 6.703 6 8.4 6 15.867 3 18 3 18h18s-3-2.133-3-9.6zM13.73 21a1.999 1.999 0 01-3.46 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>',
+      },
+      active: {
+        inner_html: '<path d="M18 8.4c0-1.697-.632-3.325-1.757-4.525C15.117 2.675 13.59 2 12 2c-1.591 0-3.117.674-4.243 1.875C6.632 5.075 6 6.703 6 8.4 6 15.867 3 18 3 18h18s-3-2.133-3-9.6zM13.73 21a1.999 1.999 0 01-3.46 0" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>',
+      },
+    },
+
+    'icon-star' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<path fill="currentColor" d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2zm-3.566 15.604a26.953 26.953 0 0 0 2.42-1.701C18.335 14.533 20 11.943 20 9c0-2.36-1.537-4-3.5-4c-1.076 0-2.24.57-3.086 1.414L12 7.828l-1.414-1.414C9.74 5.57 8.576 5 7.5 5C5.56 5 4 6.656 4 9c0 2.944 1.666 5.533 4.645 7.903c.745.592 1.54 1.145 2.421 1.7c.299.189.595.37.934.572c.339-.202.635-.383.934-.571z"></path>',
+      },
+      active: {
+        inner_html: '<path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z" fill="currentColor"></path>',
+      },
+    },
+
+    'icon-bookmarks' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>',
+      },
+      active: {
+        inner_html: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>',
+      },
+    },
+
+    'icon-mail' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><polyline points="22, 6 12, 13 2, 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>',
+      },
+      active: {
+        inner_html: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><polyline points="22, 6 12, 13 2, 6" fill="none" stroke="#232543" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>',
+      },
+    },
+
+    'icon-cog' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="12" y1="21" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="12" y1="8" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="20" y1="21" x2="20" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="20" y1="12" x2="20" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="1" y1="14" x2="7" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="9" y1="8" x2="15" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="17" y1="16" x2="23" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>',
+      },
+      active: {
+        inner_html: '<line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="12" y1="21" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="12" y1="8" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="20" y1="21" x2="20" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="20" y1="12" x2="20" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="1" y1="14" x2="7" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="9" y1="8" x2="15" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line><line x1="17" y1="16" x2="23" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>',
+      },
+    },
+
+    'icon-' => {
+      view_box: '0 0 24 24',
+      default: {
+        inner_html: '<circle cx="12" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle><circle cx="19" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle><circle cx="5" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>',
+      },
+      active: {
+        inner_html: '<circle cx="12" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle><circle cx="19" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle><circle cx="5" cy="12" r="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>',
+      },
+    },
+  }.freeze
+
   FORM_COLOR_GROUPS = [
     {
       title: 'color-base',
@@ -182,6 +264,7 @@ module CustomBrandingTheme
     opacity = normalize_opacity(values[OPACITY_SETTING])
 
     lines = []
+
     COLOR_SCHEMES.each_value do |scheme|
       lines << "#{scheme[:selector]} {"
       COLOR_SETTINGS.each do |key, config|
@@ -198,57 +281,237 @@ module CustomBrandingTheme
     lines << "  --custom-timeline-panel-opacity: #{opacity}%;"
     lines << '}'
     lines << ''
-    lines << icon_color_css
+    lines << navigation_icon_css(values)
 
     lines.join("\n")
   end
 
-  def icon_color_css
-    <<~CSS.strip
-      body.layout-single-column .column-link .icon,
-      body.layout-multiple-columns .column-link .icon,
-      body.layout-single-column .ui__navigation-bar__item .icon,
-      body.layout-multiple-columns .ui__navigation-bar__item .icon,
-      body.layout-single-column .icon-with-badge .icon,
-      body.layout-multiple-columns .icon-with-badge .icon {
-        color: var(lines << icon_color_css) !important;
+  def encode_svg(svg)
+    svg.to_s.gsub(/\s+/, ' ').strip.gsub(/[ #%<>"']/) do |char|
+      case char
+      when ' '
+        '%20'
+      when '#'
+        '%23'
+      when '%'
+        '%25'
+      when '<'
+        '%3C'
+      when '>'
+        '%3E'
+      when '"'
+        '%22'
+      when "'"
+        '%27'
+      end
+    end
+  end
+
+  def navigation_icon_data_uri(icon, state, color)
+    icon_state = icon[state] || icon[:default]
+    normalized_color = normalize_hex(color, DEFAULTS[:branding_color_light_text])
+
+    svg = <<~SVG
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="#{icon[:view_box]}" aria-hidden="true" color="#{normalized_color}" fill="none" stroke="none">
+        #{icon_state[:inner_html]}
+      </svg>
+    SVG
+
+    "data:image/svg+xml,#{encode_svg(svg)}"
+  end
+
+  def navigation_scopes(light: false)
+    prefix = light ? "html[data-color-scheme='light'] " : ''
+
+    [
+      "#{prefix}body .navigation-panel",
+      "#{prefix}body nav.navigation-panel",
+      "#{prefix}body .ui__navigation-bar",
+    ].uniq
+  end
+
+  def direct_link_selector(icon_class, light: false)
+    navigation_scopes(light: light).map do |scope|
+      "#{scope} .column-link:has(> svg.icon.#{icon_class})"
+    end.join(",\n")
+  end
+
+  def direct_svg_selector(icon_class, light: false)
+    navigation_scopes(light: light).map do |scope|
+      "#{scope} .column-link > svg.icon.#{icon_class}"
+    end.join(",\n")
+  end
+
+  def active_direct_link_selector(icon_class, light: false)
+    navigation_scopes(light: light).flat_map do |scope|
+      base = "#{scope} .column-link:has(> svg.icon.#{icon_class})"
+
+      [
+        "#{base}.active",
+        "#{base}.selected",
+        "#{base}.column-link--active",
+        "#{base}[aria-current='page']",
+        "#{base}[aria-selected='true']",
+      ]
+    end.join(",\n")
+  end
+
+  def badge_selector(icon_class, light: false)
+    navigation_scopes(light: light).map do |scope|
+      "#{scope} .column-link .icon-with-badge:has(svg.icon.#{icon_class})"
+    end.join(",\n")
+  end
+
+  def badge_svg_selector(icon_class, light: false)
+    navigation_scopes(light: light).map do |scope|
+      "#{scope} .column-link .icon-with-badge svg.icon.#{icon_class}"
+    end.join(",\n")
+  end
+
+  def active_badge_selector(icon_class, light: false)
+    navigation_scopes(light: light).flat_map do |scope|
+      [
+        "#{scope} .column-link.active .icon-with-badge:has(svg.icon.#{icon_class})",
+        "#{scope} .column-link.selected .icon-with-badge:has(svg.icon.#{icon_class})",
+        "#{scope} .column-link.column-link--active .icon-with-badge:has(svg.icon.#{icon_class})",
+        "#{scope} .column-link[aria-current='page'] .icon-with-badge:has(svg.icon.#{icon_class})",
+        "#{scope} .column-link[aria-selected='true'] .icon-with-badge:has(svg.icon.#{icon_class})",
+      ]
+    end.join(",\n")
+  end
+
+  def navigation_icon_css(values)
+    dark_icon_color = values[:branding_color_light_text] || DEFAULTS[:branding_color_light_text]
+    light_icon_color = values[:branding_color_light_text_light] || DEFAULTS[:branding_color_light_text_light]
+
+    lines = []
+
+    NAVIGATION_ICONS.each do |icon_class, icon|
+      dark_default_icon = navigation_icon_data_uri(icon, :default, dark_icon_color)
+      dark_active_icon = navigation_icon_data_uri(icon, :active, dark_icon_color)
+
+      light_default_icon = navigation_icon_data_uri(icon, :default, light_icon_color)
+      light_active_icon = navigation_icon_data_uri(icon, :active, light_icon_color)
+
+      lines << "#{direct_link_selector(icon_class)} {"
+      lines << "  background-image: url(\"#{dark_default_icon}\") !important;"
+      lines << '  background-repeat: no-repeat !important;'
+      lines << '  background-origin: content-box !important;'
+      lines << '  background-position: left center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{active_direct_link_selector(icon_class)} {"
+      lines << "  background-image: url(\"#{dark_active_icon}\") !important;"
+      lines << '  background-origin: content-box !important;'
+      lines << '  background-position: left center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{direct_svg_selector(icon_class)} {"
+      lines << '  opacity: 0 !important;'
+      lines << '  width: 22px !important;'
+      lines << '  height: 22px !important;'
+      lines << '  min-width: 22px !important;'
+      lines << '  flex: 0 0 22px !important;'
+      lines << '  pointer-events: none !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{badge_selector(icon_class)} {"
+      lines << "  background-image: url(\"#{dark_default_icon}\") !important;"
+      lines << '  background-repeat: no-repeat !important;'
+      lines << '  background-position: center center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '  width: 22px !important;'
+      lines << '  height: 22px !important;'
+      lines << '  min-width: 22px !important;'
+      lines << '  flex: 0 0 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{active_badge_selector(icon_class)} {"
+      lines << "  background-image: url(\"#{dark_active_icon}\") !important;"
+      lines << '  background-position: center center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{badge_svg_selector(icon_class)} {"
+      lines << '  opacity: 0 !important;'
+      lines << '  width: 22px !important;'
+      lines << '  height: 22px !important;'
+      lines << '  pointer-events: none !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{direct_link_selector(icon_class, light: true)} {"
+      lines << "  background-image: url(\"#{light_default_icon}\") !important;"
+      lines << '  background-origin: content-box !important;'
+      lines << '  background-position: left center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{active_direct_link_selector(icon_class, light: true)} {"
+      lines << "  background-image: url(\"#{light_active_icon}\") !important;"
+      lines << '  background-origin: content-box !important;'
+      lines << '  background-position: left center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{badge_selector(icon_class, light: true)} {"
+      lines << "  background-image: url(\"#{light_default_icon}\") !important;"
+      lines << '  background-position: center center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+
+      lines << "#{active_badge_selector(icon_class, light: true)} {"
+      lines << "  background-image: url(\"#{light_active_icon}\") !important;"
+      lines << '  background-position: center center !important;'
+      lines << '  background-size: 22px 22px !important;'
+      lines << '}'
+      lines << ''
+    end
+
+    lines << <<~CSS
+      body .navigation-panel .column-link::before {
+        content: none !important;
+        display: none !important;
+        background-image: none !important;
       }
 
-      body.layout-single-column .column-link.active .icon,
-      body.layout-multiple-columns .column-link.active .icon,
-      body.layout-single-column .ui__navigation-bar__item.active .icon,
-      body.layout-multiple-columns .ui__navigation-bar__item.active .icon,
-      body.layout-single-column .active .icon-with-badge .icon,
-      body.layout-multiple-columns .active .icon-with-badge .icon {
-        color: var(--color-light-text) !important;
+      body .navigation-panel .column-link {
+        background-origin: content-box !important;
       }
 
-      body.layout-single-column .column-link .icon path,
-      body.layout-multiple-columns .column-link .icon path,
-      body.layout-single-column .ui__navigation-bar__item .icon path,
-      body.layout-multiple-columns .ui__navigation-bar__item .icon path,
-      body.layout-single-column .icon-with-badge .icon path,
-      body.layout-multiple-columns .icon-with-badge .icon path {
-        fill: currentColor !important;
+      body .navigation-panel .column-link > svg.icon {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        flex: 0 0 22px !important;
       }
 
-      body.layout-single-column .column-link .icon [stroke]:not([stroke="none"]),
-      body.layout-multiple-columns .column-link .icon [stroke]:not([stroke="none"]),
-      body.layout-single-column .ui__navigation-bar__item .icon [stroke]:not([stroke="none"]),
-      body.layout-multiple-columns .ui__navigation-bar__item .icon [stroke]:not([stroke="none"]),
-      body.layout-single-column .icon-with-badge .icon [stroke]:not([stroke="none"]),
-      body.layout-multiple-columns .icon-with-badge .icon [stroke]:not([stroke="none"]) {
-        stroke: currentColor !important;
+      body .navigation-panel .column-link .icon-with-badge {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        flex: 0 0 22px !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: 22px 22px !important;
       }
 
-      body.layout-single-column .column-link .icon [fill="none"],
-      body.layout-multiple-columns .column-link .icon [fill="none"],
-      body.layout-single-column .ui__navigation-bar__item .icon [fill="none"],
-      body.layout-multiple-columns .ui__navigation-bar__item .icon [fill="none"],
-      body.layout-single-column .icon-with-badge .icon [fill="none"],
-      body.layout-multiple-columns .icon-with-badge .icon [fill="none"] {
-        fill: none !important;
+      body .navigation-panel .column-link .icon-with-badge svg.icon {
+        width: 22px !important;
+        height: 22px !important;
       }
     CSS
+
+    lines.join("\n")
   end
 end
