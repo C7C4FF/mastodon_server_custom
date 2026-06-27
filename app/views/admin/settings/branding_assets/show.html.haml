@@ -10,6 +10,73 @@
 
   %p.lead= t('admin.settings.branding_assets.preamble')
 
+  - preview_logo = custom_logo_path('display')
+  - preview_background_dark_upload = [@admin_settings.background_dark, @admin_settings.background, @admin_settings.background_light].compact.find(&:persisted?)
+  - preview_background_light_upload = [@admin_settings.background_light, @admin_settings.background, @admin_settings.background_dark].compact.find(&:persisted?)
+  - preview_background_dark = preview_background_dark_upload.file.url('2560') if preview_background_dark_upload
+  - preview_background_light = preview_background_light_upload.file.url('2560') if preview_background_light_upload
+  - preview_style = []
+  - CustomBrandingTheme::COLOR_SETTINGS.each_key do |field|
+    - preview_style << "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-dark: #{CustomBrandingTheme.normalize_hex(@admin_settings.public_send(field), CustomBrandingTheme::DEFAULTS[field])}"
+    - light_field = :"#{field}_light"
+    - preview_style << "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-light: #{CustomBrandingTheme.normalize_hex(@admin_settings.public_send(light_field), CustomBrandingTheme::DEFAULTS[light_field])}"
+  - preview_style << "--branding-preview-panel-opacity: #{CustomBrandingTheme.normalize_opacity(@admin_settings.branding_timeline_panel_opacity) / 100.0}"
+  - preview_style << "--branding-preview-background-dark: url('#{preview_background_dark}')" if preview_background_dark.present?
+  - preview_style << "--branding-preview-background-light: url('#{preview_background_light}')" if preview_background_light.present?
+
+  .branding-assets-preview{ style: preview_style.join('; ') }
+    .branding-assets-preview__sidebar
+      .branding-assets-preview__logo
+        = image_tag preview_logo, alt: 'C7C4FF'
+      %nav.branding-assets-preview__nav{ 'aria-label' => '브랜딩 미리보기 네비게이션' }
+        .branding-assets-preview__nav-item.branding-assets-preview__nav-item--active
+          = material_symbol 'home'
+          %span 홈
+        .branding-assets-preview__nav-item
+          = material_symbol 'planet'
+          %span 로컬 타임라인
+        .branding-assets-preview__nav-item
+          = material_symbol 'notifications'
+          %span 알림
+        .branding-assets-preview__nav-item
+          = material_symbol 'mail'
+          %span DM
+        .branding-assets-preview__nav-item
+          = material_symbol 'bookmark'
+          %span 북마크
+    .branding-assets-preview__timeline
+      .branding-assets-preview__header
+        %strong 홈
+        = material_symbol 'tune'
+      .status__wrapper.status__wrapper-public.status__wrapper-own.focusable.branding-assets-preview__status
+        .branding-assets-preview__avatar C
+        .branding-assets-preview__status-body
+          .branding-assets-preview__status-meta
+            %strong admin
+            %span @admin · 지금
+          %p 브랜딩 미리보기용 공개 툿입니다. 글자색, 강조색, 패널 투명도 분위기를 확인할 수 있어요.
+          .branding-assets-preview__status-actions
+            = material_symbol 'chat_bubble'
+            = material_symbol 'repeat'
+            = material_symbol 'favorite'
+            = material_symbol 'bookmark'
+    .branding-assets-preview__compose
+      .branding-assets-preview__search
+        %span 검색하거나 URL 붙여넣기
+        = material_symbol 'search'
+      .compose-form__highlightable.branding-assets-preview__compose-box
+        %span.branding-assets-preview__visibility
+          = material_symbol 'public'
+          공개
+        %p 지금 무슨 생각을 하고 있나요?
+        .branding-assets-preview__compose-actions
+          .branding-assets-preview__compose-icons
+            = material_symbol 'image'
+            = material_symbol 'bar_chart'
+            = material_symbol 'sentiment_satisfied'
+          %span 1000
+          %button{ type: 'button' } 게시
+
   .fields-row
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :logo,
