@@ -46,12 +46,139 @@ const findBrandingColorInputs = (target: Element) => {
   };
 };
 
+const restoreBrandingSavedColorValues = () => {
+  document
+    .querySelectorAll<HTMLInputElement>('[data-branding-saved-value]')
+    .forEach((input) => {
+      const savedValue = input.dataset.brandingSavedValue;
+
+      if (!savedValue) return;
+
+      input.value = savedValue;
+      input.defaultValue = savedValue;
+      updateBrandingPreviewVariable(input);
+    });
+};
+
+const updateBrandingPreviewVariable = (target: HTMLInputElement) => {
+  const previewVariable = target.dataset.brandingPreviewVar;
+  const preview = document.querySelector<HTMLElement>('.branding-assets-preview');
+
+  if (!previewVariable || !preview) return;
+
+  if (target.dataset.brandingPreviewTransform === 'opacity') {
+    const value = Number.parseInt(target.value, 10);
+
+    if (Number.isNaN(value)) return;
+
+    preview.style.setProperty(
+      previewVariable,
+      String(Math.min(Math.max(value, 0), 100) / 100),
+    );
+    return;
+  }
+
+  const color = normalizeHexColor(target.value);
+
+  if (color) preview.style.setProperty(previewVariable, color);
+};
+
+const originalPreviewVariableKey = (previewVariable: string) =>
+  `brandingPreviewOriginal${previewVariable.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+const findBrandingFileClearButton = (target: Element) =>
+  target
+    .closest('.fields-group')
+    ?.querySelector<HTMLButtonElement>('[data-branding-file-clear]');
+
+const updateBrandingPreviewLogo = (target: HTMLInputElement, file: File) => {
+  const logo = document.querySelector<HTMLImageElement>(
+    '[data-branding-preview-logo-target]',
+  );
+
+  if (!logo) return;
+
+  if (target.dataset.brandingPreviewLogoObjectUrl) {
+    URL.revokeObjectURL(target.dataset.brandingPreviewLogoObjectUrl);
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  target.dataset.brandingPreviewLogoObjectUrl = objectUrl;
+  logo.src = objectUrl;
+};
+
+const restoreBrandingPreviewLogo = () => {
+  const logo = document.querySelector<HTMLImageElement>(
+    '[data-branding-preview-logo-target]',
+  );
+  const originalSrc = logo?.dataset.brandingPreviewOriginalSrc;
+
+  if (logo && originalSrc) logo.src = originalSrc;
+};
+
+const updateBrandingPreviewBackground = (
+  target: HTMLInputElement,
+  file: File,
+) => {
+  const preview = document.querySelector<HTMLElement>('.branding-assets-preview');
+  const previewVariables = target.dataset.brandingPreviewImageVars
+    ?.split(/\s+/)
+    .filter(Boolean);
+
+  if (!preview || !previewVariables?.length) return;
+
+  if (target.dataset.brandingPreviewImageObjectUrl) {
+    URL.revokeObjectURL(target.dataset.brandingPreviewImageObjectUrl);
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  target.dataset.brandingPreviewImageObjectUrl = objectUrl;
+
+  previewVariables.forEach((previewVariable) => {
+    const originalKey = originalPreviewVariableKey(previewVariable);
+
+    if (!(originalKey in preview.dataset)) {
+      preview.dataset[originalKey] =
+        preview.style.getPropertyValue(previewVariable);
+    }
+
+    preview.style.setProperty(previewVariable, `url("${objectUrl}")`);
+  });
+};
+
+const restoreBrandingPreviewBackground = (target: HTMLInputElement) => {
+  const preview = document.querySelector<HTMLElement>('.branding-assets-preview');
+  const previewVariables = target.dataset.brandingPreviewImageVars
+    ?.split(/\s+/)
+    .filter(Boolean);
+
+  if (!preview || !previewVariables?.length) return;
+
+  if (target.dataset.brandingPreviewImageObjectUrl) {
+    URL.revokeObjectURL(target.dataset.brandingPreviewImageObjectUrl);
+    delete target.dataset.brandingPreviewImageObjectUrl;
+  }
+
+  previewVariables.forEach((previewVariable) => {
+    const originalKey = originalPreviewVariableKey(previewVariable);
+    const originalValue = preview.dataset[originalKey];
+
+    if (originalValue) {
+      preview.style.setProperty(previewVariable, originalValue);
+    } else {
+      preview.style.removeProperty(previewVariable);
+    }
+  });
+};
+
 on('input', '[data-branding-color-picker]', ({ target }) => {
   if (!(target instanceof HTMLInputElement)) return;
 
   const { hex } = findBrandingColorInputs(target);
 
   if (hex) hex.value = target.value.toLowerCase();
+
+  updateBrandingPreviewVariable(target);
 });
 
 on('input', '[data-branding-color-hex]', ({ target }) => {
@@ -61,6 +188,8 @@ on('input', '[data-branding-color-hex]', ({ target }) => {
   const { picker } = findBrandingColorInputs(target);
 
   if (color && picker) picker.value = color;
+
+  updateBrandingPreviewVariable(target);
 });
 
 on('change', '[data-branding-color-hex]', ({ target }) => {
@@ -69,6 +198,61 @@ on('change', '[data-branding-color-hex]', ({ target }) => {
   const color = normalizeHexColor(target.value);
 
   if (color) target.value = color;
+});
+
+on('input', '[data-branding-preview-var]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement)) return;
+
+  updateBrandingPreviewVariable(target);
+});
+
+on('change', '[data-branding-preview-scheme]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement) || !target.checked) return;
+
+  const preview = document.querySelector<HTMLElement>(
+    '[data-branding-preview-root]',
+  );
+
+  if (preview) preview.dataset.previewScheme = target.value;
+});
+
+on('change', '[data-branding-file-input]', ({ target }) => {
+  if (!(target instanceof HTMLInputElement)) return;
+
+  const file = target.files?.[0];
+  const clearButton = findBrandingFileClearButton(target);
+
+  if (clearButton) clearButton.hidden = !file;
+
+  if (!file) return;
+
+  if (target.dataset.brandingPreviewLogoInput)
+    updateBrandingPreviewLogo(target, file);
+
+  if (target.dataset.brandingPreviewImageVars)
+    updateBrandingPreviewBackground(target, file);
+});
+
+on('click', '[data-branding-file-clear]', ({ target }) => {
+  if (!(target instanceof HTMLButtonElement)) return;
+
+  const input = target
+    .closest('.fields-group')
+    ?.querySelector<HTMLInputElement>('[data-branding-file-input]');
+
+  if (!input) return;
+
+  input.value = '';
+  target.hidden = true;
+
+  if (input.dataset.brandingPreviewLogoObjectUrl) {
+    URL.revokeObjectURL(input.dataset.brandingPreviewLogoObjectUrl);
+    delete input.dataset.brandingPreviewLogoObjectUrl;
+  }
+
+  if (input.dataset.brandingPreviewLogoInput) restoreBrandingPreviewLogo();
+  if (input.dataset.brandingPreviewImageVars)
+    restoreBrandingPreviewBackground(input);
 });
 
 on(
@@ -356,6 +540,8 @@ async function mountReactComponent(element: Element) {
 }
 
 ready(() => {
+  restoreBrandingSavedColorValues();
+
   const domainBlockSeveritySelect = document.querySelector<HTMLSelectElement>(
     'select#domain_block_severity',
   );

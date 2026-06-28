@@ -24,37 +24,40 @@
   - preview_style << "--branding-preview-background-dark: url('#{preview_background_dark}')" if preview_background_dark.present?
   - preview_style << "--branding-preview-background-light: url('#{preview_background_light}')" if preview_background_light.present?
 
-  .branding-assets-preview{ style: preview_style.join('; ') }
+  .branding-assets-preview-controls{ role: 'radiogroup', 'aria-label' => '미리보기 색상 모드' }
+    %label
+      = radio_button_tag 'branding_preview_scheme', 'light', true, data: { branding_preview_scheme: true }
+      %span 밝음 미리보기
+    %label
+      = radio_button_tag 'branding_preview_scheme', 'dark', false, data: { branding_preview_scheme: true }
+      %span 어두움 미리보기
+
+  .branding-assets-preview{ style: preview_style.join('; '), data: { branding_preview_root: true, preview_scheme: 'light' } }
     .branding-assets-preview__sidebar
       .branding-assets-preview__logo
-        = image_tag preview_logo, alt: 'C7C4FF'
+        = image_tag preview_logo, alt: 'C7C4FF', data: { branding_preview_logo_target: true, branding_preview_original_src: preview_logo }
       %nav.branding-assets-preview__nav{ 'aria-label' => '브랜딩 미리보기 네비게이션' }
         .branding-assets-preview__nav-item.branding-assets-preview__nav-item--active
           = material_symbol 'home'
           %span 홈
-        .branding-assets-preview__nav-item
-          = material_symbol 'planet'
-          %span 로컬 타임라인
-        .branding-assets-preview__nav-item
-          = material_symbol 'notifications'
-          %span 알림
-        .branding-assets-preview__nav-item
-          = material_symbol 'mail'
-          %span DM
-        .branding-assets-preview__nav-item
-          = material_symbol 'bookmark'
-          %span 북마크
     .branding-assets-preview__timeline
       .branding-assets-preview__header
         %strong 홈
         = material_symbol 'tune'
       .status__wrapper.status__wrapper-public.status__wrapper-own.focusable.branding-assets-preview__status
-        .branding-assets-preview__avatar C
+        .branding-assets-preview__avatar.branding-assets-preview__avatar--muted
+          = material_symbol 'flutter_dash'
         .branding-assets-preview__status-body
+          .branding-assets-preview__prepend
+            = material_symbol 'reply'
+            %span 유저 님에게
           .branding-assets-preview__status-meta
             %strong admin
-            %span @admin · 지금
-          %p 브랜딩 미리보기용 공개 툿입니다. 글자색, 강조색, 패널 투명도 분위기를 확인할 수 있어요.
+            %span @admin
+            %small · 지금
+          %p
+            %span.branding-assets-preview__mention @user
+            브랜딩 미리보기용 공개 툿입니다. 글자색, 강조색, 패널 투명도 분위기를 확인할 수 있어요.
           .branding-assets-preview__status-actions
             = material_symbol 'chat_bubble'
             = material_symbol 'repeat'
@@ -64,27 +67,31 @@
       .branding-assets-preview__search
         %span 검색하거나 URL 붙여넣기
         = material_symbol 'search'
+      .branding-assets-preview__compose-profile
+        .branding-assets-preview__avatar.branding-assets-preview__avatar--muted
+          = material_symbol 'flutter_dash'
+        .branding-assets-preview__compose-account
+          %strong admin
+          %span @admin
+        = material_symbol 'more_horiz'
       .compose-form__highlightable.branding-assets-preview__compose-box
         %span.branding-assets-preview__visibility
           = material_symbol 'public'
-          공개
+          로컬, 인용 허용
         %p 지금 무슨 생각을 하고 있나요?
         .branding-assets-preview__compose-actions
-          .branding-assets-preview__compose-icons
-            = material_symbol 'image'
-            = material_symbol 'bar_chart'
-            = material_symbol 'sentiment_satisfied'
           %span 1000
-          %button{ type: 'button' } 게시
+          %button.button.button--compact.branding-assets-preview__submit-button{ type: 'button', aria: { disabled: 'false', live: 'polite' }, style: 'background-color: var(--color-accent-dark); border-color: var(--color-accent-dark); color: #fff;' } 게시
 
   .fields-row
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :logo,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
                 label: '서버 로고 공통',
                 hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.logo.persisted?
@@ -97,10 +104,11 @@
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :logo_dark,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
                 label: '어두움 모드 로고',
                 hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.logo_dark.persisted?
@@ -113,10 +121,11 @@
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :logo_light,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
                 label: '밝음 모드 로고',
                 hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.logo_light.persisted?
@@ -151,10 +160,11 @@
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :background,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-dark --branding-preview-background-light' } },
                 label: '배경 이미지 공통',
                 hint: '권장 픽셀: 2560x1440',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.background.persisted?
@@ -167,10 +177,11 @@
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :background_dark,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-dark' } },
                 label: '어두움 모드 배경 이미지',
                 hint: '권장 픽셀: 2560x1440',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.background_dark.persisted?
@@ -183,10 +194,11 @@
     .fields-row__column.fields-row__column-6.fields-group
       = f.input :background_light,
                 as: :file,
-                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
+                input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-light' } },
                 label: '밝음 모드 배경 이미지',
                 hint: '권장 픽셀: 2560x1440',
                 wrapper: :with_block_label
+      %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
     .fields-row__column.fields-row__column-6.fields-group
       - if @admin_settings.background_light.persisted?
@@ -232,7 +244,7 @@
   .fields-group
     = f.input :branding_timeline_panel_opacity,
               as: :integer,
-              input_html: { min: 0, max: 100, step: 5 },
+              input_html: { min: 0, max: 100, step: 5, data: { branding_preview_var: '--branding-preview-panel-opacity', branding_preview_transform: 'opacity' } },
               label: '타임라인 패널 투명도',
               hint: '0은 완전 투명, 100은 불투명입니다. 배경 이미지가 적용된 타임라인 패널에 반영됩니다.',
               wrapper: :with_block_label
@@ -247,20 +259,22 @@
           %p.hint= config[:hint]
 
           .fields-row
-            - CustomBrandingTheme::COLOR_SCHEMES.each_value do |scheme|
+            - CustomBrandingTheme::COLOR_SCHEMES.each do |scheme_name, scheme|
               - scheme_field = CustomBrandingTheme.scheme_key(field, scheme)
+              - saved_color = CustomBrandingTheme.normalize_hex(f.object.public_send(scheme_field), CustomBrandingTheme::DEFAULTS[scheme_field])
               .fields-row__column.fields-row__column-6.fields-group
                 .input.with_block_label.string.optional
                   %label.string.optional{ for: "form_admin_settings_#{scheme_field}" }= scheme[:title]
                   .branding-assets__color-control{ data: { branding_color_row: true } }
                     = color_field_tag nil,
-                                      CustomBrandingTheme.normalize_hex(f.object.public_send(scheme_field), CustomBrandingTheme::DEFAULTS[scheme_field]),
+                                      saved_color,
                                       id: "#{scheme_field}_picker",
-                                      data: { branding_color_picker: true }
+                                      data: { branding_color_picker: true, branding_preview_var: "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-#{scheme_name}", branding_saved_value: saved_color }
                     = f.text_field scheme_field,
                                    id: "form_admin_settings_#{scheme_field}",
+                                   value: saved_color,
                                    pattern: '#?[0-9a-fA-F]{6}',
-                                   data: { branding_color_hex: true }
+                                   data: { branding_color_hex: true, branding_preview_var: "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-#{scheme_name}", branding_saved_value: saved_color }
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit
