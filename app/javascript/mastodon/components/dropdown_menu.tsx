@@ -20,6 +20,8 @@ import type {
 } from 'react-overlays/esm/usePopper';
 import Overlay from 'react-overlays/Overlay';
 
+import CloseIcon from '@/material-icons/400-24px/close.svg?react';
+
 import { fetchRelationships } from 'mastodon/actions/accounts';
 import {
   openDropdownMenu,
@@ -498,7 +500,7 @@ export const Dropdown = <Item extends object | null = MenuItem>({
     button = (
       <IconButton
         icon={!open ? icon : 'close'}
-        iconComponent={iconComponent}
+        iconComponent={!open ? iconComponent : CloseIcon}
         title={title}
         active={open}
         className={iconClassName}
