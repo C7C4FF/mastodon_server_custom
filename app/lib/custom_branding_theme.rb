@@ -8,7 +8,7 @@ module CustomBrandingTheme
   COLOR_SETTINGS = {
     branding_color_base: {
       default: '#1f883d',
-      css_vars: %w(--color-base --color-bg-brand-base --color-text-brand --color-border-brand --color-accent-dark --color-brand-mastodon),
+      css_vars: %w(--color-base --color-bg-brand-base --color-text-brand --color-border-brand --color-accent-dark --color-brand-mastodon --color-text-bookmark-highlight),
     },
     branding_color_base_hover: {
       default: '#2da44e',
@@ -38,6 +38,10 @@ module CustomBrandingTheme
       default: '#f7f9f9',
       css_vars: %w(--color-light-text --color-button-text --color-ghost-button-text),
     },
+    branding_color_text_on_brand_base: {
+      default: '#f7f9f9',
+      css_vars: %w(--color-text-on-brand-base),
+    },
   }.freeze
 
   COLOR_SCHEMES = {
@@ -62,6 +66,7 @@ module CustomBrandingTheme
     branding_color_text_tertiary_light: '#81778f',
     branding_color_dim_light: '#9388a6',
     branding_color_light_text_light: '#1f1b23',
+    branding_color_text_on_brand_base_light: '#f7f9f9',
     OPACITY_SETTING => 80
   ).freeze
 
@@ -193,6 +198,10 @@ module CustomBrandingTheme
           label: '--color-light-text',
           hint: '밝은 텍스트와 버튼 텍스트 색입니다.',
         },
+        branding_color_text_on_brand_base: {
+          label: '--color-text-on-brand-base',
+          hint: '브랜드 색 배경 위에 올라가는 텍스트 색입니다.',
+        },
       },
     },
   ].freeze
@@ -272,6 +281,8 @@ module CustomBrandingTheme
         color = normalize_hex(values[setting_key], DEFAULTS[setting_key] || config[:default])
         config[:css_vars].each { |css_var| lines << "  #{css_var}: #{color};" }
       end
+      lines.concat(bookmark_icon_css_vars(values, scheme))
+      lines.concat(status_action_icon_css_vars(values, scheme))
       lines << "  --custom-timeline-panel-opacity: #{opacity}%;"
       lines << '}'
       lines << ''
@@ -282,6 +293,7 @@ module CustomBrandingTheme
     lines << '}'
     lines << ''
     lines << navigation_icon_css(values)
+    lines << icon_button_css(values)
 
     lines.join("\n")
   end
@@ -321,6 +333,138 @@ module CustomBrandingTheme
     SVG
 
     "data:image/svg+xml,#{encode_svg(svg)}"
+  end
+
+  def bookmark_icon_data_uri(state, color)
+    normalized_color = normalize_hex(color, DEFAULTS[:branding_color_base])
+
+    path = case state
+           when :filled
+             '<path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path>'
+           else
+             '<path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path>'
+           end
+
+    svg = <<~SVG
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#{normalized_color}" aria-hidden="true">
+        <g>#{path}</g>
+      </svg>
+    SVG
+
+    "data:image/svg+xml,#{encode_svg(svg)}"
+  end
+
+  def bookmark_icon_css_vars(values, scheme)
+    base_color = normalize_hex(values[scheme_key(:branding_color_base, scheme)], DEFAULTS[scheme_key(:branding_color_base, scheme)])
+    dim_color = normalize_hex(values[scheme_key(:branding_color_dim, scheme)], DEFAULTS[scheme_key(:branding_color_dim, scheme)])
+
+    default_icon = bookmark_icon_data_uri(:outline, dim_color)
+    highlight_icon = bookmark_icon_data_uri(:outline, base_color)
+    active_icon = bookmark_icon_data_uri(:filled, base_color)
+
+    [
+      "  --icon-bookmark: url(\"#{default_icon}\");",
+      "  --icon-bookmark-status-hover: url(\"#{highlight_icon}\");",
+      "  --icon-bookmark-status-hover-red: url(\"#{highlight_icon}\");",
+      "  --icon-bookmark-active: url(\"#{active_icon}\");",
+      "  --icon-bookmark-detailed-status-action-bar: url(\"#{default_icon}\");",
+      "  --icon-bookmark-detailed-status-action-bar-hover: url(\"#{highlight_icon}\");",
+      "  --icon-bookmark-detailed-status-action-bar-active: url(\"#{active_icon}\");",
+    ]
+  end
+
+  def action_icon_data_uri(name, color)
+    normalized_color = normalize_hex(color, DEFAULTS[:branding_color_base])
+
+    svg = case name
+          when :reply
+            <<~SVG
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#{normalized_color}" aria-hidden="true">
+                <g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
+              </svg>
+            SVG
+          when :boost
+            <<~SVG
+              <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 136 136">
+                <path fill="#{normalized_color}" d="M51 23.8c0 .4 2.4 3.1 5.3 6l5.3 5.2h34.6l3.4 3.4 3.4 3.4v47.4l-6.7-6.1-6.8-6.1-4 4-4 4 13.8 13.7 13.7 13.8L122.5 99c7.4-7.4 13.5-13.7 13.5-14-.1-.3-1.7-2.3-3.6-4.4l-3.5-4-6.8 6.8-6.9 6.9-.4-25.4c-.3-23.8-.4-25.7-2.5-29.4-2.7-5.1-5.7-7.9-11.3-10.4-4.1-1.9-6.5-2.1-27.2-2.1-12.6 0-22.8.4-22.8.8zM13 37.5-.4 51l3.8 3.9 3.9 4 6.6-6.1 6.6-6 .5 24.4c.5 26.3.7 27.2 6.6 33.2 6 5.9 6.8 6.1 33.2 6.4 13.3.2 24.2-.1 24.2-.5 0-.5-2.2-3-4.8-5.6l-4.8-4.7-15.9-.1c-17.7 0-21.7-.9-24.9-5.2-2-2.7-2.1-4.2-2.3-26.5l-.2-23.6 6.7 6.7C42.5 55 46 58 46.6 58c.5 0 2.5-1.6 4.4-3.5l3.4-3.5L41 37.5C33.6 30.1 27.3 24 27 24c-.3 0-6.6 6.1-14 13.5z"></path>
+              </svg>
+            SVG
+          when :heart_filled
+            <<~SVG
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="#{normalized_color}">
+                <g><path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
+              </svg>
+            SVG
+          else
+            <<~SVG
+              <svg viewBox="0 0 24 24" color="inherit" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#{normalized_color}" d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2zm-3.566 15.604a26.953 26.953 0 0 0 2.42-1.701C18.335 14.533 20 11.943 20 9c0-2.36-1.537-4-3.5-4c-1.076 0-2.24.57-3.086 1.414L12 7.828l-1.414-1.414C9.74 5.57 8.576 5 7.5 5C5.56 5 4 6.656 4 9c0 2.944 1.666 5.533 4.645 7.903c.745.592 1.54 1.145 2.421 1.7c.299.189.595.37.934.572c.339-.202.635-.383.934-.571z"></path>
+              </svg>
+            SVG
+          end
+
+    "data:image/svg+xml,#{encode_svg(svg)}"
+  end
+
+  def status_action_icon_css_vars(values, scheme)
+    base_color = normalize_hex(values[scheme_key(:branding_color_base, scheme)], DEFAULTS[scheme_key(:branding_color_base, scheme)])
+    dim_color = normalize_hex(values[scheme_key(:branding_color_dim, scheme)], DEFAULTS[scheme_key(:branding_color_dim, scheme)])
+
+    reply_default = action_icon_data_uri(:reply, dim_color)
+    reply_highlight = action_icon_data_uri(:reply, base_color)
+    boost_default = action_icon_data_uri(:boost, dim_color)
+    boost_active = action_icon_data_uri(:boost, base_color)
+    heart_default = action_icon_data_uri(:heart_outline, dim_color)
+    heart_highlight = action_icon_data_uri(:heart_outline, base_color)
+    heart_active = action_icon_data_uri(:heart_filled, base_color)
+
+    [
+      "  --icon-reply: url(\"#{reply_default}\");",
+      "  --icon-reply-detailed-status-action-bar: url(\"#{reply_default}\");",
+      "  --icon-reply-detailed-status-action-bar-hover: url(\"#{reply_highlight}\");",
+      "  --icon-reply-conversation: url(\"#{reply_highlight}\");",
+      "  --icon-reply-status-hover: url(\"#{reply_highlight}\");",
+      "  --icon-boost: url(\"#{boost_default}\");",
+      "  --icon-boost-status: url(\"#{boost_default}\");",
+      "  --icon-boost-active: url(\"#{boost_active}\");",
+      "  --icon-boost-notification-filter-bar: url(\"#{boost_default}\");",
+      "  --icon-boost-notification-wrapper: url(\"#{boost_active}\");",
+      "  --icon-heart: url(\"#{heart_default}\");",
+      "  --icon-heart-hover: url(\"#{heart_highlight}\");",
+      "  --icon-heart-active: url(\"#{heart_active}\");",
+      "  --icon-heart-active-red: url(\"#{heart_active}\");",
+      "  --icon-heart-notification: url(\"#{heart_active}\");",
+    ]
+  end
+
+  def icon_button_css(values)
+    lines = []
+
+    COLOR_SCHEMES.each_value do |scheme|
+      color = normalize_hex(values[scheme_key(:branding_color_base, scheme)], DEFAULTS[scheme_key(:branding_color_base, scheme)])
+
+      lines << "#{icon_button_selector(light: !scheme[:suffix].nil?)} {"
+      lines << "  color: #{color} !important;"
+      lines << '}'
+      lines << ''
+    end
+
+    lines.join("\n")
+  end
+
+  def icon_button_selector(light: false)
+    prefix = light ? "html[data-color-scheme='light'] " : ''
+
+    [
+      "#{prefix}body.layout-multiple-columns .icon-button .icon-button__icon",
+      "#{prefix}body.layout-multiple-columns .icon-button .icon-button__icon > .icon",
+      "#{prefix}body.layout-multiple-columns .icon-button > .icon",
+      "#{prefix}body.layout-single-column .icon-button .icon-button__icon",
+      "#{prefix}body.layout-single-column .icon-button .icon-button__icon > .icon",
+      "#{prefix}body.layout-single-column .icon-button > .icon",
+      "#{prefix}body .compose-form__buttons .icon-button .icon-button__icon",
+      "#{prefix}body .compose-form__buttons .icon-button .icon-button__icon > .icon",
+    ].join(",\n")
   end
 
   def navigation_scopes(light: false)

@@ -1309,6 +1309,7 @@ a.name-tag,
   --branding-preview-text-secondary: var(--branding-preview-text-secondary-dark, #8493a7);
   --branding-preview-dim: var(--branding-preview-dim-dark, #717c9b);
   --branding-preview-light-text: var(--branding-preview-light-text-dark, #f7f9f9);
+  --branding-preview-text-on-brand-base: var(--branding-preview-text-on-brand-base-dark, #f7f9f9);
   --branding-preview-background: var(--branding-preview-background-dark, #000);
   --branding-preview-surface-rgb: 12, 16, 22;
   --branding-preview-surface: rgba(var(--branding-preview-surface-rgb), var(--branding-preview-panel-opacity, 0.8));
@@ -1316,6 +1317,7 @@ a.name-tag,
   --color-accent-dark: var(--branding-preview-base);
   --color-dim: var(--branding-preview-dim);
   --color-light-text: var(--branding-preview-light-text);
+  --color-text-on-brand-base: var(--branding-preview-text-on-brand-base);
 
   display: grid;
   grid-template-columns: minmax(190px, 0.92fr) minmax(330px, 1.38fr) minmax(250px, 1fr);
@@ -1346,6 +1348,7 @@ a.name-tag,
   --branding-preview-text-secondary: var(--branding-preview-text-secondary-light);
   --branding-preview-dim: var(--branding-preview-dim-light);
   --branding-preview-light-text: var(--branding-preview-light-text-light);
+  --branding-preview-text-on-brand-base: var(--branding-preview-text-on-brand-base-light);
   --branding-preview-background: var(--branding-preview-background-light, #fff);
   --branding-preview-surface-rgb: 255, 255, 255;
   --branding-preview-input-surface: rgb(147 136 166 / 20%);
@@ -1359,6 +1362,7 @@ a.name-tag,
   --branding-preview-text-secondary: var(--branding-preview-text-secondary-dark, #8493a7);
   --branding-preview-dim: var(--branding-preview-dim-dark, #717c9b);
   --branding-preview-light-text: var(--branding-preview-light-text-dark, #f7f9f9);
+  --branding-preview-text-on-brand-base: var(--branding-preview-text-on-brand-base-dark, #f7f9f9);
   --branding-preview-background: var(--branding-preview-background-dark, #000);
   --branding-preview-surface-rgb: 12, 16, 22;
   --branding-preview-input-surface: rgb(31 35 47 / 80%);
@@ -1606,7 +1610,7 @@ a.name-tag,
   min-width: 54px;
   min-height: 36px;
   padding: 6px 14px;
-  color: #fff !important;
+  color: var(--branding-preview-text-on-brand-base) !important;
   background-color: var(--color-accent-dark) !important;
   border-color: var(--color-accent-dark) !important;
   border-radius: 999px !important;
@@ -1615,7 +1619,7 @@ a.name-tag,
   &:hover,
   &:focus,
   &:active {
-    color: #fff !important;
+    color: var(--branding-preview-text-on-brand-base) !important;
     background-color: var(--color-accent-dark) !important;
     border-color: var(--color-accent-dark) !important;
   }
