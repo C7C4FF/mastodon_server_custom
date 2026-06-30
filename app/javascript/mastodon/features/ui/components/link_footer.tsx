@@ -10,7 +10,7 @@ const COMMISSION_URL = 'https://crepe.cm/ko/@yBlrMdSz/x8j0ttu';
 const SOURCE_CODE_URL = 'https://github.com/C7C4FF/mastodon_server_custom';
 const AGPL_URL = 'https://www.gnu.org/licenses/agpl-3.0.html';
 const MASTODON_URL = 'https://joinmastodon.org';
-const MASTODON_VERSION = '4.6.0';
+const MASTODON_VERSION = '4.5.11';
 
 export const LinkFooter: React.FC<{
   context?: 'default' | 'multi-column' | 'about';
