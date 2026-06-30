@@ -5,21 +5,23 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { Helmet } from '@unhead/react/helmet';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import MailIcon from '@/material-icons/400-24px/mail.svg?react';
-import { expandAllConversations } from 'mastodon/actions/all_conversations';
+import { expandAllConversations, markAllConversationsRead } from 'mastodon/actions/all_conversations';
 import { addColumn, removeColumn, moveColumn } from 'mastodon/actions/columns';
 import { mountConversations, unmountConversations, expandConversations } from 'mastodon/actions/conversations';
 import { connectDirectStream } from 'mastodon/actions/streaming';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
+import { selectUnreadAllConversationsCount } from 'mastodon/reducers/all_conversations';
 
 import { ConversationsList } from './components/conversations_list';
 
 const messages = defineMessages({
   title: { id: 'column.direct', defaultMessage: 'Direct messages' },
   allTitle: { id: 'column.all_direct', defaultMessage: 'All DMs' },
+  markAllRead: { id: 'column.all_direct.mark_all_read', defaultMessage: 'Mark all as read' },
 });
 
 const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
@@ -28,6 +30,8 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
   const dispatch = useDispatch();
   const pinned = !!columnId;
   const title = intl.formatMessage(allConversations ? messages.allTitle : messages.title);
+  const markAllReadLabel = intl.formatMessage(messages.markAllRead);
+  const unreadAllConversationsCount = useSelector(state => allConversations ? selectUnreadAllConversationsCount(state) : 0);
 
   const handlePin = useCallback(() => {
     if (columnId) {
@@ -44,6 +48,10 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
   const handleHeaderClick = useCallback(() => {
     columnRef.current.scrollTop();
   }, [columnRef]);
+
+  const handleMarkAllRead = useCallback(() => {
+    dispatch(markAllConversationsRead());
+  }, [dispatch]);
 
   useEffect(() => {
     if (allConversations) {
@@ -74,6 +82,18 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
         onClick={handleHeaderClick}
         pinned={pinned}
         multiColumn={multiColumn}
+        extraButton={allConversations && (
+          <button
+            className='button button--compact column-header__read-all-button'
+            disabled={unreadAllConversationsCount === 0}
+            onClick={handleMarkAllRead}
+            aria-label={markAllReadLabel}
+            title={markAllReadLabel}
+            type='button'
+          >
+            {markAllReadLabel}
+          </button>
+        )}
         hideCollapseButton
       />
 

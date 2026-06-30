@@ -16,7 +16,7 @@ class Api::V1::Admin::DirectMessagesController < Api::BaseController
   end
 
   before_action -> { doorkeeper_authorize! :read, :'read:statuses' }, only: :index
-  before_action -> { doorkeeper_authorize! :write, :'write:conversations' }, only: :read
+  before_action -> { doorkeeper_authorize! :write, :'write:conversations' }, only: [:read, :read_all]
   before_action :require_user!
   after_action :verify_authorized
   after_action :insert_pagination_headers, only: :index
@@ -35,6 +35,14 @@ class Api::V1::Admin::DirectMessagesController < Api::BaseController
 
     status = latest_status_for_conversation(params[:id])
     mark_conversation_read!(status) if status
+
+    render_empty
+  end
+
+  def read_all
+    authorize :direct_message, :index?
+
+    mark_all_conversations_read!
 
     render_empty
   end
@@ -101,6 +109,29 @@ class Api::V1::Admin::DirectMessagesController < Api::BaseController
       },
       unique_by: [:account_id, :conversation_id]
     )
+  end
+
+  def mark_all_conversations_read!
+    now = Time.current
+    rows = latest_statuses_for_all_conversations.filter_map do |status|
+      next if status.account_id == current_account.id
+
+      {
+        account_id: current_account.id,
+        conversation_id: status.conversation_id,
+        last_status_id: status.id,
+        created_at: now,
+        updated_at: now,
+      }
+    end
+
+    Admin::DirectMessageRead.upsert_all(rows, unique_by: [:account_id, :conversation_id]) if rows.any?
+  end
+
+  def latest_statuses_for_all_conversations
+    Status
+      .direct_visibility
+      .where(id: latest_direct_status_ids)
   end
 
   def participants_by_conversation_id

@@ -6,6 +6,7 @@ import {
   ALL_CONVERSATIONS_FETCH_FAIL,
   ALL_CONVERSATIONS_UPDATE,
   ALL_CONVERSATIONS_READ,
+  ALL_CONVERSATIONS_READ_ALL,
 } from '../actions/all_conversations';
 import { compareId } from '../compare_id';
 
@@ -100,6 +101,8 @@ export default function allConversations(state = initialState, action) {
 
       return item;
     }));
+  case ALL_CONVERSATIONS_READ_ALL:
+    return state.update('items', list => list.map(item => item.set('unread', false).set('unread_count', 0)));
   default:
     return state;
   }

@@ -460,6 +460,7 @@
   "column.create_list": "Create list",
   "column.direct": "Direct messages",
   "column.all_direct": "All DMs",
+  "column.all_direct.mark_all_read": "Mark all as read",
   "column.directory": "Browse profiles",
   "column.domain_blocks": "Blocked domains",
   "column.edit_list": "Edit list",

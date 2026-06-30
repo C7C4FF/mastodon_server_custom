@@ -12,6 +12,7 @@ export const ALL_CONVERSATIONS_FETCH_SUCCESS = 'ALL_CONVERSATIONS_FETCH_SUCCESS'
 export const ALL_CONVERSATIONS_FETCH_FAIL    = 'ALL_CONVERSATIONS_FETCH_FAIL';
 export const ALL_CONVERSATIONS_UPDATE        = 'ALL_CONVERSATIONS_UPDATE';
 export const ALL_CONVERSATIONS_READ          = 'ALL_CONVERSATIONS_READ';
+export const ALL_CONVERSATIONS_READ_ALL      = 'ALL_CONVERSATIONS_READ_ALL';
 
 const notifiedAllConversationStatusIds = new Set();
 
@@ -102,4 +103,12 @@ export const markAllConversationRead = conversationId => (dispatch) => {
   });
 
   api().post(`/api/v1/admin/direct_messages/${conversationId}/read`);
+};
+
+export const markAllConversationsRead = () => (dispatch) => {
+  dispatch({
+    type: ALL_CONVERSATIONS_READ_ALL,
+  });
+
+  api().post('/api/v1/admin/direct_messages/read_all');
 };

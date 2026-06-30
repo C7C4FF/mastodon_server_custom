@@ -5002,6 +5002,40 @@ a.status-card {
   margin-inline-end: 10px;
 }
 
+.column-header__read-all-button {
+  align-self: center;
+  margin-inline-end: 8px;
+  min-height: 30px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background-color: var(--color-accent-dark);
+  font-weight: 700;
+  white-space: nowrap;
+
+  &:active,
+  &:focus,
+  &:hover {
+    color: #fff;
+    background-color: var(--color-accent-dark);
+  }
+
+  &:disabled {
+    color: #fff;
+    background-color: var(--color-accent-dark);
+    cursor: default;
+    opacity: 0.45;
+
+    &:active,
+    &:focus,
+    &:hover {
+      color: #fff;
+      background-color: var(--color-accent-dark);
+    }
+  }
+}
+
 .column-header__button {
   display: flex;
   justify-content: center;

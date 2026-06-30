@@ -299,6 +299,10 @@ namespace :api, format: false do
       end
 
       resources :direct_messages, only: [:index] do
+        collection do
+          post :read_all
+        end
+
         member do
           post :read
         end
