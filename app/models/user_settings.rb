@@ -43,17 +43,17 @@ class UserSettings
   end
 
   namespace :notification_emails do
-    setting :follow, default: true
+    setting :follow, default: false
     setting :reblog, default: false
     setting :favourite, default: false
     setting :mention, default: false
-    setting :quote, default: true
-    setting :follow_request, default: true
-    setting :report, default: true
-    setting :pending_account, default: true
-    setting :trends, default: true
-    setting :appeal, default: true
-    setting :software_updates, default: 'critical', in: %w(none critical patch all)
+    setting :quote, default: false
+    setting :follow_request, default: false
+    setting :report, default: false
+    setting :pending_account, default: false
+    setting :trends, default: false
+    setting :appeal, default: false
+    setting :software_updates, default: 'none', in: %w(none critical patch all)
   end
 
   namespace :interactions do

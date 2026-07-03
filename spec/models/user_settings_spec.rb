@@ -12,6 +12,36 @@ RSpec.describe UserSettings do
       it 'returns default value' do
         expect(subject[:always_send_emails]).to be false
       end
+
+      it 'disables notification email defaults' do
+        defaults = {
+          follow: subject[:'notification_emails.follow'],
+          reblog: subject[:'notification_emails.reblog'],
+          favourite: subject[:'notification_emails.favourite'],
+          mention: subject[:'notification_emails.mention'],
+          quote: subject[:'notification_emails.quote'],
+          follow_request: subject[:'notification_emails.follow_request'],
+          report: subject[:'notification_emails.report'],
+          pending_account: subject[:'notification_emails.pending_account'],
+          trends: subject[:'notification_emails.trends'],
+          appeal: subject[:'notification_emails.appeal'],
+          software_updates: subject[:'notification_emails.software_updates'],
+        }
+
+        expect(defaults).to eq(
+          follow: false,
+          reblog: false,
+          favourite: false,
+          mention: false,
+          quote: false,
+          follow_request: false,
+          report: false,
+          pending_account: false,
+          trends: false,
+          appeal: false,
+          software_updates: 'none'
+        )
+      end
     end
 
     context 'when setting is set' do
