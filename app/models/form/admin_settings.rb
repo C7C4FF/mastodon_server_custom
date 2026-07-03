@@ -59,7 +59,6 @@ class Form::AdminSettings
     branding_color_base_soft
     branding_color_text_primary
     branding_color_text_secondary
-    branding_color_text_tertiary
     branding_color_dim
     branding_color_light_text
     branding_color_text_on_brand_base
@@ -68,7 +67,6 @@ class Form::AdminSettings
     branding_color_base_soft_light
     branding_color_text_primary_light
     branding_color_text_secondary_light
-    branding_color_text_tertiary_light
     branding_color_dim_light
     branding_color_light_text_light
     branding_color_text_on_brand_base_light

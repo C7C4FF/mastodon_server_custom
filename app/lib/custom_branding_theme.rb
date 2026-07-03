@@ -4,6 +4,8 @@ module CustomBrandingTheme
   OPACITY_SETTING = :branding_timeline_panel_opacity
   BEGIN_MARKER = '/* C7C4FF branding theme:start */'
   END_MARKER = '/* C7C4FF branding theme:end */'
+  BOOST_ACTION_COLOR = '#00ba7c'
+  FAVORITE_ACTION_COLOR = '#f91880'
 
   COLOR_SETTINGS = {
     branding_color_base: {
@@ -25,10 +27,6 @@ module CustomBrandingTheme
     branding_color_text_secondary: {
       default: '#8493a7',
       css_vars: %w(--color-text-secondary --color-brand-mastodon-text-light),
-    },
-    branding_color_text_tertiary: {
-      default: '#717c9b',
-      css_vars: %w(--color-text-tertiary),
     },
     branding_color_dim: {
       default: '#717c9b',
@@ -63,7 +61,6 @@ module CustomBrandingTheme
     branding_color_base_soft_light: '#eaf8ef',
     branding_color_text_primary_light: '#1f1b23',
     branding_color_text_secondary_light: '#5f576d',
-    branding_color_text_tertiary_light: '#81778f',
     branding_color_dim_light: '#9388a6',
     branding_color_light_text_light: '#1f1b23',
     branding_color_text_on_brand_base_light: '#f7f9f9',
@@ -154,19 +151,19 @@ module CustomBrandingTheme
 
   FORM_COLOR_GROUPS = [
     {
-      title: 'color-base',
+      title: '강조 색상',
       fields: {
         branding_color_base: {
-          label: '강조 색깔',
-          hint: '주요 버튼, 링크, 선택 상태, brand/accent 계열에 함께 적용됩니다.',
+          label: '기본 강조 색상',
+          hint: '주요 버튼, 링크, 선택 상태 등에 적용됩니다.',
         },
         branding_color_base_hover: {
-          label: 'hover 색깔',
-          hint: 'hover, 링크, 해시태그, 멘션 등 보조 강조 계열에 적용됩니다.',
+          label: '보조 강조 색상',
+          hint: '마우스를 올렸을 때, 링크, 해시태그, 멘션 등 보조 강조 계열에 적용됩니다.',
         },
         branding_color_base_soft: {
-          label: 'soft 색깔',
-          hint: '연한 강조 배경과 연한 강조 테두리에 적용됩니다.',
+          label: '부드러운 강조 색상',
+          hint: '연한 강조 배경 (맖풍선 강조)에 적용됩니다.',
         },
       },
     },
@@ -175,15 +172,11 @@ module CustomBrandingTheme
       fields: {
         branding_color_text_primary: {
           label: '기본 글자 색',
-          hint: '본문과 제목의 primary 텍스트 색입니다.',
+          hint: '본문 같은 주요 텍스트에 적용됩니다.',
         },
         branding_color_text_secondary: {
           label: '보조 글자 색',
-          hint: '힌트, 메타 정보, 보조 링크 텍스트 색입니다.',
-        },
-        branding_color_text_tertiary: {
-          label: '흐린 글자 색',
-          hint: '가장 낮은 우선순위의 tertiary 텍스트 색입니다.',
+          hint: '설정 사이트에서 보여지는 보조 텍스트에 적용됩니다.',
         },
       },
     },
@@ -191,16 +184,16 @@ module CustomBrandingTheme
       title: '보조 텍스트 색',
       fields: {
         branding_color_dim: {
-          label: '--color-dim',
-          hint: '흐리게 표시되는 텍스트와 아이콘 계열 색입니다.',
+          label: '흐리게 표시되는 텍스트 색상',
+          hint: '타임라인의 ~ 님에게 멘션, 유저 ID, 시각, 설명 등에 적용됩니다. ',
         },
         branding_color_light_text: {
-          label: '--color-light-text',
-          hint: '밝은 텍스트와 버튼 텍스트 색입니다.',
+          label: '홈 화면, 유저 닉네임 색상',
+          hint: '홈 화면의 메뉴, 그리고 타임라인의 유저 닉네임 등에 적용됩니다.',
         },
         branding_color_text_on_brand_base: {
-          label: '--color-text-on-brand-base',
-          hint: '브랜드 색 배경 위에 올라가는 텍스트 색입니다.',
+          label: '게시 버튼 위 글씨 색상',
+          hint: '게시 버튼과 같은 강조 색상 위의 글에 적용됩니다.',
         },
       },
     },
@@ -413,10 +406,10 @@ module CustomBrandingTheme
     reply_default = action_icon_data_uri(:reply, dim_color)
     reply_highlight = action_icon_data_uri(:reply, base_color)
     boost_default = action_icon_data_uri(:boost, dim_color)
-    boost_active = action_icon_data_uri(:boost, base_color)
+    boost_active = action_icon_data_uri(:boost, BOOST_ACTION_COLOR)
     heart_default = action_icon_data_uri(:heart_outline, dim_color)
-    heart_highlight = action_icon_data_uri(:heart_outline, base_color)
-    heart_active = action_icon_data_uri(:heart_filled, base_color)
+    heart_highlight = action_icon_data_uri(:heart_outline, FAVORITE_ACTION_COLOR)
+    heart_active = action_icon_data_uri(:heart_filled, FAVORITE_ACTION_COLOR)
 
     [
       "  --icon-reply: url(\"#{reply_default}\");",

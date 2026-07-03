@@ -41,7 +41,6 @@ defaults: &defaults
   branding_color_base_soft: '#dff7e7'
   branding_color_text_primary: '#f7f9f9'
   branding_color_text_secondary: '#8493a7'
-  branding_color_text_tertiary: '#717c9b'
   branding_color_dim: '#717c9b'
   branding_color_light_text: '#f7f9f9'
   branding_color_base_light: '#1f883d'
@@ -49,7 +48,6 @@ defaults: &defaults
   branding_color_base_soft_light: '#eaf8ef'
   branding_color_text_primary_light: '#1f1b23'
   branding_color_text_secondary_light: '#5f576d'
-  branding_color_text_tertiary_light: '#81778f'
   branding_color_dim_light: '#9388a6'
   branding_color_light_text_light: '#1f1b23'
 

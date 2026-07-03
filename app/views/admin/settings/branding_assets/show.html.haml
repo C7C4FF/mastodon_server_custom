@@ -58,6 +58,7 @@
           %p
             %span.branding-assets-preview__mention @user
             브랜딩 미리보기용 공개 툿입니다. 글자색, 강조색, 패널 투명도 분위기를 확인할 수 있어요.
+            느낌만 확인해주세요.
           .branding-assets-preview__status-actions
             = material_symbol 'chat_bubble'
             = material_symbol 'repeat'
@@ -88,7 +89,7 @@
       = f.input :logo,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
-                label: '서버 로고 공통',
+                label: '서버 로고 - 밝음과 어두움 테마에 일괄 적용됩니다.',
                 hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
@@ -105,8 +106,8 @@
       = f.input :logo_dark,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
-                label: '어두움 모드 로고',
-                hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
+                label: '서버 로고 - 어두움',
+                hint: '색상 구성 어두움에만 적용됩니다.',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
@@ -122,8 +123,8 @@
       = f.input :logo_light,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_logo_input: true } },
-                label: '밝음 모드 로고',
-                hint: '권장 픽셀: 가로형 600x200 또는 정사각형 200x200',
+                label: '서버 로고 - 밝음',
+                hint: '색상 구성 밝음에만 적용됩니다.',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
@@ -139,7 +140,7 @@
       = f.input :thumbnail,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
-                label: '서버 대표 이미지',
+                label: '서버 대표 이미지 - 링크 미리보기, 서버 소개 등에 사용됩니다.',
                 hint: '권장 픽셀: 1200x630',
                 wrapper: :with_block_label
       - if @admin_settings.thumbnail.persisted?
@@ -161,7 +162,7 @@
       = f.input :background,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-dark --branding-preview-background-light' } },
-                label: '배경 이미지 공통',
+                label: '배경 이미지 - 밝음과 어두움 테마에 일괄 적용됩니다.',
                 hint: '권장 픽셀: 2560x1440',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
@@ -178,8 +179,8 @@
       = f.input :background_dark,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-dark' } },
-                label: '어두움 모드 배경 이미지',
-                hint: '권장 픽셀: 2560x1440',
+                label: '배경 이미지 - 어두움',
+                hint: '색상 구성 어두움에만 적용됩니다.',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
@@ -195,8 +196,8 @@
       = f.input :background_light,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES, data: { branding_file_input: true, branding_preview_image_vars: '--branding-preview-background-light' } },
-                label: '밝음 모드 배경 이미지',
-                hint: '권장 픽셀: 2560x1440',
+                label: '배경 이미지 - 밝음',
+                hint: '색상 구성 밝음에만 적용됩니다.',
                 wrapper: :with_block_label
       %button.button.button-secondary.branding-assets__clear-upload{ type: 'button', data: { branding_file_clear: true }, hidden: true } 선택한 파일 제거
 
@@ -212,7 +213,7 @@
       = f.input :favicon,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
-                label: '브라우저 탭 아이콘',
+                label: 'favicon - 브라우저 탭에 보이는 작은 아이콘입니다.',
                 hint: '권장 픽셀: 48x48',
                 wrapper: :with_block_label
 
@@ -228,7 +229,7 @@
       = f.input :app_icon,
                 as: :file,
                 input_html: { accept: f.object.class::UPLOAD_MIME_TYPES },
-                label: '앱 아이콘',
+                label: '앱 아이콘 - 모바일 바로가기 등에 사용되는 이미지입니다.',
                 hint: '권장 픽셀: 512x512',
                 wrapper: :with_block_label
 
@@ -278,4 +279,4 @@
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit
-    = f.button :button, 'Bluebirdlike UI 기본값으로 초기화', type: :submit, name: 'branding_assets_action', value: 'reset_theme', data: { confirm: '색상과 패널 투명도 설정을 Bluebirdlike UI 기본값으로 되돌릴까요?' }
+    = f.button :button, 'UI 기본값으로 초기화', type: :submit, name: 'branding_assets_action', value: 'reset_theme', data: { confirm: '색상과 패널 투명도 설정을 Bluebirdlike UI 기본값으로 되돌릴까요?' }
