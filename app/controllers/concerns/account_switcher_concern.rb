@@ -55,4 +55,8 @@ module AccountSwitcherConcern
 
     User.includes(:account).where(id: ids).index_by(&:id).values_at(*ids).compact
   end
+
+  def switchable_account_user_for_account_id(account_id)
+    switchable_account_users.find { |user| user.account_id.to_s == account_id.to_s }
+  end
 end

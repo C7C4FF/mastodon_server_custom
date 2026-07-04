@@ -58,6 +58,7 @@ export const COMPOSE_SPOILERNESS_CHANGE  = 'COMPOSE_SPOILERNESS_CHANGE';
 export const COMPOSE_SPOILER_TEXT_CHANGE = 'COMPOSE_SPOILER_TEXT_CHANGE';
 export const COMPOSE_COMPOSING_CHANGE    = 'COMPOSE_COMPOSING_CHANGE';
 export const COMPOSE_LANGUAGE_CHANGE     = 'COMPOSE_LANGUAGE_CHANGE';
+export const COMPOSE_ACCOUNT_CHANGE      = 'COMPOSE_ACCOUNT_CHANGE';
 
 export const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT';
 
@@ -111,6 +112,13 @@ export function changeCompose(text) {
   return {
     type: COMPOSE_CHANGE,
     text: text,
+  };
+}
+
+export function changeComposeAccount(accountId) {
+  return {
+    type: COMPOSE_ACCOUNT_CHANGE,
+    accountId,
   };
 }
 
@@ -192,6 +200,7 @@ export function submitCompose(successCallback) {
     const status   = getState().getIn(['compose', 'text'], '');
     const media    = getState().getIn(['compose', 'media_attachments']);
     const statusId = getState().getIn(['compose', 'id'], null);
+    const accountId = getState().getIn(['compose', 'account_id'], null);
     const hasQuote = !!getState().getIn(['compose', 'quoted_status_id']);
     const spoiler_text = getState().getIn(['compose', 'spoiler']) ? getState().getIn(['compose', 'spoiler_text'], '') : '';
 
@@ -235,6 +244,7 @@ export function submitCompose(successCallback) {
       method: statusId === null ? 'post' : 'put',
       data: {
         status,
+        account_id: statusId === null ? accountId : undefined,
         spoiler_text,
         in_reply_to_id: getState().getIn(['compose', 'in_reply_to'], null),
         media_ids: media.map(item => item.get('id')),
@@ -274,7 +284,9 @@ export function submitCompose(successCallback) {
         dispatch(importFetchedStatus({ ...response.data }));
       }
 
-      if (statusId === null && response.data.visibility !== 'direct') {
+      const postedAsCurrentAccount = response.data.account.id === getState().getIn(['meta', 'me']);
+
+      if (statusId === null && response.data.visibility !== 'direct' && postedAsCurrentAccount) {
         insertIfOnline('home');
       }
 
@@ -335,6 +347,7 @@ export function uploadCompose(files) {
     const uploadLimit = getState().getIn(['server', 'server', 'item', 'configuration', 'statuses', 'max_media_attachments']);
     const media = getState().getIn(['compose', 'media_attachments']);
     const pending = getState().getIn(['compose', 'pending_media_attachments']);
+    const accountId = getState().getIn(['compose', 'account_id'], null);
     const progress = new Array(files.length).fill(0);
 
     let total = Array.from(files).reduce((a, v) => a + v.size, 0);
@@ -351,6 +364,9 @@ export function uploadCompose(files) {
 
       const data = new FormData();
       data.append('file', file);
+      if (accountId) {
+        data.append('account_id', accountId);
+      }
 
       api().post('/api/v2/media', data, {
         onUploadProgress: function({ loaded }){
@@ -369,7 +385,9 @@ export function uploadCompose(files) {
           let tryCount = 1;
 
           const poll = () => {
-            api().get(`/api/v1/media/${data.id}`).then(response => {
+            api().get(`/api/v1/media/${data.id}`, {
+              params: { account_id: accountId },
+            }).then(response => {
               if (response.status === 200) {
                 dispatch(uploadComposeSuccess(response.data, file));
               } else if (response.status === 206) {
@@ -391,7 +409,7 @@ export const uploadComposeProcessing = () => ({
   type: COMPOSE_UPLOAD_PROCESSING,
 });
 
-export const uploadThumbnail = (id, file) => (dispatch) => {
+export const uploadThumbnail = (id, file) => (dispatch, getState) => {
   dispatch(uploadThumbnailRequest());
 
   const total = file.size;
@@ -400,6 +418,7 @@ export const uploadThumbnail = (id, file) => (dispatch) => {
   data.append('thumbnail', file);
 
   api().put(`/api/v1/media/${id}`, data, {
+    params: { account_id: getState().getIn(['compose', 'account_id'], null) },
     onUploadProgress: ({ loaded }) => {
       dispatch(uploadThumbnailProgress(loaded, total));
     },

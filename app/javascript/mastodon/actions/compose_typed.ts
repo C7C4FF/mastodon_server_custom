@@ -133,7 +133,12 @@ export const changeUploadCompose = createDataLoadingThunk(
       });
     }
 
-    return apiUpdateMedia(id, params);
+    return apiUpdateMedia(id, {
+      ...params,
+      account_id: (getState().compose as ImmutableMap<string, unknown>).get(
+        'account_id',
+      ) as string | null,
+    });
   },
   (media: SimulatedMediaAttachmentJSON) => {
     return {

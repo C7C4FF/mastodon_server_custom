@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class Api::V1::MediaController < Api::BaseController
+  include AccountSwitcherConcern
+
   before_action -> { doorkeeper_authorize! :write, :'write:media' }
   before_action :require_user!
+  before_action :set_media_account
   before_action :set_media_attachment, except: [:create, :destroy]
   before_action :check_processing, except: [:create, :destroy]
 
@@ -35,6 +38,24 @@ class Api::V1::MediaController < Api::BaseController
   end
 
   private
+
+  def current_account
+    @media_account || super
+  end
+
+  def set_media_account
+    @media_account = current_user.account
+
+    return if params[:account_id].blank?
+    return if params[:account_id].to_s == current_user.account_id.to_s
+
+    target_user = switchable_account_user_for_account_id(params[:account_id])
+
+    return render json: { error: 'Account is not available for switching' }, status: 404 unless target_user
+    return render json: { error: 'Your login is currently disabled' }, status: 403 unless target_user.functional?
+
+    @media_account = target_user.account
+  end
 
   def status_code_for_media_attachment
     @media_attachment.not_processed? ? 206 : 200

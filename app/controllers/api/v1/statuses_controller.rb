@@ -3,12 +3,14 @@
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
   include Api::InteractionPoliciesConcern
+  include AccountSwitcherConcern
 
   before_action -> { authorize_if_got_token! :read, :'read:statuses' }, except: [:create, :update, :destroy]
   before_action -> { doorkeeper_authorize! :write, :'write:statuses' }, only:   [:create, :update, :destroy]
   before_action :require_user!, except:      [:index, :show]
   before_action :set_statuses, only:         [:index]
   before_action :set_status, only:           [:show]
+  before_action :set_status_author, only:    [:create]
   before_action :set_thread, only:           [:create]
   before_action :set_quoted_status, only:    [:create]
   before_action :check_statuses_limit, only: [:index]
@@ -29,11 +31,11 @@ class Api::V1::StatusesController < Api::BaseController
 
   def create
     @status = PostStatusService.new.call(
-      current_user.account,
+      status_author_account,
       text: status_params[:status],
       thread: @thread,
       quoted_status: @quoted_status,
-      quote_approval_policy: quote_approval_policy,
+      quote_approval_policy: quote_approval_policy(status_author_user),
       media_ids: status_params[:media_ids],
       sensitive: status_params[:sensitive],
       spoiler_text: status_params[:spoiler_text],
@@ -92,6 +94,34 @@ class Api::V1::StatusesController < Api::BaseController
 
   private
 
+  def current_account
+    @status_author_account || super
+  end
+
+  def set_status_author
+    @status_author_user = current_user
+    @status_author_account = current_user.account
+
+    return if status_params[:account_id].blank?
+    return if status_params[:account_id].to_s == current_user.account_id.to_s
+
+    target_user = switchable_account_user_for_account_id(status_params[:account_id])
+
+    return render json: { error: 'Account is not available for switching' }, status: 404 unless target_user
+    return render json: { error: 'Your login is currently disabled' }, status: 403 unless target_user.functional?
+
+    @status_author_user = target_user
+    @status_author_account = target_user.account
+  end
+
+  def status_author_user
+    @status_author_user || current_user
+  end
+
+  def status_author_account
+    @status_author_account || current_user.account
+  end
+
   def set_statuses
     @statuses = Status.permitted_statuses_from_ids(status_ids, current_account)
   end
@@ -133,6 +163,7 @@ class Api::V1::StatusesController < Api::BaseController
   def status_params
     params.permit(
       :status,
+      :account_id,
       :in_reply_to_id,
       :quoted_status_id,
       :quote_approval_policy,

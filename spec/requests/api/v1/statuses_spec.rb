@@ -154,6 +154,41 @@ RSpec.describe '/api/v1/statuses' do
         end
       end
 
+      context 'with a switchable account id' do
+        let(:switchable_user) { Fabricate(:user) }
+        let(:params) { { status: 'Hello from another account', account_id: switchable_user.account_id } }
+
+        before do
+          sign_in_with_switchable_account(user, switchable_user)
+        end
+
+        it 'creates the status as the selected account', :aggregate_failures do
+          expect { subject }
+            .to change { switchable_user.account.statuses.count }.by(1)
+            .and(not_change { user.account.statuses.count })
+
+          expect(response).to have_http_status(200)
+          expect(response.content_type)
+            .to start_with('application/json')
+          expect(response.parsed_body[:account][:id]).to eq switchable_user.account_id.to_s
+          expect(Status.last.account_id).to eq switchable_user.account_id
+        end
+      end
+
+      context 'with an account id outside the switchable session' do
+        let(:other_user) { Fabricate(:user) }
+        let(:params) { { status: 'Hello from another account', account_id: other_user.account_id } }
+
+        it 'returns http not found and does not create a post', :aggregate_failures do
+          expect { subject }
+            .to not_change(Status, :count)
+
+          expect(response).to have_http_status(404)
+          expect(response.content_type)
+            .to start_with('application/json')
+        end
+      end
+
       context 'without a quote policy' do
         let(:user) do
           Fabricate(:user, settings: { default_quote_policy: 'followers' })

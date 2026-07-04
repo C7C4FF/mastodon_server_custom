@@ -43,6 +43,7 @@ import {
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
   COMPOSE_LANGUAGE_CHANGE,
+  COMPOSE_ACCOUNT_CHANGE,
   COMPOSE_COMPOSING_CHANGE,
   COMPOSE_EMOJI_INSERT,
   COMPOSE_RESET,
@@ -71,6 +72,7 @@ const initialState = ImmutableMap({
   focusDate: null,
   caretPosition: null,
   preselectDate: null,
+  account_id: me,
   in_reply_to: null,
   is_composing: false,
   is_submitting: false,
@@ -416,6 +418,10 @@ export const composeReducer = (state = initialState, action) => {
   case COMPOSE_CHANGE:
     return state
       .set('text', action.text)
+      .set('idempotencyKey', uuid());
+  case COMPOSE_ACCOUNT_CHANGE:
+    return state
+      .set('account_id', action.accountId)
       .set('idempotencyKey', uuid());
   case COMPOSE_COMPOSING_CHANGE:
     return state.set('is_composing', action.value);

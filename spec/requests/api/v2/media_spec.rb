@@ -26,6 +26,30 @@ RSpec.describe 'Media API', :attachment_processing do
       end
     end
 
+    context 'with a switchable account id' do
+      let(:switchable_user) { Fabricate(:user) }
+      let(:params) { { file: fixture_file_upload('attachment-jpg.123456_abcd', 'image/jpeg'), account_id: switchable_user.account_id } }
+
+      before do
+        sign_in_with_switchable_account(user, switchable_user)
+      end
+
+      it 'creates the media attachment as the selected account', :aggregate_failures do
+        expect { post '/api/v2/media', headers: headers, params: params }
+          .to change { switchable_user.account.media_attachments.count }.by(1)
+          .and(not_change { user.account.media_attachments.count })
+
+        expect(response)
+          .to have_http_status(200)
+
+        expect(response.content_type)
+          .to start_with('application/json')
+
+        expect(MediaAttachment.last.account_id)
+          .to eq switchable_user.account_id
+      end
+    end
+
     context 'when media description is too long' do
       let(:params) do
         {

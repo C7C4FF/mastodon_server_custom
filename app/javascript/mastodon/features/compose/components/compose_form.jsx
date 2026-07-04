@@ -23,6 +23,7 @@ import UploadButtonContainer from '../containers/upload_button_container';
 import { countableText } from '../util/counter';
 
 import { CharacterCounter } from './character_counter';
+import { ComposeAccountSwitcher } from './compose_account_switcher';
 import { EditIndicator } from './edit_indicator';
 import { NavigationBar } from './navigation_bar';
 import { PollForm } from "./poll_form";
@@ -266,6 +267,7 @@ class ComposeForm extends ImmutablePureComponent {
           <EditIndicator />
 
           <div className='compose-form__dropdowns'>
+            <ComposeAccountSwitcher />
             <VisibilityButton disabled={this.props.isEditing} />
           </div>
 

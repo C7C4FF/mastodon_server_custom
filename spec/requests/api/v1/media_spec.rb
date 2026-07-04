@@ -7,9 +7,10 @@ RSpec.describe 'Media' do
 
   describe 'GET /api/v1/media/:id' do
     subject do
-      get "/api/v1/media/#{media.id}", headers: headers
+      get "/api/v1/media/#{media.id}", headers: headers, params: params
     end
 
+    let(:params) { {} }
     let(:media) { Fabricate(:media_attachment, account: user.account) }
 
     it_behaves_like 'forbidden for wrong scope', 'read'
@@ -52,6 +53,25 @@ RSpec.describe 'Media' do
         expect(response).to have_http_status(404)
         expect(response.content_type)
           .to start_with('application/json')
+      end
+    end
+
+    context 'when the media belongs to a switchable account' do
+      let(:switchable_user) { Fabricate(:user) }
+      let(:media) { Fabricate(:media_attachment, account: switchable_user.account) }
+      let(:params) { { account_id: switchable_user.account_id } }
+
+      before do
+        sign_in_with_switchable_account(user, switchable_user)
+      end
+
+      it 'returns http success with media information' do
+        subject
+
+        expect(response).to have_http_status(200)
+        expect(response.content_type)
+          .to start_with('application/json')
+        expect(response.parsed_body[:id]).to eq media.id.to_s
       end
     end
 
@@ -187,6 +207,20 @@ RSpec.describe 'Media' do
           expect(response.content_type)
             .to start_with('application/json')
         end
+      end
+    end
+
+    context 'when the media belongs to a switchable account' do
+      let(:switchable_user) { Fabricate(:user) }
+      let(:media) { Fabricate(:media_attachment, status: nil, account: switchable_user.account, description: 'old') }
+      let(:params) { { description: 'Lorem ipsum!!!', account_id: switchable_user.account_id } }
+
+      before do
+        sign_in_with_switchable_account(user, switchable_user)
+      end
+
+      it 'updates the description' do
+        expect { subject }.to change { media.reload.description }.from('old').to('Lorem ipsum!!!')
       end
     end
   end
