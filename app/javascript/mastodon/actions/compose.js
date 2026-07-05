@@ -116,9 +116,24 @@ export function changeCompose(text) {
 }
 
 export function changeComposeAccount(accountId) {
-  return {
-    type: COMPOSE_ACCOUNT_CHANGE,
-    accountId,
+  return (dispatch, getState) => {
+    const state = getState();
+    const inReplyTo = state.getIn(['compose', 'in_reply_to'], null);
+    let status = inReplyTo ? state.statuses.get(inReplyTo) : null;
+
+    if (status) {
+      const account = state.accounts.get(status.get('account'));
+
+      if (account) {
+        status = status.set('account', account);
+      }
+    }
+
+    dispatch({
+      type: COMPOSE_ACCOUNT_CHANGE,
+      accountId,
+      status,
+    });
   };
 }
 

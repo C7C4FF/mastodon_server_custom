@@ -108,14 +108,45 @@ const initialPoll = ImmutableMap({
   multiple: false,
 });
 
-function statusToTextMentions(state, status) {
+function statusToTextMentions(state, status, accountId = state.get('account_id') || me) {
   let set = ImmutableOrderedSet([]);
+  const excludedAccountId = accountId?.toString();
 
-  if (status.getIn(['account', 'id']) !== me) {
+  if (status.getIn(['account', 'id']) !== excludedAccountId) {
     set = set.add(`@${status.getIn(['account', 'acct'])} `);
   }
 
-  return set.union(status.get('mentions').filterNot(mention => mention.get('id') === me).map(mention => `@${mention.get('acct')} `)).join('');
+  return set.union(status.get('mentions').filterNot(mention => mention.get('id') === excludedAccountId).map(mention => `@${mention.get('acct')} `)).join('');
+}
+
+function refreshReplyMentionsForAccount(state, status, accountId) {
+  if (!status || state.get('in_reply_to') !== status.get('id')) {
+    return state;
+  }
+
+  const previousMentions = statusToTextMentions(state, status);
+  const nextMentions = statusToTextMentions(state, status, accountId);
+
+  if (previousMentions === nextMentions) {
+    return state;
+  }
+
+  const text = state.get('text');
+  let nextText;
+
+  if (previousMentions.length > 0 && text.startsWith(previousMentions)) {
+    nextText = `${nextMentions}${text.slice(previousMentions.length)}`;
+  } else if (previousMentions.length === 0 && nextMentions.length > 0 && !text.startsWith(nextMentions)) {
+    nextText = `${nextMentions}${text}`;
+  } else {
+    return state;
+  }
+
+  return state
+    .set('text', nextText)
+    .set('focusDate', new Date())
+    .set('caretPosition', null)
+    .set('preselectDate', new Date());
 }
 
 function clearAll(state) {
@@ -420,7 +451,7 @@ export const composeReducer = (state = initialState, action) => {
       .set('text', action.text)
       .set('idempotencyKey', uuid());
   case COMPOSE_ACCOUNT_CHANGE:
-    return state
+    return refreshReplyMentionsForAccount(state, action.status, action.accountId)
       .set('account_id', action.accountId)
       .set('idempotencyKey', uuid());
   case COMPOSE_COMPOSING_CHANGE:
