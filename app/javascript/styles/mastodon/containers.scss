@@ -253,6 +253,15 @@ body.has-custom-public-background {
     background-image: none !important;
   }
 
+  .column.direct-timeline > .scrollable,
+  .column.notifications-timeline > .scrollable,
+  .column.notifications-timeline > .notification__filter-bar,
+  .direct-conversation-thread,
+  .item-list.scrollable.scrollable--flex.direct-conversation-thread,
+  .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
+    background: rgb(8 10 14 / var(--custom-timeline-panel-opacity, 80%)) !important;
+  }
+
   ._ui_components_link_footer__wrapper,
   [class*='_ui_components_link_footer__wrapper'] {
     background-color: transparent !important;
@@ -278,5 +287,13 @@ body.has-custom-public-background {
 
   .status__wrapper.status__wrapper-private.status__wrapper-reply.status__wrapper-own.focusable {
     backdrop-filter: blur(2px);
+  }
+
+  .column.notifications-timeline
+    :is(.notification-ungrouped, .notification-group)
+    :is(.status__wrapper, .status) {
+    background: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
   }
 }

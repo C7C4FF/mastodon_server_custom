@@ -62,6 +62,8 @@ class Form::AdminSettings
     branding_color_dim
     branding_color_light_text
     branding_color_text_on_brand_base
+    branding_color_direct_message_other_text
+    branding_color_direct_message_own_text
     branding_color_base_light
     branding_color_base_hover_light
     branding_color_base_soft_light
@@ -70,6 +72,8 @@ class Form::AdminSettings
     branding_color_dim_light
     branding_color_light_text_light
     branding_color_text_on_brand_base_light
+    branding_color_direct_message_other_text_light
+    branding_color_direct_message_own_text_light
   ).freeze
 
   INTEGER_KEYS = %i(

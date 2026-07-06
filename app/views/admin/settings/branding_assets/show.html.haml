@@ -10,21 +10,64 @@
 
   %p.lead= t('admin.settings.branding_assets.preamble')
 
-  - preview_logo = custom_logo_path('display')
-  - preview_background_dark_upload = [@admin_settings.background_dark, @admin_settings.background, @admin_settings.background_light].compact.find(&:persisted?)
-  - preview_background_light_upload = [@admin_settings.background_light, @admin_settings.background, @admin_settings.background_dark].compact.find(&:persisted?)
-  - preview_background_dark = preview_background_dark_upload.file.url('2560') if preview_background_dark_upload
-  - preview_background_light = preview_background_light_upload.file.url('2560') if preview_background_light_upload
-  - preview_style = []
-  - CustomBrandingTheme::COLOR_SETTINGS.each_key do |field|
-    - preview_style << "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-dark: #{CustomBrandingTheme.normalize_hex(@admin_settings.public_send(field), CustomBrandingTheme::DEFAULTS[field])}"
-    - light_field = :"#{field}_light"
-    - preview_style << "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-light: #{CustomBrandingTheme.normalize_hex(@admin_settings.public_send(light_field), CustomBrandingTheme::DEFAULTS[light_field])}"
-  - preview_style << "--branding-preview-panel-opacity: #{CustomBrandingTheme.normalize_opacity(@admin_settings.branding_timeline_panel_opacity) / 100.0}"
-  - preview_style << "--branding-preview-background-dark: url('#{preview_background_dark}')" if preview_background_dark.present?
-  - preview_style << "--branding-preview-background-light: url('#{preview_background_light}')" if preview_background_light.present?
+  :ruby
+    preview_logo_light = custom_logo_path('display', :light)
+    preview_logo_dark = custom_logo_path('display', :dark)
+    preview_logo = preview_logo_light
+    preview_background_url = ->(upload) { upload&.persisted? ? upload.file.url('2560') : nil }
+    preview_background_dark_upload = [
+      @admin_settings.background_dark,
+      SiteUpload.find_by(var: 'background_dark'),
+      @admin_settings.background,
+      SiteUpload.find_by(var: 'background'),
+      @admin_settings.background_light,
+      SiteUpload.find_by(var: 'background_light'),
+    ].compact.find(&:persisted?)
+    preview_background_light_upload = [
+      @admin_settings.background_light,
+      SiteUpload.find_by(var: 'background_light'),
+      @admin_settings.background,
+      SiteUpload.find_by(var: 'background'),
+      @admin_settings.background_dark,
+      SiteUpload.find_by(var: 'background_dark'),
+    ].compact.find(&:persisted?)
+    preview_background_dark = preview_background_url.call(preview_background_dark_upload) || custom_background_path(:dark)
+    preview_background_light = preview_background_url.call(preview_background_light_upload) || custom_background_path(:light)
+    preview_style = []
 
-  .branding-assets-preview-controls{ role: 'radiogroup', 'aria-label' => '미리보기 색상 모드' }
+    CustomBrandingTheme::COLOR_SETTINGS.each_key do |field|
+      preview_key = field.to_s.delete_prefix('branding_color_').tr('_', '-')
+      dark_color = CustomBrandingTheme.normalize_hex(
+        @admin_settings.public_send(field),
+        CustomBrandingTheme::DEFAULTS[field]
+      )
+      light_field = :"#{field}_light"
+      light_color = CustomBrandingTheme.normalize_hex(
+        @admin_settings.public_send(light_field),
+        CustomBrandingTheme::DEFAULTS[light_field]
+      )
+
+      preview_style << "--branding-preview-#{preview_key}-dark: #{dark_color}"
+      preview_style << "--branding-preview-#{preview_key}-light: #{light_color}"
+    end
+
+    preview_opacity = CustomBrandingTheme.normalize_opacity(@admin_settings.branding_timeline_panel_opacity) / 100.0
+    preview_style << "--branding-preview-panel-opacity: #{preview_opacity}"
+    if preview_background_dark.present?
+      preview_style << "--branding-preview-background-dark: url('#{preview_background_dark}')"
+    end
+    if preview_background_light.present?
+      preview_style << "--branding-preview-background-light: url('#{preview_background_light}')"
+    end
+
+    preview_logo_data = {
+      branding_preview_logo_target: true,
+      branding_preview_original_src: preview_logo,
+      branding_preview_logo_light: preview_logo_light,
+      branding_preview_logo_dark: preview_logo_dark,
+    }
+
+  .branding-assets-preview-controls{ 'role' => 'radiogroup', 'aria-label' => '미리보기 색상 모드' }
     %label
       = radio_button_tag 'branding_preview_scheme', 'light', true, data: { branding_preview_scheme: true }
       %span 밝음 미리보기
@@ -35,7 +78,7 @@
   .branding-assets-preview{ style: preview_style.join('; '), data: { branding_preview_root: true, preview_scheme: 'light' } }
     .branding-assets-preview__sidebar
       .branding-assets-preview__logo
-        = image_tag preview_logo, alt: 'C7C4FF', data: { branding_preview_logo_target: true, branding_preview_original_src: preview_logo }
+        = image_tag preview_logo, alt: 'C7C4FF', data: preview_logo_data
       %nav.branding-assets-preview__nav{ 'aria-label' => '브랜딩 미리보기 네비게이션' }
         .branding-assets-preview__nav-item.branding-assets-preview__nav-item--active
           = material_symbol 'home'
@@ -64,6 +107,14 @@
             = material_symbol 'repeat'
             = material_symbol 'favorite'
             = material_symbol 'bookmark'
+      .branding-assets-preview__direct
+        .branding-assets-preview__direct-bubble.branding-assets-preview__direct-bubble--own
+          %p @user 안녕하세요.
+        .branding-assets-preview__direct-bubble.branding-assets-preview__direct-bubble--other
+          .branding-assets-preview__direct-meta
+            %strong 유저
+            %span @user
+          %p @user2 상대방 DM 글자는 이렇게 보입니다.
     .branding-assets-preview__compose
       .branding-assets-preview__search
         %span 검색하거나 URL 붙여넣기

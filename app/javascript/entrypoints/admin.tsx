@@ -107,13 +107,41 @@ const updateBrandingPreviewLogo = (target: HTMLInputElement, file: File) => {
   logo.src = objectUrl;
 };
 
-const restoreBrandingPreviewLogo = () => {
+const updateBrandingPreviewLogoForScheme = (scheme: string) => {
   const logo = document.querySelector<HTMLImageElement>(
     '[data-branding-preview-logo-target]',
   );
-  const originalSrc = logo?.dataset.brandingPreviewOriginalSrc;
 
-  if (logo && originalSrc) logo.src = originalSrc;
+  if (!logo) return;
+
+  const objectUrl = document.querySelector<HTMLInputElement>(
+    '[data-branding-preview-logo-object-url]',
+  )?.dataset.brandingPreviewLogoObjectUrl;
+
+  if (objectUrl) {
+    logo.src = objectUrl;
+    return;
+  }
+
+  const nextSrc =
+    scheme === 'dark'
+      ? logo.dataset.brandingPreviewLogoDark
+      : logo.dataset.brandingPreviewLogoLight;
+
+  if (nextSrc) {
+    logo.src = nextSrc;
+  } else if (logo.dataset.brandingPreviewOriginalSrc) {
+    logo.src = logo.dataset.brandingPreviewOriginalSrc;
+  }
+};
+
+const restoreBrandingPreviewLogo = () => {
+  const selectedScheme =
+    document.querySelector<HTMLInputElement>(
+      '[data-branding-preview-scheme]:checked',
+    )?.value ?? 'light';
+
+  updateBrandingPreviewLogoForScheme(selectedScheme);
 };
 
 const updateBrandingPreviewBackground = (
@@ -214,6 +242,8 @@ on('change', '[data-branding-preview-scheme]', ({ target }) => {
   );
 
   if (preview) preview.dataset.previewScheme = target.value;
+
+  updateBrandingPreviewLogoForScheme(target.value);
 });
 
 on('change', '[data-branding-file-input]', ({ target }) => {

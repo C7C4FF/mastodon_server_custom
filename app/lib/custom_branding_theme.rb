@@ -40,6 +40,14 @@ module CustomBrandingTheme
       default: '#f7f9f9',
       css_vars: %w(--color-text-on-brand-base),
     },
+    branding_color_direct_message_other_text: {
+      default: '#f7f9f9',
+      css_vars: %w(--color-direct-message-other-text),
+    },
+    branding_color_direct_message_own_text: {
+      default: '#f7f9f9',
+      css_vars: %w(--color-direct-message-own-text),
+    },
   }.freeze
 
   COLOR_SCHEMES = {
@@ -64,6 +72,8 @@ module CustomBrandingTheme
     branding_color_dim_light: '#9388a6',
     branding_color_light_text_light: '#1f1b23',
     branding_color_text_on_brand_base_light: '#f7f9f9',
+    branding_color_direct_message_other_text_light: '#1f1b23',
+    branding_color_direct_message_own_text_light: '#f7f9f9',
     OPACITY_SETTING => 80
   ).freeze
 
@@ -163,7 +173,7 @@ module CustomBrandingTheme
         },
         branding_color_base_soft: {
           label: '부드러운 강조 색상',
-          hint: '연한 강조 배경 (맖풍선 강조)에 적용됩니다.',
+          hint: '연한 강조 배경 (말풍선 강조)에 적용됩니다.',
         },
       },
     },
@@ -177,6 +187,19 @@ module CustomBrandingTheme
         branding_color_text_secondary: {
           label: '보조 글자 색',
           hint: '설정 사이트에서 보여지는 보조 텍스트에 적용됩니다.',
+        },
+      },
+    },
+    {
+      title: 'DM 대화 글자 색',
+      fields: {
+        branding_color_direct_message_other_text: {
+          label: '상대방 DM 글자 색',
+          hint: 'DM 대화방에서 상대방 말풍선의 본문, 링크, 멘션에 적용됩니다.',
+        },
+        branding_color_direct_message_own_text: {
+          label: '내 DM 글자 색',
+          hint: 'DM 대화방에서 내 말풍선의 본문, 링크, 멘션에 적용됩니다.',
         },
       },
     },

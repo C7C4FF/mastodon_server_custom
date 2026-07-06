@@ -69,6 +69,10 @@ module BrandingHelper
     'has-public-background has-custom-public-background' if custom_background?
   end
 
+  def custom_background_path(variant = nil)
+    custom_background_url(variant)
+  end
+
   def logo_as_symbol(version = :icon)
     case version
     when :icon

@@ -3801,7 +3801,7 @@ body.embed .button.logo-button:hover,
   border: 0;
   border-radius: 24px;
   box-sizing: border-box;
-  color: var(--color-light-text);
+  color: var(--color-direct-message-other-text, var(--color-light-text));
   max-width: min(72%, 680px);
   min-height: 0;
   padding: 12px 16px;
@@ -3817,7 +3817,7 @@ body.embed .button.logo-button:hover,
   .detailed-status__wrapper-own
   .detailed-status {
   background: var(--color-accent);
-  color: var(--color-button-text);
+  color: var(--color-direct-message-own-text, var(--color-button-text));
 }
 
 .layout-multiple-columns
@@ -6063,7 +6063,7 @@ div[tabindex='-1']
   border: 0 !important;
   border-radius: 24px !important;
   box-sizing: border-box !important;
-  color: var(--color-light-text) !important;
+  color: var(--color-direct-message-other-text, var(--color-light-text)) !important;
   max-width: min(72%, 680px) !important;
   min-height: 0 !important;
   padding: 12px 16px !important;
@@ -6085,7 +6085,7 @@ div[tabindex='-1']
   .detailed-status__wrapper-own
   .detailed-status {
   background: var(--color-accent) !important;
-  color: var(--color-button-text) !important;
+  color: var(--color-direct-message-own-text, var(--color-button-text)) !important;
 }
 
 .layout-multiple-columns
@@ -6307,10 +6307,6 @@ div[tabindex='-1']
   height: 100% !important;
 }
 
-.layout-multiple-columns .direct-timeline__warning {
-  margin-top: 0;
-}
-
 .layout-multiple-columns .columns-area__panels:has(.direct-reply-composer),
 .layout-multiple-columns .columns-area__panels__main:has(.direct-reply-composer),
 .layout-multiple-columns .columns-area.columns-area--mobile:has(.direct-reply-composer) {
@@ -6355,4 +6351,24 @@ div[tabindex='-1']
   flex: 0 0 auto;
   position: sticky;
   z-index: 2;
+}
+
+body.has-custom-public-background.layout-multiple-columns .column.direct-timeline > .scrollable,
+body.has-custom-public-background.layout-multiple-columns .column.notifications-timeline > .scrollable,
+body.has-custom-public-background.layout-multiple-columns .column.notifications-timeline > .notification__filter-bar,
+body.has-custom-public-background.layout-multiple-columns .direct-conversation-thread,
+body.has-custom-public-background.layout-multiple-columns
+  .item-list.scrollable.scrollable--flex.direct-conversation-thread,
+body.has-custom-public-background.layout-multiple-columns
+  .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
+  background: rgb(8 10 14 / var(--custom-timeline-panel-opacity, 80%)) !important;
+}
+
+body.has-custom-public-background.layout-multiple-columns
+  .column.notifications-timeline
+  :is(.notification-ungrouped, .notification-group)
+  :is(.status__wrapper, .status) {
+  background: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
 }
