@@ -192,6 +192,77 @@ body.has-custom-public-background {
     background: transparent !important;
   }
 
+  &:not(.app-body, .admin) {
+    .container-alt {
+      position: relative;
+      z-index: 1;
+      box-sizing: border-box;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding-block: 1px 48px;
+    }
+
+    .logo-container {
+      margin-bottom: 42px;
+
+      .logo {
+        filter: drop-shadow(0 10px 28px rgb(0 0 0 / 65%));
+      }
+    }
+
+    .form-container {
+      color: rgb(247 249 249);
+      background: rgb(8 10 14 / 78%);
+      border: 1px solid rgb(199 196 255 / 22%);
+      border-radius: 12px;
+      box-shadow: 0 24px 72px rgb(0 0 0 / 42%);
+      backdrop-filter: blur(10px) saturate(1.05);
+    }
+
+    .simple_form,
+    .form-footer {
+      color: rgb(247 249 249);
+    }
+
+    .simple_form .title,
+    .simple_form h1,
+    .simple_form h2,
+    .simple_form h3,
+    .simple_form label,
+    .simple_form .lead,
+    .simple_form .hint,
+    .simple_form .input.boolean .label_input > label,
+    .form-footer {
+      color: rgb(247 249 249) !important;
+      text-shadow: 0 2px 14px rgb(0 0 0 / 65%);
+    }
+
+    .simple_form .lead a,
+    .simple_form label a,
+    .simple_form .hint a,
+    .form-footer a {
+      color: rgb(199 196 255) !important;
+      text-shadow: 0 2px 14px rgb(0 0 0 / 65%);
+    }
+
+    .simple_form input[type='text'],
+    .simple_form input[type='email'],
+    .simple_form input[type='password'],
+    .simple_form input[type='url'],
+    .simple_form input[type='number'],
+    .simple_form textarea {
+      color: rgb(247 249 249) !important;
+      background-color: rgb(31 35 47 / 96%) !important;
+      border-color: rgb(199 196 255 / 32%) !important;
+      box-shadow: 0 8px 26px rgb(0 0 0 / 24%);
+    }
+
+    .simple_form input::placeholder,
+    .simple_form textarea::placeholder {
+      color: rgb(184 190 215 / 72%) !important;
+    }
+  }
+
   .columns-area,
   .columns-area:not(.columns-area--mobile),
   .columns-area__panels,
