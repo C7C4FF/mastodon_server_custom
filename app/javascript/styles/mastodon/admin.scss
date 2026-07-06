@@ -626,7 +626,7 @@ body.admin.has-public-background {
 
   .sidebar ul .simple-navigation-active-leaf a {
     color: var(--color-text-brand);
-    background-color: rgba(31, 136, 61, 16%);
+    background-color: rgb(from var(--color-bg-brand-base) r g b / 16%);
   }
 
   input,
@@ -691,7 +691,7 @@ html[data-color-scheme='light'] body.admin.has-public-background {
 
   .sidebar ul .simple-navigation-active-leaf a {
     color: var(--color-text-brand);
-    background-color: rgba(31, 136, 61, 12%);
+    background-color: rgb(from var(--color-bg-brand-base) r g b / 12%);
   }
 
   .sidebar ul a {
