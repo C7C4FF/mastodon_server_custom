@@ -4,7 +4,16 @@ require 'rails_helper'
 
 RSpec.describe 'Settings Preferences Appearance' do
   describe 'PUT /settings/preferences/appearance' do
-    before { sign_in Fabricate(:user) }
+    let(:user) { Fabricate(:user, locale: 'en') }
+
+    before { sign_in user }
+
+    it 'updates the interface language' do
+      put settings_preferences_appearance_path, params: { user: { locale: 'ko' } }
+
+      expect(response).to redirect_to(settings_preferences_appearance_path)
+      expect(user.reload.locale).to eq('ko')
+    end
 
     it 'gracefully handles invalid nested params' do
       put settings_preferences_appearance_path(user: 'invalid')
