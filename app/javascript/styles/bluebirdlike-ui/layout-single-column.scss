@@ -3572,19 +3572,6 @@ body.embed .button.logo-button:hover,
   color: var(--color-light-text);
 }
 
-.layout-single-column .account__header__buttons .icon-button .icon-bell-o,
-.layout-single-column .account__header__buttons .icon-button .icon-bell {
-  background-image: var(--icon-bell-header-tabs);
-}
-
-.layout-single-column
-  .account__header__buttons
-  .icon-button.active
-  .icon-bell-o,
-.layout-single-column .account__header__buttons .icon-button.active .icon-bell {
-  background-image: var(--icon-bell-header-tabs-active);
-}
-
 .layout-single-column
   .explore__suggestions
   .account-card__actions__button
@@ -4585,6 +4572,8 @@ body .compose-form .compose-form__uploads {
 .layout-single-column .icon-user-plus.column-link__icon path,
 .layout-single-column .icon.icon-undefined path,
 .layout-single-column .icon.icon-users path,
+.layout-single-column .account__header__buttons .icon.icon-bell-o path,
+.layout-single-column .account__header__buttons .icon.icon-bell path,
 .layout-single-column .account__header__buttons .optional path,
 .layout-single-column .account__header__buttons .icon.icon-user-plus path,
 .layout-single-column .notification__filter-bar .icon.icon-user-plus path,
