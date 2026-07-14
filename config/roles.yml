@@ -26,6 +26,7 @@ admin:
     - manage_appeals
     - manage_rules
     - manage_invites
+    - invite_users
     - manage_announcements
     - manage_custom_emojis
     - manage_webhooks
