@@ -9,22 +9,42 @@ class MarkdownStatusFormatter
 
   CUSTOM_TAGS = [
     {
-      pattern: /\[color=(#{HEX_COLOR_RE})\](.*?)\[\/color\]/im,
+      pattern: /\*\*\*(\S(?:.*?\S)?)\*\*\*/m,
+      open: ->(_value) { '<strong><em>' },
+      close: '</em></strong>',
+    },
+    {
+      pattern: /\*\*(\S(?:.*?\S)?)\*\*/m,
+      open: ->(_value) { '<strong>' },
+      close: '</strong>',
+    },
+    {
+      pattern: /\*(\S(?:.*?\S)?)\*/m,
+      open: ->(_value) { '<em>' },
+      close: '</em>',
+    },
+    {
+      pattern: /~~(\S(?:.*?\S)?)~~/m,
+      open: ->(_value) { '<del>' },
+      close: '</del>',
+    },
+    {
+      pattern: %r{\[color=(#{HEX_COLOR_RE})\](.*?)\[/color\]}im,
       open: ->(value) { %(<span class="md-color" style="color: #{value.downcase}">) },
       close: '</span>',
     },
     {
-      pattern: /\[bg=(#{HEX_COLOR_RE})\](.*?)\[\/bg\]/im,
+      pattern: %r{\[bg=(#{HEX_COLOR_RE})\](.*?)\[/bg\]}im,
       open: ->(value) { %(<span class="md-bg" style="background-color: #{value.downcase}">) },
       close: '</span>',
     },
     {
-      pattern: /\[(left|center|right)\](.*?)\[\/\1\]/im,
+      pattern: %r{\[(left|center|right)\](.*?)\[/\1\]}im,
       open: ->(value) { %(<span class="md-align-#{value.downcase}">) },
       close: '</span>',
     },
     {
-      pattern: /\[big\](.*?)\[\/big\]/im,
+      pattern: %r{\[big\](.*?)\[/big\]}im,
       open: ->(_value) { '<span class="md-size-big">' },
       close: '</span>',
     },
@@ -41,9 +61,8 @@ class MarkdownStatusFormatter
   def to_s
     return add_quote_fallback('').html_safe if text.blank? # rubocop:disable Rails/OutputSafety
 
-    html = markdown.render(tokenize_custom_tags(text))
+    html = TextFormatter.new(tokenize_custom_tags(text), formatter_options).to_s
     html = restore_custom_tags(html)
-    html = linkify_text_nodes(html)
     html = Sanitize.fragment(html, Sanitize::Config::MASTODON_STRICT)
     html = add_quote_fallback(html) if options[:quoted_status].present?
 
@@ -53,16 +72,6 @@ class MarkdownStatusFormatter
   end
 
   private
-
-  def markdown
-    @markdown ||= Redcarpet::Markdown.new(
-      Redcarpet::Render::HTML.new(escape_html: true, no_images: true),
-      autolink: false,
-      fenced_code_blocks: true,
-      no_intra_emphasis: true,
-      strikethrough: true
-    )
-  end
 
   def tokenize_custom_tags(input)
     CUSTOM_TAGS.reduce(input.dup) do |result, tag|
@@ -94,23 +103,8 @@ class MarkdownStatusFormatter
     @tokens.reduce(html) { |result, (token, replacement)| result.gsub(token, replacement) }
   end
 
-  def linkify_text_nodes(html)
-    fragment = Nokogiri::HTML5.fragment(html)
-
-    fragment.traverse do |node|
-      next unless node.text?
-      next if node.text.blank?
-      next if node.ancestors.any? { |ancestor| %w(a code pre).include?(ancestor.name) }
-
-      replacement = TextFormatter.new(node.text, linkify_options).to_s
-      node.replace(Nokogiri::HTML5.fragment(replacement))
-    end
-
-    fragment.to_html
-  end
-
-  def linkify_options
-    options.merge(multiline: false, quoted_status: nil)
+  def formatter_options
+    options.merge(quoted_status: nil)
   end
 
   def add_quote_fallback(html)
