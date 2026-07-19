@@ -129,7 +129,7 @@ export const Footer: React.FC<{
     [history, status, account, onClose],
   );
 
-  if (!status) {
+  if (!status || status.get('visibility') === 'direct') {
     return null;
   }
 

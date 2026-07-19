@@ -27,6 +27,7 @@ export interface StatusHeaderProps {
   onHeaderClick?: MouseEventHandler<HTMLDivElement>;
   className?: string;
   featured?: boolean;
+  absoluteTime?: boolean;
 }
 
 export type StatusHeaderRenderFn = (args: StatusHeaderProps) => ReactNode;
@@ -40,8 +41,11 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
   contentBeforeDate,
   contentAfterDate,
   onHeaderClick,
+  absoluteTime,
 }) => {
+  const intl = useIntl();
   const statusAccount = status.get('account') as Account | undefined;
+  const createdAt = status.get('created_at') as string;
   const editedAt = status.get('edited_at') as string;
 
   return (
@@ -66,7 +70,13 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
         className='status__relative-time'
       >
         <StatusVisibility visibility={status.get('visibility')} />
-        <RelativeTimestamp timestamp={status.get('created_at') as string} />
+        {absoluteTime ? (
+          <time dateTime={createdAt}>
+            {intl.formatDate(createdAt, { hour: 'numeric', minute: '2-digit' })}
+          </time>
+        ) : (
+          <RelativeTimestamp timestamp={createdAt} />
+        )}
         {editedAt && <StatusEditedAt editedAt={editedAt} />}
       </Link>
 

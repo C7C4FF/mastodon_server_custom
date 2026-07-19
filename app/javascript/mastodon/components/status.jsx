@@ -585,6 +585,7 @@ class Status extends ImmutablePureComponent {
           status={status}
           account={account}
           avatarSize={avatarSize}
+          absoluteTime={status.get('visibility') === 'direct' && !!rootId}
           onHeaderClick={this.handleHeaderClick}
         />
       );

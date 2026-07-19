@@ -1,3 +1,5 @@
+import { Fragment } from 'react';
+
 import PropTypes from 'prop-types';
 
 import { defineMessages } from 'react-intl';
@@ -13,6 +15,7 @@ import { connect } from 'react-redux';
 
 import VisibilityIcon from '@/material-icons/400-24px/visibility.svg?react';
 import VisibilityOffIcon from '@/material-icons/400-24px/visibility_off.svg?react';
+import { Avatar } from 'mastodon/components/avatar';
 import { Hotkeys }  from 'mastodon/components/hotkeys';
 import { Icon }  from 'mastodon/components/icon';
 import { injectIntl } from '@/mastodon/components/intl';
@@ -70,7 +73,7 @@ import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from
 
 import ActionBar from './components/action_bar';
 import { DetailedStatus } from './components/detailed_status';
-import { DirectReplyComposer } from './components/direct_reply_composer';
+import { buildDirectMessageRows, DirectReplyComposer, getDirectParticipants } from './components/direct_reply_composer';
 import { RefreshController } from './components/refresh_controller';
 import { quoteComposeById } from '@/mastodon/actions/compose_typed';
 import { FOCUS_TARGET, NavigationFocusTarget } from '@/mastodon/components/navigation_focus_target';
@@ -80,6 +83,7 @@ const messages = defineMessages({
   hideAll: { id: 'status.show_less_all', defaultMessage: 'Show less for all' },
   statusTitleWithAttachments: { id: 'status.title.with_attachments', defaultMessage: '{user} posted {attachmentCount, plural, one {an attachment} other {# attachments}}' },
   detailedStatus: { id: 'status.detailed_status', defaultMessage: 'Detailed conversation view' },
+  directParticipants: { id: 'direct_conversation.participants', defaultMessage: '{count} participants' },
 });
 
 const makeMapStateToProps = () => {
@@ -97,12 +101,25 @@ const makeMapStateToProps = () => {
       descendantsIds = getDescendantsIds(state, status.get('id'));
     }
 
+    const directMessageIds = status?.get('visibility') === 'direct' ? (state.contexts.directMessages[props.params.statusId] ?? []) : [];
+    const directMessages = directMessageIds.length > 0 ? directMessageIds : [props.params.statusId];
+    const directParticipants = status?.get('visibility') === 'direct' ? getDirectParticipants(
+      state,
+      directMessages,
+      state.getIn(['meta', 'me']),
+    ) : [];
+    const directMessageDates = status?.get('visibility') === 'direct' ? Object.fromEntries(
+      directMessages.map(id => [id, state.getIn(['statuses', id, 'created_at'])]),
+    ) : {};
+
     return {
       isLoading: state.getIn(['statuses', props.params.statusId, 'isLoading']),
       status,
       ancestorsIds,
       descendantsIds,
-      directMessageIds: status?.get('visibility') === 'direct' ? (state.contexts.directMessages[props.params.statusId] ?? []) : [],
+      directMessageIds,
+      directMessageDates,
+      directParticipants,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
       domain: state.getIn(['meta', 'domain']),
       pictureInPicture: getPictureInPicture(state, { id: props.params.statusId }),
@@ -141,6 +158,8 @@ class Status extends ImmutablePureComponent {
     ancestorsIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     descendantsIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     directMessageIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+    directMessageDates: PropTypes.objectOf(PropTypes.string).isRequired,
+    directParticipants: PropTypes.arrayOf(ImmutablePropTypes.map).isRequired,
     intl: PropTypes.object.isRequired,
     askReplyConfirmation: PropTypes.bool,
     multiColumn: PropTypes.bool,
@@ -461,19 +480,31 @@ class Status extends ImmutablePureComponent {
     this.handleTranslate(this.props.status);
   };
 
-  renderChildren (list, ancestors) {
-    const { params: { statusId } } = this.props;
+  renderChildren (list, ancestors, dates) {
+    const { intl, params: { statusId } } = this.props;
+    const rows = dates ? buildDirectMessageRows(
+      list,
+      dates,
+      timestamp => intl.formatDate(timestamp, { year: 'numeric', month: 'long', day: 'numeric' }),
+    ) : list.map(id => ({ id }));
 
-    return list.map((id, i) => (
-      <StatusQuoteManager
-        key={id}
-        id={id}
-        contextType='thread'
-        previousId={i > 0 ? list[i - 1] : undefined}
-        nextId={list[i + 1] || (ancestors && statusId)}
-        rootId={statusId}
-        shouldHighlightOnMount={this.state.newRepliesIds.includes(id)}
-      />
+    return rows.map(({ id, createdAt, date }, i) => (
+      <Fragment key={id}>
+        {date && (
+          <div className='direct-conversation-date'>
+            <time dateTime={createdAt}>{date}</time>
+          </div>
+        )}
+
+        <StatusQuoteManager
+          id={id}
+          contextType='thread'
+          previousId={i > 0 ? rows[i - 1].id : undefined}
+          nextId={rows[i + 1]?.id || (ancestors && statusId)}
+          rootId={statusId}
+          shouldHighlightOnMount={this.state.newRepliesIds.includes(id)}
+        />
+      </Fragment>
     ));
   }
 
@@ -539,7 +570,7 @@ class Status extends ImmutablePureComponent {
 
   render () {
     let ancestors, descendants, remoteHint;
-    const { isLoading, status, ancestorsIds, descendantsIds, directMessageIds, refresh, intl, domain, multiColumn, pictureInPicture } = this.props;
+    const { isLoading, status, ancestorsIds, descendantsIds, directMessageIds, directMessageDates, directParticipants, refresh, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen } = this.state;
 
     if (isLoading) {
@@ -582,17 +613,35 @@ class Status extends ImmutablePureComponent {
 
     if (status.get('visibility') === 'direct') {
       const directMessages = directMessageIds.length > 0 ? directMessageIds : [status.get('id')];
+      const isGroupDirectMessage = directParticipants.length > 1;
+      const headerAccount = directParticipants[0] || status.get('account');
+      const headerNames = (directParticipants.length > 0 ? directParticipants : [headerAccount])
+        .map(account => account.get('display_name')?.trim() || account.get('username') || account.get('acct'))
+        .join(', ');
 
       return (
         <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.detailedStatus)}>
           <ColumnHeader
             showBackButton
             multiColumn={multiColumn}
+            title={(
+              <span className='direct-conversation-header'>
+                <Avatar account={headerAccount} size={36} className='direct-conversation-header__avatar' />
+                <span className='direct-conversation-header__text'>
+                  <strong>{headerNames}</strong>
+                  <span>
+                    {isGroupDirectMessage
+                      ? intl.formatMessage(messages.directParticipants, { count: directParticipants.length + 1 })
+                      : `@${headerAccount.get('acct')}`}
+                  </span>
+                </span>
+              </span>
+            )}
           />
 
           <ScrollContainer scrollKey='thread' shouldUpdateScroll={this.shouldUpdateScroll} childRef={this.setContainerRef}>
-            <div className={classNames('item-list scrollable scrollable--flex direct-conversation-thread', { fullscreen })} ref={this.setContainerRef}>
-              {this.renderChildren(directMessages)}
+            <div className={classNames('item-list scrollable scrollable--flex direct-conversation-thread', { fullscreen, 'direct-conversation-thread--group': isGroupDirectMessage })} ref={this.setContainerRef}>
+              {this.renderChildren(directMessages, false, directMessageDates)}
 
               <RefreshController
                 isLocal={isLocal}
