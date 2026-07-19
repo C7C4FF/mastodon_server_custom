@@ -28,6 +28,7 @@ export interface StatusHeaderProps {
   className?: string;
   featured?: boolean;
   absoluteTime?: boolean;
+  hideTimestamp?: boolean;
 }
 
 export type StatusHeaderRenderFn = (args: StatusHeaderProps) => ReactNode;
@@ -42,6 +43,7 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
   contentAfterDate,
   onHeaderClick,
   absoluteTime,
+  hideTimestamp,
 }) => {
   const intl = useIntl();
   const statusAccount = status.get('account') as Account | undefined;
@@ -65,20 +67,22 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
 
       {contentBeforeDate}
 
-      <Link
-        to={`/@${statusAccount?.acct}/${status.get('id') as string}`}
-        className='status__relative-time'
-      >
-        <StatusVisibility visibility={status.get('visibility')} />
-        {absoluteTime ? (
-          <time dateTime={createdAt}>
-            {intl.formatDate(createdAt, { hour: 'numeric', minute: '2-digit' })}
-          </time>
-        ) : (
-          <RelativeTimestamp timestamp={createdAt} />
-        )}
-        {editedAt && <StatusEditedAt editedAt={editedAt} />}
-      </Link>
+      {!hideTimestamp && (
+        <Link
+          to={`/@${statusAccount?.acct}/${status.get('id') as string}`}
+          className='status__relative-time'
+        >
+          <StatusVisibility visibility={status.get('visibility')} />
+          {absoluteTime ? (
+            <time dateTime={createdAt}>
+              {intl.formatDate(createdAt, { hour: 'numeric', minute: '2-digit' })}
+            </time>
+          ) : (
+            <RelativeTimestamp timestamp={createdAt} />
+          )}
+          {editedAt && <StatusEditedAt editedAt={editedAt} />}
+        </Link>
+      )}
 
       {contentAfterDate}
     </div>

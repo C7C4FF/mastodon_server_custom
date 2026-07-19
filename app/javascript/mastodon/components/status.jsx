@@ -91,6 +91,8 @@ class Status extends ImmutablePureComponent {
     previousId: PropTypes.string,
     nextInReplyToId: PropTypes.string,
     rootId: PropTypes.string,
+    showDirectAvatar: PropTypes.bool,
+    showDirectTime: PropTypes.bool,
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
@@ -146,6 +148,8 @@ class Status extends ImmutablePureComponent {
     'unread',
     'pictureInPicture',
     'headerRenderFn',
+    'showDirectAvatar',
+    'showDirectTime',
   ];
 
   state = {
@@ -392,6 +396,8 @@ class Status extends ImmutablePureComponent {
       previousId,
       nextInReplyToId,
       rootId,
+      showDirectAvatar,
+      showDirectTime,
       skipPrepend,
       avatarSize = 46,
       children,
@@ -586,13 +592,14 @@ class Status extends ImmutablePureComponent {
           account={account}
           avatarSize={avatarSize}
           absoluteTime={status.get('visibility') === 'direct' && !!rootId}
+          hideTimestamp={showDirectTime === false}
           onHeaderClick={this.handleHeaderClick}
         />
       );
 
     return (
       <Hotkeys handlers={handlers} focusable={!unfocusable}>
-        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), 'status__wrapper-own': status.getIn(['account', 'id']) === me, unread, focusable: !this.props.muted })} tabIndex={this.props.muted || unfocusable ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader({intl, status, rebloggedByText, isQuote: isQuotedPost})} ref={this.handleRef} data-nosnippet={status.getIn(['account', 'noindex'], true) || undefined}>
+        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), 'status__wrapper-own': status.getIn(['account', 'id']) === me, 'status__wrapper-direct-avatar': showDirectAvatar, unread, focusable: !this.props.muted })} tabIndex={this.props.muted || unfocusable ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader({intl, status, rebloggedByText, isQuote: isQuotedPost})} ref={this.handleRef} data-nosnippet={status.getIn(['account', 'noindex'], true) || undefined}>
           {!skipPrepend && prepend}
 
           <div

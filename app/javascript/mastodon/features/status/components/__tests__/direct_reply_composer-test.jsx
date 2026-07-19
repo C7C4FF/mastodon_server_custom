@@ -57,16 +57,25 @@ describe('<DirectReplyComposer />', () => {
 
   it('adds a date only to the first direct message of each day', () => {
     const rows = buildDirectMessageRows(
-      ['status-1', 'status-2', 'status-3'],
+      ['status-1', 'status-2', 'status-3', 'status-4'],
       {
         'status-1': '2026-07-19T10:00:00Z',
-        'status-2': '2026-07-19T11:00:00Z',
-        'status-3': '2026-07-20T10:00:00Z',
+        'status-2': '2026-07-19T10:00:59Z',
+        'status-3': '2026-07-19T10:00:59Z',
+        'status-4': '2026-07-20T10:00:00Z',
       },
       timestamp => timestamp.slice(0, 10),
+      {
+        'status-1': 'account-1',
+        'status-2': 'account-1',
+        'status-3': 'account-2',
+        'status-4': 'account-2',
+      },
     );
 
-    expect(rows.map(row => row.date)).toEqual(['2026-07-19', null, '2026-07-20']);
+    expect(rows.map(row => row.date)).toEqual(['2026-07-19', null, null, '2026-07-20']);
+    expect(rows.map(row => row.showAvatar)).toEqual([true, false, true, true]);
+    expect(rows.map(row => row.showTime)).toEqual([false, true, true, true]);
   });
 
   it('previews, removes, and includes an image in the direct reply', async () => {

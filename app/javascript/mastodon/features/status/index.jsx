@@ -111,6 +111,9 @@ const makeMapStateToProps = () => {
     const directMessageDates = status?.get('visibility') === 'direct' ? Object.fromEntries(
       directMessages.map(id => [id, state.getIn(['statuses', id, 'created_at'])]),
     ) : {};
+    const directMessageAuthors = status?.get('visibility') === 'direct' ? Object.fromEntries(
+      directMessages.map(id => [id, state.getIn(['statuses', id, 'account'])]),
+    ) : {};
 
     return {
       isLoading: state.getIn(['statuses', props.params.statusId, 'isLoading']),
@@ -119,6 +122,7 @@ const makeMapStateToProps = () => {
       descendantsIds,
       directMessageIds,
       directMessageDates,
+      directMessageAuthors,
       directParticipants,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
       domain: state.getIn(['meta', 'domain']),
@@ -159,6 +163,7 @@ class Status extends ImmutablePureComponent {
     descendantsIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     directMessageIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     directMessageDates: PropTypes.objectOf(PropTypes.string).isRequired,
+    directMessageAuthors: PropTypes.objectOf(PropTypes.string).isRequired,
     directParticipants: PropTypes.arrayOf(ImmutablePropTypes.map).isRequired,
     intl: PropTypes.object.isRequired,
     askReplyConfirmation: PropTypes.bool,
@@ -481,14 +486,15 @@ class Status extends ImmutablePureComponent {
   };
 
   renderChildren (list, ancestors, dates) {
-    const { intl, params: { statusId } } = this.props;
+    const { directMessageAuthors, intl, params: { statusId } } = this.props;
     const rows = dates ? buildDirectMessageRows(
       list,
       dates,
       timestamp => intl.formatDate(timestamp, { year: 'numeric', month: 'long', day: 'numeric' }),
+      directMessageAuthors,
     ) : list.map(id => ({ id }));
 
-    return rows.map(({ id, createdAt, date }, i) => (
+    return rows.map(({ id, createdAt, date, showAvatar, showTime }, i) => (
       <Fragment key={id}>
         {date && (
           <div className='direct-conversation-date'>
@@ -502,6 +508,8 @@ class Status extends ImmutablePureComponent {
           previousId={i > 0 ? rows[i - 1].id : undefined}
           nextId={rows[i + 1]?.id || (ancestors && statusId)}
           rootId={statusId}
+          showDirectAvatar={showAvatar}
+          showDirectTime={showTime}
           shouldHighlightOnMount={this.state.newRepliesIds.includes(id)}
         />
       </Fragment>

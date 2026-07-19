@@ -2,3 +2,73 @@
 @use 'bluebirdlike-ui/layout-single-column';
 @use 'bluebirdlike-ui/layout-multiple-columns';
 @use 'bluebirdlike-ui/custom-navigation';
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread
+  .status__wrapper-direct
+  .status {
+  padding-block-end: 12px !important;
+  padding-inline: 16px !important;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread
+  .status__wrapper-direct:not(.status__wrapper-own)
+  .status__relative-time {
+  bottom: 10px !important;
+  color: var(--color-dim) !important;
+  inset-inline-end: -58px !important;
+  min-width: 52px;
+  opacity: 1;
+  text-align: start;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .item-list.scrollable.scrollable--flex.direct-conversation-thread
+  .status__wrapper-direct.status__wrapper-own
+  .status {
+  margin-block-end: 0 !important;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .item-list.scrollable.scrollable--flex.direct-conversation-thread
+  .status__wrapper-direct.status__wrapper-own
+  .status__relative-time {
+  bottom: 10px !important;
+  color: var(--color-dim) !important;
+  inset-inline-end: auto !important;
+  inset-inline-start: -58px !important;
+  min-width: 52px;
+  opacity: 1;
+  text-align: end;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread--group
+  .status__wrapper-direct:not(.status__wrapper-own)
+  .status {
+  padding-block-end: 0 !important;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread--group
+  .status__wrapper-direct:not(.status__wrapper-own)
+  .status__content {
+  padding-inline: 16px !important;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread--group
+  .status__wrapper-direct:not(.status__wrapper-own)
+  .status__display-name {
+  bottom: auto !important;
+  display: none !important;
+  top: 0 !important;
+}
+
+:is(.layout-single-column, .layout-multiple-columns)
+  .direct-conversation-thread--group
+  .status__wrapper-direct-avatar:not(.status__wrapper-own)
+  .status__display-name {
+  display: block !important;
+}

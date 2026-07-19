@@ -47,19 +47,26 @@ export const getDirectParticipants = (state, statusIds, accountId) => {
   return Array.from(participants.values()).filter(Boolean);
 };
 
-export const buildDirectMessageRows = (statusIds, dates, formatDate) => {
+export const buildDirectMessageRows = (statusIds, dates, formatDate, authors = {}) => {
   let previousDate;
+  let previousAuthor = null;
 
-  return statusIds.map(id => {
+  return statusIds.map((id, index) => {
     const createdAt = dates[id];
     const formattedDate = createdAt ? formatDate(createdAt) : null;
     const date = formattedDate && formattedDate !== previousDate ? formattedDate : null;
+    const author = authors[id];
+    const nextId = statusIds[index + 1];
+    const showAvatar = Boolean(date || author !== previousAuthor);
+    const showTime = !nextId || author !== authors[nextId] || createdAt?.slice(0, 16) !== dates[nextId]?.slice(0, 16);
 
     if (formattedDate) {
       previousDate = formattedDate;
     }
 
-    return { id, createdAt, date };
+    previousAuthor = author;
+
+    return { id, createdAt, date, showAvatar, showTime };
   });
 };
 
