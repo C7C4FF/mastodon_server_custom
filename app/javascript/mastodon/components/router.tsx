@@ -17,6 +17,7 @@ import { isDevelopment } from 'mastodon/utils/environment';
 import type { FocusTarget } from './navigation_focus_target';
 
 interface MastodonLocationState {
+  directAccountIds?: string[];
   fromMastodon?: boolean;
   mastodonModalKey?: string;
   // Controls which element is focused after a navigation.

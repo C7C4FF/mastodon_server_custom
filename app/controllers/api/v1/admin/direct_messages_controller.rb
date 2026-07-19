@@ -5,7 +5,7 @@ class Api::V1::Admin::DirectMessagesController < Api::BaseController
 
   LIMIT = 20
 
-  DirectMessageConversation = Struct.new(:id, :participant_accounts, :last_status, :unread, :unread_count, keyword_init: true) do
+  DirectMessageConversation = Struct.new(:id, :title, :participant_accounts, :last_status, :unread, :unread_count, keyword_init: true) do
     def self.model_name
       ActiveModel::Name.new(self, nil, 'AccountConversation')
     end
@@ -63,12 +63,14 @@ class Api::V1::Admin::DirectMessagesController < Api::BaseController
   def build_conversations
     participant_accounts_by_conversation_id = participants_by_conversation_id
     read_status_ids_by_conversation_id = read_status_ids_by_conversation_id(@last_statuses.map(&:conversation_id))
+    titles_by_conversation_id = Conversation.where(id: @last_statuses.map(&:conversation_id)).pluck(:id, :title).to_h
 
     @last_statuses.map do |status|
       unread = unread_status?(status, read_status_ids_by_conversation_id[status.conversation_id])
 
       DirectMessageConversation.new(
         id: status.conversation_id.to_s,
+        title: titles_by_conversation_id[status.conversation_id],
         participant_accounts: participant_accounts_by_conversation_id[status.conversation_id] || [status.account],
         last_status: status,
         unread: unread,

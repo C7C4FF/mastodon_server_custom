@@ -78,6 +78,28 @@ describe('<DirectReplyComposer />', () => {
     expect(rows.map(row => row.showTime)).toEqual([false, true, true, true]);
   });
 
+  it('turns title changes into standalone direct message rows', () => {
+    const rows = buildDirectMessageRows(
+      ['status-1', 'status-2', 'status-3'],
+      {
+        'status-1': '2026-07-19T10:00:00Z',
+        'status-2': '2026-07-19T10:00:01Z',
+        'status-3': '2026-07-19T10:00:02Z',
+      },
+      timestamp => timestamp.slice(0, 10),
+      {
+        'status-1': 'account-1',
+        'status-2': 'account-1',
+        'status-3': 'account-1',
+      },
+      { 'status-2': "Alice님의 변경. '새 제목'" },
+    );
+
+    expect(rows.map(row => row.event)).toEqual([undefined, "Alice님의 변경. '새 제목'", undefined]);
+    expect(rows.map(row => row.showAvatar)).toEqual([true, false, true]);
+    expect(rows[0].showTime).toBe(true);
+  });
+
   it('previews, removes, and includes an image in the direct reply', async () => {
     post
       .mockResolvedValueOnce({ data: { id: 'media-1', preview_url: '/media-1.png' } })
@@ -132,5 +154,39 @@ describe('<DirectReplyComposer />', () => {
         media_ids: ['media-1'],
       }));
     });
+  });
+
+  it('starts a direct conversation without a reply target', async () => {
+    const response = { id: 'new-status', account: { acct: 'me' } };
+    const onSend = vi.fn();
+    post.mockResolvedValueOnce({ data: response });
+
+    render(
+      <IntlProvider locale='en'>
+        <DirectReplyComposer
+          recipientAccounts={[
+            Map({ id: '2', acct: 'friend' }),
+            Map({ id: '3', acct: 'guest' }),
+          ]}
+          onSend={onSend}
+        />
+      </IntlProvider>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Write a message'), {
+      target: { value: 'Hello' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+
+    await waitFor(() => {
+      expect(post).toHaveBeenCalledWith('/api/v1/statuses', {
+        status: '@friend @guest Hello',
+        visibility: 'direct',
+        media_ids: [],
+        quote_approval_policy: 'nobody',
+        allowed_mentions: ['2', '3'],
+      });
+    });
+    expect(onSend).toHaveBeenCalledWith(response);
   });
 });

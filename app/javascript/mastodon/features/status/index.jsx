@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 
 import VisibilityIcon from '@/material-icons/400-24px/visibility.svg?react';
 import VisibilityOffIcon from '@/material-icons/400-24px/visibility_off.svg?react';
+import EditIcon from '@/material-icons/400-24px/edit.svg?react';
 import { Avatar } from 'mastodon/components/avatar';
 import { Hotkeys }  from 'mastodon/components/hotkeys';
 import { Icon }  from 'mastodon/components/icon';
@@ -35,6 +36,7 @@ import {
   mentionCompose,
   directCompose,
 } from '../../actions/compose';
+import { updateConversationTitle } from '../../actions/conversations';
 import {
   initDomainBlockModal,
   unblockDomain,
@@ -84,6 +86,7 @@ const messages = defineMessages({
   statusTitleWithAttachments: { id: 'status.title.with_attachments', defaultMessage: '{user} posted {attachmentCount, plural, one {an attachment} other {# attachments}}' },
   detailedStatus: { id: 'status.detailed_status', defaultMessage: 'Detailed conversation view' },
   directParticipants: { id: 'direct_conversation.participants', defaultMessage: '{count} participants' },
+  editDirectTitle: { id: 'direct_conversation.edit_title', defaultMessage: 'Edit conversation title' },
 });
 
 const makeMapStateToProps = () => {
@@ -114,6 +117,9 @@ const makeMapStateToProps = () => {
     const directMessageAuthors = status?.get('visibility') === 'direct' ? Object.fromEntries(
       directMessages.map(id => [id, state.getIn(['statuses', id, 'account'])]),
     ) : {};
+    const directMessageEvents = status?.get('visibility') === 'direct' ? Object.fromEntries(
+      directMessages.map(id => [id, state.getIn(['statuses', id, 'conversation_event', 'text'])]),
+    ) : {};
 
     return {
       isLoading: state.getIn(['statuses', props.params.statusId, 'isLoading']),
@@ -123,6 +129,7 @@ const makeMapStateToProps = () => {
       directMessageIds,
       directMessageDates,
       directMessageAuthors,
+      directMessageEvents,
       directParticipants,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
       domain: state.getIn(['meta', 'domain']),
@@ -164,6 +171,7 @@ class Status extends ImmutablePureComponent {
     directMessageIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     directMessageDates: PropTypes.objectOf(PropTypes.string).isRequired,
     directMessageAuthors: PropTypes.objectOf(PropTypes.string).isRequired,
+    directMessageEvents: PropTypes.objectOf(PropTypes.string).isRequired,
     directParticipants: PropTypes.arrayOf(ImmutablePropTypes.map).isRequired,
     intl: PropTypes.object.isRequired,
     askReplyConfirmation: PropTypes.bool,
@@ -185,6 +193,8 @@ class Status extends ImmutablePureComponent {
      * Used to highlight newly added replies in the UI
      */
     newRepliesIds: [],
+    editingConversationTitle: false,
+    conversationTitleDraft: '',
   };
 
   componentDidMount() {
@@ -194,6 +204,40 @@ class Status extends ImmutablePureComponent {
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
+  };
+
+  handleEditConversationTitle = () => {
+    const { status } = this.props;
+
+    this.setState({
+      editingConversationTitle: true,
+      conversationTitleDraft: status.get('conversation_title') || '',
+    });
+  };
+
+  handleConversationTitleChange = ({ target }) => {
+    this.setState({ conversationTitleDraft: target.value });
+  };
+
+  handleConversationTitleBlur = () => {
+    const { dispatch, status } = this.props;
+    const title = this.state.conversationTitleDraft.trim();
+
+    this.setState({ editingConversationTitle: false });
+
+    if (title !== (status.get('conversation_title') || '')) {
+      dispatch(updateConversationTitle(status.get('conversation_id'), title))
+        .then(() => dispatch(fetchStatus(status.get('id'), { forceFetch: true })));
+    }
+  };
+
+  handleConversationTitleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.currentTarget.blur();
+    } else if (event.key === 'Escape') {
+      this.setState({ editingConversationTitle: false });
+    }
   };
 
   handleFavouriteClick = (status) => {
@@ -486,15 +530,16 @@ class Status extends ImmutablePureComponent {
   };
 
   renderChildren (list, ancestors, dates) {
-    const { directMessageAuthors, intl, params: { statusId } } = this.props;
+    const { directMessageAuthors, directMessageEvents, intl, params: { statusId } } = this.props;
     const rows = dates ? buildDirectMessageRows(
       list,
       dates,
       timestamp => intl.formatDate(timestamp, { year: 'numeric', month: 'long', day: 'numeric' }),
       directMessageAuthors,
+      directMessageEvents,
     ) : list.map(id => ({ id }));
 
-    return rows.map(({ id, createdAt, date, showAvatar, showTime }, i) => (
+    return rows.map(({ id, createdAt, date, event, showAvatar, showTime }, i) => (
       <Fragment key={id}>
         {date && (
           <div className='direct-conversation-date'>
@@ -502,16 +547,22 @@ class Status extends ImmutablePureComponent {
           </div>
         )}
 
-        <StatusQuoteManager
-          id={id}
-          contextType='thread'
-          previousId={i > 0 ? rows[i - 1].id : undefined}
-          nextId={rows[i + 1]?.id || (ancestors && statusId)}
-          rootId={statusId}
-          showDirectAvatar={showAvatar}
-          showDirectTime={showTime}
-          shouldHighlightOnMount={this.state.newRepliesIds.includes(id)}
-        />
+        {event ? (
+          <div className='direct-conversation-date direct-conversation-event'>
+            <span>{event}</span>
+          </div>
+        ) : (
+          <StatusQuoteManager
+            id={id}
+            contextType='thread'
+            previousId={i > 0 ? rows[i - 1].id : undefined}
+            nextId={rows[i + 1]?.id || (ancestors && statusId)}
+            rootId={statusId}
+            showDirectAvatar={showAvatar}
+            showDirectTime={showTime}
+            shouldHighlightOnMount={this.state.newRepliesIds.includes(id)}
+          />
+        )}
       </Fragment>
     ));
   }
@@ -622,6 +673,7 @@ class Status extends ImmutablePureComponent {
     if (status.get('visibility') === 'direct') {
       const directMessages = directMessageIds.length > 0 ? directMessageIds : [status.get('id')];
       const isGroupDirectMessage = directParticipants.length > 1;
+      const { editingConversationTitle, conversationTitleDraft } = this.state;
       const headerAccount = directParticipants[0] || status.get('account');
       const headerNames = (directParticipants.length > 0 ? directParticipants : [headerAccount])
         .map(account => account.get('display_name')?.trim() || account.get('username') || account.get('acct'))
@@ -636,7 +688,32 @@ class Status extends ImmutablePureComponent {
               <span className='direct-conversation-header'>
                 <Avatar account={headerAccount} size={36} className='direct-conversation-header__avatar' />
                 <span className='direct-conversation-header__text'>
-                  <strong>{headerNames}</strong>
+                  <span className='direct-conversation-header__name'>
+                    {editingConversationTitle ? (
+                      <input
+                        aria-label={intl.formatMessage(messages.editDirectTitle)}
+                        autoFocus
+                        maxLength={100}
+                        onBlur={this.handleConversationTitleBlur}
+                        onChange={this.handleConversationTitleChange}
+                        onKeyDown={this.handleConversationTitleKeyDown}
+                        value={conversationTitleDraft}
+                      />
+                    ) : (
+                      <strong>{status.get('conversation_title') || headerNames}</strong>
+                    )}
+                    {isGroupDirectMessage && !editingConversationTitle && (
+                      <button
+                        aria-label={intl.formatMessage(messages.editDirectTitle)}
+                        className='direct-conversation-header__edit'
+                        onClick={this.handleEditConversationTitle}
+                        title={intl.formatMessage(messages.editDirectTitle)}
+                        type='button'
+                      >
+                        <EditIcon />
+                      </button>
+                    )}
+                  </span>
                   <span>
                     {isGroupDirectMessage
                       ? intl.formatMessage(messages.directParticipants, { count: directParticipants.length + 1 })

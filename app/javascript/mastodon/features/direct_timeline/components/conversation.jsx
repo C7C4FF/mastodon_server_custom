@@ -4,25 +4,21 @@ import { useCallback } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import classNames from 'classnames';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { createSelector } from '@reduxjs/toolkit';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { useDispatch, useSelector } from 'react-redux';
 
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
-import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
-import { replyCompose } from 'mastodon/actions/compose';
 import { markAllConversationRead } from 'mastodon/actions/all_conversations';
 import { markConversationRead, deleteConversation } from 'mastodon/actions/conversations';
-import { openModal } from 'mastodon/actions/modal';
 import { muteStatus, unmuteStatus, toggleStatusSpoilers } from 'mastodon/actions/statuses';
 import { Hotkeys } from 'mastodon/components/hotkeys';
 import AttachmentList from 'mastodon/components/attachment_list';
 import AvatarComposite from 'mastodon/components/avatar_composite';
-import { IconButton } from 'mastodon/components/icon_button';
 import { RelativeTimestamp } from 'mastodon/components/relative_timestamp';
-import StatusContent from 'mastodon/components/status_content';
+import StatusContent, { getStatusContent } from 'mastodon/components/status_content';
 import { Dropdown } from 'mastodon/components/dropdown_menu';
 import { makeGetStatus } from 'mastodon/selectors';
 import { LinkedDisplayName } from '@/mastodon/components/display_name';
@@ -31,7 +27,6 @@ import { AnimateEmojiProvider } from '@/mastodon/components/emoji/context';
 const messages = defineMessages({
   more: { id: 'status.more', defaultMessage: 'More' },
   open: { id: 'conversation.open', defaultMessage: 'View conversation' },
-  reply: { id: 'status.reply', defaultMessage: 'Reply' },
   markAsRead: { id: 'conversation.mark_as_read', defaultMessage: 'Mark as read' },
   delete: { id: 'conversation.delete', defaultMessage: 'Delete conversation' },
   muteConversation: { id: 'status.mute_conversation', defaultMessage: 'Mute conversation' },
@@ -47,9 +42,33 @@ const getAccounts = createSelector(
 
 const getStatus = makeGetStatus();
 
+export const stripLeadingMentions = (content) => {
+  const document = new DOMParser().parseFromString(content, 'text/html');
+  const root = document.body.firstElementChild || document.body;
+  let removedMention = false;
+
+  while (root.firstChild) {
+    if (root.firstChild.nodeType === 1 && root.firstChild.classList.contains('h-card')) {
+      root.firstChild.remove();
+      removedMention = true;
+    } else if (root.firstChild.nodeType === 3 && !root.firstChild.textContent.trim()) {
+      root.firstChild.remove();
+    } else {
+      if (removedMention && root.firstChild.nodeType === 3) {
+        root.firstChild.textContent = root.firstChild.textContent.trimStart();
+      }
+
+      break;
+    }
+  }
+
+  return document.body.innerHTML;
+};
+
 export const Conversation = ({ conversation, scrollKey, adminMode }) => {
   const id = conversation.get('id');
   const unread = conversation.get('unread');
+  const title = conversation.get('title');
   const lastStatusId = conversation.get('last_status');
   const accountIds = conversation.get('accounts');
   const intl = useIntl();
@@ -69,18 +88,6 @@ export const Conversation = ({ conversation, scrollKey, adminMode }) => {
   const handleMarkAsRead = useCallback(() => {
     dispatch(adminMode ? markAllConversationRead(id) : markConversationRead(id));
   }, [dispatch, adminMode, id]);
-
-  const handleReply = useCallback(() => {
-    dispatch((_, getState) => {
-      let state = getState();
-
-      if (state.getIn(['compose', 'text']).trim().length !== 0) {
-        dispatch(openModal({ modalType: 'CONFIRM_REPLY', modalProps: { status: lastStatus } }));
-      } else {
-        dispatch(replyCompose(lastStatus));
-      }
-    });
-  }, [dispatch, lastStatus]);
 
   const handleDelete = useCallback(() => {
     dispatch(deleteConversation(id));
@@ -131,10 +138,6 @@ export const Conversation = ({ conversation, scrollKey, adminMode }) => {
     toggleHidden: handleShowMore,
   };
 
-  if (!adminMode) {
-    handlers.reply = handleReply;
-  }
-
   return (
     <Hotkeys handlers={handlers}>
       <div className={classNames('conversation focusable muted', { unread })} tabIndex={0}>
@@ -148,13 +151,14 @@ export const Conversation = ({ conversation, scrollKey, adminMode }) => {
               {unread && <span className='conversation__unread' />} <RelativeTimestamp timestamp={lastStatus.get('created_at')} />
             </div>
 
-            <AnimateEmojiProvider className='conversation__content__names'>
-              <FormattedMessage id='conversation.with' defaultMessage='With {names}' values={{ names: <span>{names}</span> }} />
+            <AnimateEmojiProvider className={classNames('conversation__content__names', { 'conversation__content__names--custom': title })}>
+              {title || <FormattedMessage id='conversation.with' defaultMessage='With {names}' values={{ names: <span>{names}</span> }} />}
             </AnimateEmojiProvider>
           </div>
 
           <StatusContent
             status={lastStatus}
+            statusContent={stripLeadingMentions(getStatusContent(lastStatus))}
             onClick={handleClick}
             expanded={!lastStatus.get('hidden')}
             onExpandedToggle={handleShowMore}
@@ -165,12 +169,11 @@ export const Conversation = ({ conversation, scrollKey, adminMode }) => {
             <AttachmentList
               compact
               media={lastStatus.get('media_attachments')}
+              preview={!lastStatus.get('sensitive')}
             />
           )}
 
           <div className='status__action-bar'>
-            {!adminMode && <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.reply)} icon='reply' iconComponent={ReplyIcon} onClick={handleReply} />}
-
             <div className='status__action-bar-dropdown'>
               <Dropdown
                 scrollKey={scrollKey}

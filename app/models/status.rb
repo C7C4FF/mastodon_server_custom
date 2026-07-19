@@ -60,6 +60,7 @@ class Status < ApplicationRecord
   ].freeze
 
   MEDIA_ATTACHMENTS_LIMIT = 4
+  CONVERSATION_TITLE_CHANGE_PREFIX = 'conversation:title_changed:'
 
   rate_limit by: :account, family: :statuses
 

@@ -34,6 +34,10 @@ export function DirectTimeline() {
   return import('../../direct_timeline');
 }
 
+export function NewDirectConversation() {
+  return import('../../direct_timeline/components/new_conversation');
+}
+
 export function AllDirectTimeline() {
   return import('../../all_direct_timeline');
 }

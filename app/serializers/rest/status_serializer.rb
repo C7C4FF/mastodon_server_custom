@@ -15,6 +15,9 @@ class REST::StatusSerializer < ActiveModel::Serializer
   attribute :muted, if: :current_user?
   attribute :bookmarked, if: :current_user?
   attribute :pinned, if: :pinnable?
+  attribute :conversation_id, if: :direct_conversation?
+  attribute :conversation_title, if: :direct_conversation?
+  attribute :conversation_event, if: :conversation_event?
   has_many :filtered, serializer: REST::FilterResultSerializer, if: :current_user?
 
   attribute :content, unless: :source_requested?
@@ -53,6 +56,30 @@ class REST::StatusSerializer < ActiveModel::Serializer
     object.in_reply_to_account_id&.to_s
   end
 
+  def conversation_id
+    object.conversation_id.to_s
+  end
+
+  def conversation_title
+    object.conversation&.title
+  end
+
+  def conversation_event
+    { type: 'title_changed', text: object.spoiler_text.delete_prefix(Status::CONVERSATION_TITLE_CHANGE_PREFIX) }
+  end
+
+  def spoiler_text
+    conversation_event? ? '' : object.spoiler_text
+  end
+
+  def conversation_event?
+    object.direct_visibility? && object.spoiler_text.start_with?(Status::CONVERSATION_TITLE_CHANGE_PREFIX)
+  end
+
+  def direct_conversation?
+    object.direct_visibility? && object.conversation_id.present?
+  end
+
   def current_user?
     !current_user.nil?
   end
@@ -73,6 +100,8 @@ class REST::StatusSerializer < ActiveModel::Serializer
   end
 
   def sensitive
+    return false if conversation_event?
+
     if current_user? && current_user.account_id == object.account_id
       object.sensitive
     else

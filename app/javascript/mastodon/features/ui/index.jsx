@@ -54,6 +54,7 @@ import {
   Following,
   Reblogs,
   Favourites,
+  NewDirectConversation,
   DirectTimeline,
   AllDirectTimeline,
   HashtagTimeline,
@@ -212,6 +213,7 @@ class SwitchingColumnsArea extends PureComponent {
             <Redirect from='/public' to='/public/local' exact />
             <WrappedRoute path='/public/local' exact component={Firehose} content={children} />
             <Redirect from='/public/remote' to='/public/local' exact />
+            <WrappedRoute path='/conversations/new' exact component={NewDirectConversation} content={children} />
             <WrappedRoute path={['/conversations', '/timelines/direct']} component={DirectTimeline} content={children} />
             <WrappedRoute path='/all_conversations/:statusId' exact component={Status} content={children} />
             <WrappedRoute path='/all_conversations' component={AllDirectTimeline} content={children} />

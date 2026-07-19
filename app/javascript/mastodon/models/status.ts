@@ -44,6 +44,9 @@ export interface StatusShape {
   // Content
   content: string;
   contentHtml: string;
+  conversation_id?: string;
+  conversation_title?: string | null;
+  conversation_event?: { type: 'title_changed'; text: string };
   in_reply_to_account_id?: string;
   in_reply_to_id?: string;
   search_index?: string;

@@ -47,7 +47,7 @@ export const getDirectParticipants = (state, statusIds, accountId) => {
   return Array.from(participants.values()).filter(Boolean);
 };
 
-export const buildDirectMessageRows = (statusIds, dates, formatDate, authors = {}) => {
+export const buildDirectMessageRows = (statusIds, dates, formatDate, authors = {}, events = {}) => {
   let previousDate;
   let previousAuthor = null;
 
@@ -57,20 +57,21 @@ export const buildDirectMessageRows = (statusIds, dates, formatDate, authors = {
     const date = formattedDate && formattedDate !== previousDate ? formattedDate : null;
     const author = authors[id];
     const nextId = statusIds[index + 1];
-    const showAvatar = Boolean(date || author !== previousAuthor);
-    const showTime = !nextId || author !== authors[nextId] || createdAt?.slice(0, 16) !== dates[nextId]?.slice(0, 16);
+    const event = events[id];
+    const showAvatar = !event && Boolean(date || author !== previousAuthor);
+    const showTime = Boolean(!nextId || events[nextId] || author !== authors[nextId] || createdAt?.slice(0, 16) !== dates[nextId]?.slice(0, 16));
 
     if (formattedDate) {
       previousDate = formattedDate;
     }
 
-    previousAuthor = author;
+    previousAuthor = event ? null : author;
 
-    return { id, createdAt, date, showAvatar, showTime };
+    return { id, createdAt, date, event, showAvatar, showTime };
   });
 };
 
-export const DirectReplyComposer = ({ status }) => {
+export const DirectReplyComposer = ({ status, recipientAccounts, onSend }) => {
   const intl = useIntl();
   const dispatch = useDispatch();
   const { accountId } = useIdentity();
@@ -93,14 +94,20 @@ export const DirectReplyComposer = ({ status }) => {
       result.push({ id, acct });
     };
 
-    add(status.getIn(['account', 'id']), status.getIn(['account', 'acct']));
+    if (recipientAccounts) {
+      recipientAccounts.forEach(account => {
+        add(account.get('id'), account.get('acct'));
+      });
+    } else {
+      add(status.getIn(['account', 'id']), status.getIn(['account', 'acct']));
 
-    status.get('mentions')?.forEach(mention => {
-      add(mention.get('id'), getMentionAcct(mention));
-    });
+      status.get('mentions')?.forEach(mention => {
+        add(mention.get('id'), getMentionAcct(mention));
+      });
+    }
 
     return result;
-  }, [accountId, status]);
+  }, [accountId, recipientAccounts, status]);
 
   const handleChange = useCallback(e => {
     setText(e.target.value);
@@ -151,21 +158,24 @@ export const DirectReplyComposer = ({ status }) => {
     api().post('/api/v1/statuses', {
       status: body,
       visibility: 'direct',
-      in_reply_to_id: status.get('id'),
+      ...(status ? { in_reply_to_id: status.get('id') } : {}),
       media_ids: media ? [media.id] : [],
       quote_approval_policy: 'nobody',
       allowed_mentions: recipients.map(({ id }) => id).filter(Boolean),
     }).then(response => {
       dispatch(importFetchedStatus(response.data));
-      dispatch(fetchStatus(status.get('id'), { forceFetch: true }));
+      if (status) {
+        dispatch(fetchStatus(status.get('id'), { forceFetch: true }));
+      }
       setText('');
       setMedia(null);
+      onSend?.(response.data);
     }).catch(error => {
       dispatch(showAlertForError(error));
     }).finally(() => {
       setIsSubmitting(false);
     });
-  }, [dispatch, isSubmitting, isUploading, media, recipients, status, text]);
+  }, [dispatch, isSubmitting, isUploading, media, onSend, recipients, status, text]);
 
   const handleRemoveImage = useCallback(() => {
     setMedia(null);
@@ -236,5 +246,7 @@ export const DirectReplyComposer = ({ status }) => {
 };
 
 DirectReplyComposer.propTypes = {
-  status: ImmutablePropTypes.map.isRequired,
+  onSend: PropTypes.func,
+  recipientAccounts: PropTypes.arrayOf(ImmutablePropTypes.map),
+  status: ImmutablePropTypes.map,
 };

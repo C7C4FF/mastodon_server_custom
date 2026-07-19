@@ -7,13 +7,16 @@ import { Helmet } from '@unhead/react/helmet';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import EditSquareIcon from '@/material-icons/400-24px/edit_square.svg?react';
 import MailIcon from '@/material-icons/400-24px/mail.svg?react';
 import { expandAllConversations, markAllConversationsRead } from 'mastodon/actions/all_conversations';
 import { addColumn, removeColumn, moveColumn } from 'mastodon/actions/columns';
 import { mountConversations, unmountConversations, expandConversations } from 'mastodon/actions/conversations';
+import { openModal } from 'mastodon/actions/modal';
 import { connectDirectStream } from 'mastodon/actions/streaming';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
+import { IconButton } from 'mastodon/components/icon_button';
 import { selectUnreadAllConversationsCount } from 'mastodon/reducers/all_conversations';
 
 import { ConversationsList } from './components/conversations_list';
@@ -22,6 +25,7 @@ const messages = defineMessages({
   title: { id: 'column.direct', defaultMessage: 'Direct messages' },
   allTitle: { id: 'column.all_direct', defaultMessage: 'All DMs' },
   markAllRead: { id: 'column.all_direct.mark_all_read', defaultMessage: 'Mark all as read' },
+  newConversation: { id: 'direct.new_conversation', defaultMessage: 'New message' },
 });
 
 const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
@@ -53,6 +57,10 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
     dispatch(markAllConversationsRead());
   }, [dispatch]);
 
+  const handleNewConversation = useCallback(() => {
+    dispatch(openModal({ modalType: 'NEW_DIRECT_MESSAGE', modalProps: {} }));
+  }, [dispatch]);
+
   useEffect(() => {
     if (allConversations) {
       dispatch(expandAllConversations());
@@ -82,7 +90,7 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
         onClick={handleHeaderClick}
         pinned={pinned}
         multiColumn={multiColumn}
-        extraButton={allConversations && (
+        extraButton={allConversations ? (
           <button
             className='button button--compact column-header__read-all-button'
             disabled={unreadAllConversationsCount === 0}
@@ -93,6 +101,14 @@ const DirectTimeline = ({ columnId, multiColumn, allConversations }) => {
           >
             {markAllReadLabel}
           </button>
+        ) : (
+          <IconButton
+            className='column-header__button'
+            title={intl.formatMessage(messages.newConversation)}
+            icon='edit-square'
+            iconComponent={EditSquareIcon}
+            onClick={handleNewConversation}
+          />
         )}
         hideCollapseButton
       />

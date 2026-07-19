@@ -1,6 +1,7 @@
 import api, { getLinks } from '../api';
 import { unescapeHTML } from '../utils/html';
 
+import { showAlertForError } from './alerts';
 import {
   importFetchedAccounts,
   importFetchedStatuses,
@@ -118,6 +119,12 @@ export const updateConversations = conversation => (dispatch, getState) => {
   });
 
   notifyConversation(conversation, getState);
+};
+
+export const updateConversationTitle = (conversationId, title) => (dispatch) => {
+  return api().patch('/api/v1/conversations/title', { conversation_id: conversationId, title })
+    .then(({ data }) => dispatch(updateConversations(data)))
+    .catch(error => dispatch(showAlertForError(error)));
 };
 
 export const deleteConversation = conversationId => (dispatch) => {

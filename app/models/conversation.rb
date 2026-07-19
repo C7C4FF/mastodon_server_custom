@@ -5,6 +5,7 @@
 # Table name: conversations
 #
 #  id                :bigint(8)        not null, primary key
+#  title             :string
 #  uri               :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -14,6 +15,7 @@
 
 class Conversation < ApplicationRecord
   validates :uri, uniqueness: true, if: :uri?
+  validates :title, length: { maximum: 100 }, allow_nil: true
 
   has_many :statuses, dependent: nil
 

@@ -4,7 +4,7 @@ class PushConversationWorker
   include Sidekiq::Worker
   include Redisable
 
-  DirectMessageConversation = Struct.new(:id, :participant_accounts, :last_status, :unread, :unread_count, keyword_init: true) do
+  DirectMessageConversation = Struct.new(:id, :title, :participant_accounts, :last_status, :unread, :unread_count, keyword_init: true) do
     def self.model_name
       ActiveModel::Name.new(self, nil, 'AccountConversation')
     end
@@ -46,6 +46,7 @@ class PushConversationWorker
       unread = unread_for_staff?(status, user.account)
       all_conversation = DirectMessageConversation.new(
         id: conversation.conversation_id.to_s,
+        title: conversation.conversation.title,
         participant_accounts: participant_accounts,
         last_status: status,
         unread: unread,

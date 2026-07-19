@@ -6,7 +6,7 @@ class Api::V1::ConversationsController < Api::BaseController
   before_action -> { doorkeeper_authorize! :read, :'read:statuses' }, only: :index
   before_action -> { doorkeeper_authorize! :write, :'write:conversations' }, except: :index
   before_action :require_user!
-  before_action :set_conversation, except: :index
+  before_action :set_conversation, except: [:index, :title]
   after_action :insert_pagination_headers, only: :index
 
   def index
@@ -24,6 +24,18 @@ class Api::V1::ConversationsController < Api::BaseController
     render json: @conversation, serializer: REST::ConversationSerializer
   end
 
+  def title
+    @conversation = AccountConversation.where(account: current_account).find_by!(conversation_id: params.require(:conversation_id))
+    title = params[:title].to_s.strip.presence
+
+    if title != @conversation.conversation.title
+      @conversation.conversation.update!(title: title)
+      post_title_change!(title)
+    end
+
+    render json: @conversation, serializer: REST::ConversationSerializer
+  end
+
   def destroy
     @conversation.destroy!
     render_empty
@@ -35,9 +47,26 @@ class Api::V1::ConversationsController < Api::BaseController
     @conversation = AccountConversation.where(account: current_account).find(params[:id])
   end
 
+  def post_title_change!(title)
+    recipients = @conversation.participant_accounts
+    mentions = recipients.map { |account| "@#{account.acct}" }.join(' ')
+    actor = (current_account.display_name.presence || current_account.username).tr('@', '＠')
+    message = title ? "#{actor}님의 변경. '#{title.tr('@', '＠')}'" : "#{actor}님이 단체방 이름을 삭제하였습니다."
+
+    PostStatusService.new.call(
+      current_account,
+      text: "#{mentions} #{message}",
+      thread: @conversation.last_status,
+      spoiler_text: "#{Status::CONVERSATION_TITLE_CHANGE_PREFIX}#{message}",
+      visibility: :direct,
+      allowed_mentions: recipients.map(&:id)
+    )
+  end
+
   def paginated_conversations
     AccountConversation.where(account: current_account)
       .includes(
+        :conversation,
         account: [:account_stat, user: :role],
         last_status: [
           :media_attachments,

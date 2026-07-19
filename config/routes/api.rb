@@ -100,6 +100,10 @@ namespace :api, format: false do
     end
 
     resources :conversations, only: [:index, :destroy] do
+      collection do
+        patch :title
+      end
+
       member do
         post :read
         post :unread

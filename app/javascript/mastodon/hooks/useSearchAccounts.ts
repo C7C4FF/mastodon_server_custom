@@ -16,12 +16,14 @@ export function useSearchAccounts({
   resetOnInputClear = true,
   withRelationships = false,
   withDefaultFollows = false,
+  withDefaultFollowers = false,
 }: {
   onSettled?: (value: string) => void;
   filterResults?: (account: ApiAccountJSON) => boolean;
   resetOnInputClear?: boolean;
   withRelationships?: boolean;
   withDefaultFollows?: boolean;
+  withDefaultFollowers?: boolean;
 } = {}) {
   const dispatch = useAppDispatch();
 
@@ -100,7 +102,7 @@ export function useSearchAccounts({
       !currentUserId ||
       loadingState !== 'idle' ||
       defaultAccounts !== null ||
-      !withDefaultFollows
+      (!withDefaultFollows && !withDefaultFollowers)
     ) {
       return;
     }
@@ -108,11 +110,25 @@ export function useSearchAccounts({
     async function doRequest() {
       setLoadingState('loading');
       try {
-        const accounts = await apiRequest<ApiAccountJSON[]>(
-          'GET',
-          `v1/accounts/${currentUserId}/following`,
-          { params: { limit: 40 } },
+        const relationships = [
+          ...(withDefaultFollows ? ['following'] : []),
+          ...(withDefaultFollowers ? ['followers'] : []),
+        ];
+        const responses = await Promise.all(
+          relationships.map((relationship) =>
+            apiRequest<ApiAccountJSON[]>(
+              'GET',
+              `v1/accounts/${currentUserId}/${relationship}`,
+              // ponytail: Default suggestions are capped; search covers larger lists.
+              { params: { limit: 80 } },
+            ),
+          ),
         );
+        const accounts = [
+          ...new Map(
+            responses.flat().map((account) => [account.id, account]),
+          ).values(),
+        ];
         const accountIds = accounts.map((a) => a.id);
         dispatch(importFetchedAccounts(accounts));
         if (withRelationships) {
@@ -134,10 +150,11 @@ export function useSearchAccounts({
     withRelationships,
     defaultAccounts,
     withDefaultFollows,
+    withDefaultFollowers,
   ]);
 
   const accountsToReturn =
-    accounts.length === 0 && withDefaultFollows
+    accounts.length === 0 && (withDefaultFollows || withDefaultFollowers)
       ? (defaultAccounts ?? [])
       : accounts;
 

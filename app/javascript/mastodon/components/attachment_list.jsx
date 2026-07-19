@@ -17,10 +17,11 @@ export default class AttachmentList extends ImmutablePureComponent {
   static propTypes = {
     media: ImmutablePropTypes.list.isRequired,
     compact: PropTypes.bool,
+    preview: PropTypes.bool,
   };
 
   render () {
-    const { media, compact } = this.props;
+    const { media, compact, preview } = this.props;
 
     return (
       <div className={classNames('attachment-list', { compact })}>
@@ -33,13 +34,20 @@ export default class AttachmentList extends ImmutablePureComponent {
         <ul className='attachment-list__list'>
           {media.map(attachment => {
             const displayUrl = attachment.get('remote_url') || attachment.get('url');
+            const previewUrl = preview && attachment.get('type') === 'image' && attachment.get('preview_url');
 
             return (
               <li key={attachment.get('id')}>
                 <a href={displayUrl} target='_blank' rel='noopener'>
-                  {compact && <Icon id='link' icon={LinkIcon} />}
-                  {compact && ' ' }
-                  {displayUrl ? filename(displayUrl) : <FormattedMessage id='attachments_list.unprocessed' defaultMessage='(unprocessed)' />}
+                  {previewUrl ? (
+                    <img className='attachment-list__thumbnail' src={previewUrl} alt={attachment.get('description') || filename(displayUrl || previewUrl)} />
+                  ) : (
+                    <>
+                      {compact && <Icon id='link' icon={LinkIcon} />}
+                      {compact && ' ' }
+                      {displayUrl ? filename(displayUrl) : <FormattedMessage id='attachments_list.unprocessed' defaultMessage='(unprocessed)' />}
+                    </>
+                  )}
                 </a>
               </li>
             );
