@@ -88,6 +88,23 @@ RSpec.describe NotifyService do
     end
   end
 
+  context 'with a direct message' do
+    let(:activity) { Fabricate(:mention, account: recipient, status: Fabricate(:status, account: sender, visibility: :direct)) }
+    let(:type) { :mention }
+    let!(:push_subscription) { Fabricate(:web_push_subscription, user: user, data: { alerts: { mention: true } }) }
+
+    before { recipient.follow!(sender) }
+
+    it 'creates a notification, updates the conversation, and enqueues a push' do
+      expect { subject }
+        .to change(Notification, :count).by(1)
+        .and change(AccountConversation, :count).by(1)
+
+      expect(Web::PushNotificationWorker)
+        .to have_enqueued_sidekiq_job(push_subscription.id, Notification.last.id)
+    end
+  end
+
   context 'with sender as recipient' do
     let(:sender) { recipient }
 
