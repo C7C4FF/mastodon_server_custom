@@ -603,7 +603,7 @@
   "directory.local": "{domain}에서만",
   "directory.new_arrivals": "새로운 사람들",
   "directory.recently_active": "최근 활동",
-  "direct.new_conversation": "새 쪽지",
+  "direct.new_conversation": "새 다이렉트 메세지",
   "direct.new_conversation.empty": "일치하는 팔로워 또는 팔로잉이 없습니다.",
   "direct.new_conversation.remove": "{name} 선택 해제",
   "direct.new_conversation.search": "팔로워와 팔로잉 검색",

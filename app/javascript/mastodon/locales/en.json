@@ -603,7 +603,7 @@
   "directory.local": "From {domain} only",
   "directory.new_arrivals": "New arrivals",
   "directory.recently_active": "Recently active",
-  "direct.new_conversation": "New message",
+  "direct.new_conversation": "New direct message",
   "direct.new_conversation.empty": "No matching followers or people you follow.",
   "direct.new_conversation.remove": "Remove {name}",
   "direct.new_conversation.search": "Search followers and people you follow",
