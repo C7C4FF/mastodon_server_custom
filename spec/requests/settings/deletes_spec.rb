@@ -16,6 +16,17 @@ RSpec.describe 'Settings Deletes' do
           .to have_http_status(400)
       end
 
+      it 'queues a content-preserving account deletion' do
+        allow(AccountDeletionWorker).to receive(:perform_async)
+
+        delete settings_delete_path, params: { form_delete_confirmation: { password: user.password } }
+
+        expect(AccountDeletionWorker)
+          .to have_received(:perform_async)
+          .with(user.account_id, { 'preserve_content' => true })
+        expect(user.account.reload).to be_anonymized
+      end
+
       context 'when suspended' do
         let(:user) { Fabricate(:user, account_attributes: { suspended_at: Time.now.utc }) }
 

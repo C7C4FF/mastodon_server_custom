@@ -9,7 +9,7 @@ class Admin::AccountDeletionWorker
     delete_account = Account.find(account_id)
     return unless delete_account.unavailable?
 
-    DeleteAccountService.new.call(delete_account, reserve_username: true, reserve_email: true)
+    DeleteAccountService.new.call(delete_account, reserve_username: true, reserve_email: false, preserve_content: true)
   rescue ActiveRecord::RecordNotFound
     true
   end

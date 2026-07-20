@@ -36,6 +36,40 @@ RSpec.describe 'API V1 Conversations' do
       expect(response.parsed_body.first[:accounts].size).to eq 1
     end
 
+    it 'keeps group conversations from anonymized deleted accounts', :aggregate_failures do
+      third_user = Fabricate(:user, account_attributes: { username: 'charlie' })
+      status = PostStatusService.new.call(other.account, text: 'Hey @alice @charlie', visibility: 'direct')
+      deleted_account_id = other.account_id
+      deleted_user_id = other.id
+
+      other.account.suspend!(origin: :local, block_email: false)
+
+      get "/api/v1/statuses/#{status.id}", headers: headers
+      expect(response).to have_http_status(:success)
+
+      get "/api/v1/statuses/#{status.id}/context", headers: headers
+      expect(response).to have_http_status(:success)
+
+      AccountDeletionWorker.new.perform(deleted_account_id, { 'preserve_content' => true, 'skip_activitypub' => true })
+
+      get '/api/v1/conversations', headers: headers
+
+      conversation = response.parsed_body.find { |item| item.dig(:last_status, :id) == status.id.to_s }
+      expect(conversation).to be_present
+      expect(conversation[:accounts]).to include(
+        hash_including(username: 'deleted', acct: 'deleted', display_name: '탈퇴한 사용자', suspended: true),
+        hash_including(id: third_user.account_id.to_s)
+      )
+      expect(Account.find(deleted_account_id)).to be_anonymized
+      expect(User.exists?(deleted_user_id)).to be false
+
+      get "/api/v1/statuses/#{status.id}", headers: headers
+      expect(response).to have_http_status(:success)
+
+      get "/api/v1/statuses/#{status.id}/context", headers: headers
+      expect(response).to have_http_status(:success)
+    end
+
     context 'with since_id' do
       context 'when requesting old posts' do
         it 'returns conversations' do

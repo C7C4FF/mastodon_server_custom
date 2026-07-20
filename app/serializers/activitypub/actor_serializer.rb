@@ -110,7 +110,7 @@ class ActivityPub::ActorSerializer < ActivityPub::Serializer
   end
 
   def preferred_username
-    object.username
+    object.anonymized? ? Account::ANONYMIZED_USERNAME : object.username
   end
 
   def discoverable
@@ -122,6 +122,8 @@ class ActivityPub::ActorSerializer < ActivityPub::Serializer
   end
 
   def name
+    return Account::ANONYMIZED_DISPLAY_NAME if object.anonymized?
+
     object.unavailable? ? object.username : (object.display_name.presence || object.username)
   end
 

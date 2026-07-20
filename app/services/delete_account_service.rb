@@ -14,6 +14,7 @@ class DeleteAccountService < BaseService
     conversations
     custom_filters
     domain_blocks
+    email_subscriptions
     featured_tags
     follow_requests
     list_accounts
@@ -40,6 +41,7 @@ class DeleteAccountService < BaseService
     conversations
     custom_filters
     domain_blocks
+    email_subscriptions
     featured_tags
     follow_requests
     list_accounts
@@ -72,6 +74,7 @@ class DeleteAccountService < BaseService
   # @option [Boolean] :reserve_username Keep account record
   # @option [Boolean] :skip_side_effects Side effects are ActivityPub and streaming API payloads
   # @option [Boolean] :skip_activitypub Skip sending ActivityPub payloads. Implied by :skip_side_effects
+  # @option [Boolean] :preserve_content Anonymize the account while preserving content visible to other accounts
   # @option [Time]    :suspended_at Only applicable when :reserve_username is true
   # @option [RelationshipSeveranceEvent] :relationship_severance_event Event used to record severed relationships not initiated by the user
   def call(account, **options)
@@ -82,13 +85,17 @@ class DeleteAccountService < BaseService
       @options[:reserve_email]     = false
       @options[:reserve_username]  = false
       @options[:skip_side_effects] = true
+      @options[:preserve_content]  = false
     end
 
     @options[:skip_activitypub] = true if @options[:skip_side_effects]
+    @options[:reserve_username] = true if preserve_content?
+    @anonymization_inboxes = AccountReachFinder.new(@account).inboxes if preserve_content? && @account.local? && !skip_activitypub?
 
     record_severed_relationships!
-    distribute_activities!
+    distribute_activities! unless preserve_content?
     purge_content!
+    distribute_anonymized_actor! if preserve_content?
     fulfill_deletion_request!
   end
 
@@ -144,11 +151,11 @@ class DeleteAccountService < BaseService
   def purge_content!
     purge_user!
     purge_profile!
-    purge_statuses!
-    purge_mentions!
+    purge_statuses! unless preserve_content?
+    purge_mentions! unless preserve_content?
     purge_media_attachments!
-    purge_polls!
-    purge_generated_notifications!
+    purge_polls! unless preserve_content?
+    purge_generated_notifications! unless preserve_content?
     purge_favourites!
     purge_bookmarks!
     purge_feeds!
@@ -169,6 +176,7 @@ class DeleteAccountService < BaseService
 
   def purge_media_attachments!
     @account.media_attachments.find_each do |media_attachment|
+      next if preserve_content? && media_attachment.status_id.present?
       next if keep_account_record? && reported_status_ids.include?(media_attachment.status_id)
 
       media_attachment.destroy
@@ -224,17 +232,22 @@ class DeleteAccountService < BaseService
 
     return unless keep_account_record?
 
+    @account.anonymized_at       = Time.now.utc if preserve_content?
     @account.silenced_at         = nil
-    @account.suspended_at        = @options[:suspended_at] || Time.now.utc
-    @account.suspension_origin   = :local
+    @account.suspended_at        = preserve_content? ? nil : (@options[:suspended_at] || Time.now.utc)
+    @account.suspension_origin   = preserve_content? ? nil : :local
     @account.locked              = false
     @account.memorial            = false
     @account.discoverable        = false
+    @account.indexable           = false
     @account.trendable           = false
-    @account.display_name        = ''
+    @account.display_name        = preserve_content? ? Account::ANONYMIZED_DISPLAY_NAME : ''
     @account.note                = ''
     @account.fields              = []
-    @account.statuses_count      = 0
+    @account.avatar_description  = ''
+    @account.header_description  = ''
+    @account.attribution_domains = []
+    @account.statuses_count      = 0 unless preserve_content?
     @account.followers_count     = 0
     @account.following_count     = 0
     @account.moved_to_account    = nil
@@ -268,6 +281,18 @@ class DeleteAccountService < BaseService
     ActivityPub::LowPriorityDeliveryWorker.push_bulk(low_priority_delivery_inboxes, limit: 1_000) do |inbox_url|
       [delete_actor_json, @account.id, inbox_url]
     end
+  end
+
+  def distribute_anonymized_actor!
+    return if skip_activitypub? || !@account.local?
+
+    ActivityPub::DeliveryWorker.push_bulk(@anonymization_inboxes, limit: 1_000) do |inbox_url|
+      [anonymized_actor_json, @account.id, inbox_url]
+    end
+  end
+
+  def anonymized_actor_json
+    @anonymized_actor_json ||= serialize_payload(@account, ActivityPub::UpdateActorSerializer, signer: @account).to_json
   end
 
   def record_severed_relationships!
@@ -314,6 +339,10 @@ class DeleteAccountService < BaseService
 
   def keep_account_record?
     @options[:reserve_username]
+  end
+
+  def preserve_content?
+    @options[:preserve_content]
   end
 
   def skip_side_effects?

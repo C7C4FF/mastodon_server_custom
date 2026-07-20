@@ -7,6 +7,7 @@
 #  id                            :bigint(8)        not null, primary key
 #  actor_type                    :string
 #  also_known_as                 :string           is an Array
+#  anonymized_at                 :datetime
 #  attribution_domains           :string           default([]), is an Array
 #  avatar_content_type           :string
 #  avatar_description            :string           default(""), not null
@@ -70,6 +71,8 @@ class Account < ApplicationRecord
   STALE_THRESHOLD = 1.day
   DEFAULT_FIELDS_SIZE = 4
   INSTANCE_ACTOR_ID = -99
+  ANONYMIZED_USERNAME = 'deleted'
+  ANONYMIZED_DISPLAY_NAME = '탈퇴한 사용자'
 
   USERNAME_RE   = /[a-z0-9_]+([.-]+[a-z0-9_]+)*/i
   MENTION_RE    = %r{(?<![=/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]]+([.-]+[[:word:]]+)*)?)}

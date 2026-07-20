@@ -13,7 +13,7 @@ RSpec.describe Admin::AccountDeletionWorker do
       allow(DeleteAccountService).to receive(:new).and_return(service)
       worker.perform(account.id)
 
-      expect(service).to have_received(:call).with(account, { reserve_email: true, reserve_username: true })
+      expect(service).to have_received(:call).with(account, { preserve_content: true, reserve_email: false, reserve_username: true })
     end
   end
 end

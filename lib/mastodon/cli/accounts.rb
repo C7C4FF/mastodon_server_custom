@@ -211,7 +211,7 @@ module Mastodon::CLI
       end
 
       say("Deleting user with #{account.statuses_count} statuses, this might take a while...#{dry_run_mode_suffix}")
-      DeleteAccountService.new.call(account, reserve_email: false) unless dry_run?
+      DeleteAccountService.new.call(account, reserve_email: false, preserve_content: true) unless dry_run?
       say("OK#{dry_run_mode_suffix}", :green)
     end
 

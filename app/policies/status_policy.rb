@@ -2,7 +2,7 @@
 
 class StatusPolicy < ApplicationPolicy
   def show?
-    return false if author.unavailable?
+    return false if author.unavailable? && !author.anonymized? && !record.direct_visibility?
     return true if staff_can_view_direct_messages?
 
     if requires_mention?
@@ -15,15 +15,15 @@ class StatusPolicy < ApplicationPolicy
   end
 
   def quote?
-    show? && !blocking_author? && record.quote_policy_for_account(current_account) != :denied
+    !author.anonymized? && show? && !blocking_author? && record.quote_policy_for_account(current_account) != :denied
   end
 
   def reblog?
-    !requires_mention? && (!private? || owned?) && show? && !blocking_author?
+    !author.anonymized? && !requires_mention? && (!private? || owned?) && show? && !blocking_author?
   end
 
   def favourite?
-    show? && !blocking_author?
+    !author.anonymized? && show? && !blocking_author?
   end
 
   def destroy?

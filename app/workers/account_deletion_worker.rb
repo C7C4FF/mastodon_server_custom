@@ -9,9 +9,11 @@ class AccountDeletionWorker
     account = Account.find(account_id)
     return unless account.unavailable?
 
-    reserve_username = options.with_indifferent_access.fetch(:reserve_username, true)
-    skip_activitypub = options.with_indifferent_access.fetch(:skip_activitypub, false)
-    DeleteAccountService.new.call(account, reserve_username: reserve_username, skip_activitypub: skip_activitypub, reserve_email: false)
+    options = options.with_indifferent_access
+    reserve_username = options.fetch(:reserve_username, true)
+    skip_activitypub = options.fetch(:skip_activitypub, false)
+    preserve_content = options.fetch(:preserve_content, false)
+    DeleteAccountService.new.call(account, reserve_username: reserve_username, skip_activitypub: skip_activitypub, reserve_email: false, preserve_content: preserve_content)
   rescue ActiveRecord::RecordNotFound
     true
   end

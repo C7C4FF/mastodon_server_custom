@@ -736,7 +736,7 @@ class Status extends ImmutablePureComponent {
             </div>
           </ScrollContainer>
 
-          <DirectReplyComposer status={status} />
+          <DirectReplyComposer status={status} recipientAccounts={directParticipants} />
 
           <Helmet>
             <title>{titleFromStatus(intl, status)}</title>

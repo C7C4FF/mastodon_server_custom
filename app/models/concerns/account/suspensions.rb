@@ -11,7 +11,14 @@ module Account::Suspensions
   def suspended?
     suspended_at.present? && !instance_actor?
   end
-  alias unavailable? suspended?
+
+  def anonymized?
+    anonymized_at.present?
+  end
+
+  def unavailable?
+    suspended? || anonymized?
+  end
 
   def suspended_locally?
     suspended? && suspension_origin_local?

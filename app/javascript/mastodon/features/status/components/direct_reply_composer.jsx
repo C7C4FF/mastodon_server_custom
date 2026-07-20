@@ -96,7 +96,9 @@ export const DirectReplyComposer = ({ status, recipientAccounts, onSend }) => {
 
     if (recipientAccounts) {
       recipientAccounts.forEach(account => {
-        add(account.get('id'), account.get('acct'));
+        if (!account.get('suspended')) {
+          add(account.get('id'), account.get('acct'));
+        }
       });
     } else {
       add(status.getIn(['account', 'id']), status.getIn(['account', 'acct']));

@@ -167,6 +167,7 @@ describe('<DirectReplyComposer />', () => {
           recipientAccounts={[
             Map({ id: '2', acct: 'friend' }),
             Map({ id: '3', acct: 'guest' }),
+            Map({ id: '4', acct: 'deleted', suspended: true }),
           ]}
           onSend={onSend}
         />

@@ -435,7 +435,7 @@ RSpec.describe Mastodon::CLI::Accounts do
         expect { subject }
           .to output_results('Deleting')
 
-        expect(delete_account_service).to have_received(:call).with(account, reserve_email: false).once
+        expect(delete_account_service).to have_received(:call).with(account, reserve_email: false, preserve_content: true).once
       end
 
       context 'with --dry-run option' do
@@ -444,7 +444,7 @@ RSpec.describe Mastodon::CLI::Accounts do
         it 'outputs a successful message in dry run mode and does not delete the user' do
           expect { subject }
             .to output_results('OK (DRY RUN)')
-          expect(delete_account_service).to_not have_received(:call).with(account, reserve_email: false)
+          expect(delete_account_service).to_not have_received(:call).with(account, reserve_email: false, preserve_content: true)
         end
       end
 
@@ -465,7 +465,7 @@ RSpec.describe Mastodon::CLI::Accounts do
         expect { subject }
           .to output_results('Deleting')
 
-        expect(delete_account_service).to have_received(:call).with(account, reserve_email: false).once
+        expect(delete_account_service).to have_received(:call).with(account, reserve_email: false, preserve_content: true).once
       end
 
       context 'with --dry-run option' do
@@ -476,7 +476,7 @@ RSpec.describe Mastodon::CLI::Accounts do
             .to output_results('OK (DRY RUN)')
           expect(delete_account_service)
             .to_not have_received(:call)
-            .with(account, reserve_email: false)
+            .with(account, reserve_email: false, preserve_content: true)
         end
       end
 

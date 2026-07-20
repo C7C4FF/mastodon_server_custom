@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_001000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -155,6 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_000000) do
   create_table "accounts", id: :bigint, default: -> { "timestamp_id('accounts'::text)" }, force: :cascade do |t|
     t.string "actor_type"
     t.string "also_known_as", array: true
+    t.datetime "anonymized_at"
     t.string "attribution_domains", default: [], array: true
     t.string "avatar_content_type"
     t.string "avatar_description", default: "", null: false

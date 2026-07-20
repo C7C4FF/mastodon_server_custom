@@ -36,6 +36,10 @@ export const LinkedDisplayName: FC<
     return <DisplayName {...displayProps} />;
   }
 
+  if (account.suspended && account.acct === 'deleted') {
+    return <DisplayName {...displayProps} variant='simple' />;
+  }
+
   return (
     <Link
       to={`/@${account.acct}`}
