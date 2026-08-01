@@ -6702,6 +6702,16 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
     .direct-conversation-thread,
     .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct)
   )
+  .status--in-thread
+  > .status__content {
+  padding-inline-start: 0 !important;
+}
+
+.layout-single-column
+  :is(
+    .direct-conversation-thread,
+    .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct)
+  )
   :is(
     .status__content,
     .status__content p,
@@ -6919,6 +6929,7 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
   .direct-conversation-thread
   .status__content__text
   p {
+  transform: translateY(-1px);
   white-space: normal !important;
 }
 
