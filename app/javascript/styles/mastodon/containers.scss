@@ -311,6 +311,7 @@ body.has-custom-public-background {
 
   .column-header,
   .column-header__select-row,
+  .column-search-header,
   .column-back-button--with-title,
   .detailed-status,
   .detailed-status__action-bar,
@@ -325,6 +326,10 @@ body.has-custom-public-background {
   .search.active .search__input {
     background-color: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
     background-image: none !important;
+  }
+
+  .column-search-header {
+    border-inline-color: transparent !important;
   }
 
   .compose-form__highlightable,
