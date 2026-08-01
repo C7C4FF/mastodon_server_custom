@@ -39,7 +39,7 @@ module BrandingHelper
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background-image: linear-gradient(rgba(5, 7, 8, 0.08), rgba(5, 7, 8, 0.08)), var(--custom-public-background-image) !important;
+        background-image: var(--custom-public-background-image) !important;
         background-size: cover;
         background-position: center;
         background-attachment: fixed;

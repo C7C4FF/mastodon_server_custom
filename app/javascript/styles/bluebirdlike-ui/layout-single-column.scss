@@ -7051,7 +7051,7 @@ body.has-custom-public-background.layout-single-column
   .item-list.scrollable.scrollable--flex.direct-conversation-thread,
 body.has-custom-public-background.layout-single-column
   .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
-  background: rgb(8 10 14 / var(--custom-timeline-panel-opacity, 80%)) !important;
+  background: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
 }
 
 body.has-custom-public-background.layout-single-column
