@@ -309,8 +309,17 @@ body.has-custom-public-background {
     background: transparent !important;
   }
 
-  .column-header__title,
-  .column-header__button,
+  .column-header,
+  .column-header__select-row,
+  .column-back-button--with-title,
+  .detailed-status,
+  .detailed-status__action-bar,
+  .load-more,
+  .notification-request,
+  [class*='_comp_account_header__barWrapper'],
+  [class*='_comp_tab_list__tabList'][class*='_comp_tab_list__withSpaceAndBorder'],
+  .scrollable > header:has(> [class*='_feat_account_edit__profileImage']),
+  [class*='_feat_account_edit__section'],
   .search__input,
   .search.active .search__input {
     background-color: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
