@@ -280,6 +280,8 @@ namespace :api, format: false do
     end
 
     namespace :admin do
+      resource :theme, only: :update
+
       resources :accounts, only: [:index, :show, :destroy] do
         member do
           post :enable

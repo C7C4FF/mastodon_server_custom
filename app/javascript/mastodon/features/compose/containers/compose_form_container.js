@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 
+import { showAlertForError } from 'mastodon/actions/alerts';
 import {
   changeCompose,
   submitCompose,
@@ -12,6 +13,7 @@ import {
 } from 'mastodon/actions/compose';
 import { pasteLinkCompose } from 'mastodon/actions/compose_typed';
 import { openModal } from 'mastodon/actions/modal';
+import api from 'mastodon/api';
 import { PRIVATE_QUOTE_MODAL_ID } from 'mastodon/features/ui/components/confirmation_modals/private_quote_notify';
 import { me } from 'mastodon/initial_state';
 
@@ -113,6 +115,17 @@ const mapDispatchToProps = (dispatch, props) => ({
 
   onPickEmoji (position, data, needsSpace) {
     dispatch(insertEmojiCompose(position, data, needsSpace));
+  },
+
+  onToggleTheme (modalProps) {
+    dispatch(openModal({
+      modalType: 'CONFIRM',
+      modalProps: {
+        ...modalProps,
+        onConfirm: () => api().patch('/api/v1/admin/theme')
+          .catch(error => dispatch(showAlertForError(error))),
+      },
+    }));
   },
 
 });

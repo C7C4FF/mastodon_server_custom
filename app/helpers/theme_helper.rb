@@ -59,6 +59,9 @@ module ThemeHelper
   end
 
   def color_scheme
+    return 'dark' if current_user && Setting.force_dark_theme
+    return 'light' if current_user && !current_user.can?(:manage_settings)
+
     current_user&.setting_color_scheme || 'auto'
   end
 

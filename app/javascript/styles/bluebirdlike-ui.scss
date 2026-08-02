@@ -3,6 +3,20 @@
 @use 'bluebirdlike-ui/layout-multiple-columns';
 @use 'bluebirdlike-ui/custom-navigation';
 
+:is(.layout-single-column, .layout-multiple-columns)
+  .compose-form
+  > .button.button-secondary.button--block {
+  background-color: var(--color-accent-dark) !important;
+  border-color: var(--color-accent-dark);
+  color: var(--color-text-on-brand-base);
+
+  &:is(:hover, :focus) {
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent);
+    color: var(--color-text-on-brand-base);
+  }
+}
+
 .conversation__content__names--custom {
   color: var(--color-text-primary);
   font-size: 16px;

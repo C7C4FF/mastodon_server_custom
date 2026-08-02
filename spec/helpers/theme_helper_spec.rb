@@ -163,6 +163,31 @@ RSpec.describe ThemeHelper do
     end
   end
 
+  describe '#color_scheme' do
+    subject { helper.color_scheme }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+      Setting.force_dark_theme = false
+    end
+
+    let(:current_user) { Fabricate(:user) }
+
+    it { is_expected.to eq('light') }
+
+    context 'when the user is an administrator' do
+      let(:current_user) { Fabricate(:admin_user, settings: { 'web.color_scheme' => 'auto' }) }
+
+      it { is_expected.to eq('auto') }
+    end
+
+    context 'when the server forces the dark theme' do
+      before { Setting.force_dark_theme = true }
+
+      it { is_expected.to eq('dark') }
+    end
+  end
+
   private
 
   def html_links

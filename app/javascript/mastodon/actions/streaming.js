@@ -141,6 +141,9 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
         case 'announcement.delete':
           dispatch(deleteAnnouncement(data.payload));
           break;
+        case 'force_reload':
+          window.location.reload();
+          break;
         }
       },
     };

@@ -214,6 +214,7 @@ const KNOWN_EVENT_TYPES = [
   'notification',
   'conversation',
   'filters_changed',
+  'force_reload',
   'announcement',
   'announcement.delete',
   'announcement.reaction',

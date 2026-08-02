@@ -10,7 +10,8 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 
 import { length } from 'stringz';
 
-import { missingAltTextModal } from 'mastodon/initial_state';
+import { initialState, missingAltTextModal } from 'mastodon/initial_state';
+import { canViewAdminDashboard } from 'mastodon/permissions';
 
 import AutosuggestInput from 'mastodon/components/autosuggest_input';
 import AutosuggestTextarea from 'mastodon/components/autosuggest_textarea';
@@ -41,6 +42,9 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Post' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Update' },
   reply: { id: 'compose_form.reply', defaultMessage: 'Reply' },
+  theme_toggle_title: { id: 'compose_form.theme_toggle.title', defaultMessage: 'Switch theme' },
+  theme_toggle_button: { id: 'compose_form.theme_toggle.button', defaultMessage: 'Switch theme' },
+  theme_toggle_confirmation: { id: 'compose_form.theme_toggle.confirmation', defaultMessage: 'This switches everyone between the light and dark themes and immediately reloads their open web sessions. Continue?' },
 });
 
 class ComposeForm extends ImmutablePureComponent {
@@ -67,6 +71,7 @@ class ComposeForm extends ImmutablePureComponent {
     onPaste: PropTypes.func.isRequired,
     onDrop: PropTypes.func.isRequired,
     onPickEmoji: PropTypes.func.isRequired,
+    onToggleTheme: PropTypes.func.isRequired,
     autoFocus: PropTypes.bool,
     withoutNavigation: PropTypes.bool,
     anyMedia: PropTypes.bool,
@@ -246,6 +251,16 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
+  handleToggleTheme = () => {
+    const { intl, onToggleTheme } = this.props;
+
+    onToggleTheme({
+      title: intl.formatMessage(messages.theme_toggle_title),
+      message: intl.formatMessage(messages.theme_toggle_confirmation),
+      confirm: intl.formatMessage(messages.theme_toggle_button),
+    });
+  };
+
   render () {
     const { intl, onPaste, onDrop, autoFocus, withoutNavigation, maxChars, isSubmitting } = this.props;
 
@@ -347,6 +362,12 @@ class ComposeForm extends ImmutablePureComponent {
             </div>
           </div>
         </div>
+
+        {canViewAdminDashboard(Number(initialState?.role?.permissions ?? 0)) && (
+          <Button block secondary onClick={this.handleToggleTheme}>
+            {intl.formatMessage(messages.theme_toggle_button)}
+          </Button>
+        )}
       </form>
     );
   }
