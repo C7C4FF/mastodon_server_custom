@@ -89,14 +89,11 @@ const normalizeContext = (
 const normalizeDirectMessages = (
   state: Draft<State>,
   id: string,
-  { direct_messages }: ApiContextJSON,
+  { ancestors, descendants }: ApiContextJSON,
 ): void => {
-  if (!direct_messages) {
-    delete state.directMessages[id];
-    return;
-  }
-
-  state.directMessages[id] = direct_messages.map((item) => item.id);
+  state.directMessages[id] = ancestors
+    .map((item) => item.id)
+    .concat(id, descendants.map((item) => item.id));
 };
 
 const applyPrefetchedReplies = (state: Draft<State>, statusId: string) => {
