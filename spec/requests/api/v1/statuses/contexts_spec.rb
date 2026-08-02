@@ -47,6 +47,24 @@ RSpec.describe 'API V1 Statuses Contexts' do
             .and include(descendants: be_an(Array).and(be_present))
         end
       end
+
+      context 'with a direct conversation' do
+        let(:other_user) { Fabricate(:user) }
+        let!(:first_status) { PostStatusService.new.call(other_user.account, text: "First @#{user.account.username}", visibility: :direct) }
+        let!(:status) { PostStatusService.new.call(user.account, text: "Second @#{other_user.account.username}", visibility: :direct, thread: first_status) }
+        let!(:last_status) { PostStatusService.new.call(other_user.account, text: "Third @#{user.account.username}", visibility: :direct, thread: status) }
+
+        it 'returns the conversation in the standard context fields', :aggregate_failures do
+          get "/api/v1/statuses/#{status.id}/context", headers: headers
+
+          body = response.parsed_body
+
+          expect(response).to have_http_status(200)
+          expect(body[:ancestors].pluck(:id)).to eq([first_status.id.to_s])
+          expect(body[:descendants].pluck(:id)).to eq([last_status.id.to_s])
+          expect(body).to_not have_key(:direct_messages)
+        end
+      end
     end
 
     context 'without an oauth token' do
