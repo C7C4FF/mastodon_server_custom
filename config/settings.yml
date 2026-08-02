@@ -36,6 +36,7 @@ defaults: &defaults
   landing_page: 'trends'
   wrapstodon: true
   branding_timeline_panel_opacity: 80
+  branding_profile_field_card_opacity: 80
   branding_color_base: '#1f883d'
   branding_color_base_hover: '#2da44e'
   branding_color_base_soft: '#dff7e7'
@@ -46,6 +47,7 @@ defaults: &defaults
   branding_color_text_on_brand_base: '#f7f9f9'
   branding_color_direct_message_other_text: '#f7f9f9'
   branding_color_direct_message_own_text: '#f7f9f9'
+  branding_color_profile_field_card_background: '#181820'
   branding_color_base_light: '#1f883d'
   branding_color_base_hover_light: '#2da44e'
   branding_color_base_soft_light: '#eaf8ef'
@@ -56,6 +58,7 @@ defaults: &defaults
   branding_color_text_on_brand_base_light: '#f7f9f9'
   branding_color_direct_message_other_text_light: '#1f1b23'
   branding_color_direct_message_own_text_light: '#f7f9f9'
+  branding_color_profile_field_card_background_light: '#ffffff'
 
 development:
   <<: *defaults

@@ -2,6 +2,7 @@
 
 module CustomBrandingTheme
   OPACITY_SETTING = :branding_timeline_panel_opacity
+  PROFILE_FIELD_CARD_OPACITY_SETTING = :branding_profile_field_card_opacity
   BEGIN_MARKER = '/* C7C4FF branding theme:start */'
   END_MARKER = '/* C7C4FF branding theme:end */'
   BOOST_ACTION_COLOR = '#00ba7c'
@@ -48,6 +49,10 @@ module CustomBrandingTheme
       default: '#f7f9f9',
       css_vars: %w(--color-direct-message-own-text),
     },
+    branding_color_profile_field_card_background: {
+      default: '#181820',
+      css_vars: %w(--custom-profile-field-card-background),
+    },
   }.freeze
 
   COLOR_SCHEMES = {
@@ -74,7 +79,9 @@ module CustomBrandingTheme
     branding_color_text_on_brand_base_light: '#f7f9f9',
     branding_color_direct_message_other_text_light: '#1f1b23',
     branding_color_direct_message_own_text_light: '#f7f9f9',
-    OPACITY_SETTING => 80
+    branding_color_profile_field_card_background_light: '#ffffff',
+    branding_timeline_panel_opacity: 80,
+    branding_profile_field_card_opacity: 80
   ).freeze
 
   NAVIGATION_ICONS = {
@@ -220,12 +227,21 @@ module CustomBrandingTheme
         },
       },
     },
+    {
+      title: '프로필 필드 카드',
+      fields: {
+        branding_color_profile_field_card_background: {
+          label: '배경 색상',
+          hint: '프로필의 사용자 정의 필드 카드에만 적용됩니다.',
+        },
+      },
+    },
   ].freeze
 
   module_function
 
   def setting_keys
-    [OPACITY_SETTING, *color_setting_keys]
+    [OPACITY_SETTING, PROFILE_FIELD_CARD_OPACITY_SETTING, *color_setting_keys]
   end
 
   def color_setting_keys
@@ -287,6 +303,7 @@ module CustomBrandingTheme
 
   def css_for(values)
     opacity = normalize_opacity(values[OPACITY_SETTING])
+    profile_field_card_opacity = normalize_opacity(values[PROFILE_FIELD_CARD_OPACITY_SETTING])
 
     lines = []
 
@@ -300,6 +317,7 @@ module CustomBrandingTheme
       lines.concat(bookmark_icon_css_vars(values, scheme))
       lines.concat(status_action_icon_css_vars(values, scheme))
       lines << "  --custom-timeline-panel-opacity: #{opacity}%;"
+      lines << "  --custom-profile-field-card-opacity: #{profile_field_card_opacity}%;"
       lines << '}'
       lines << ''
     end

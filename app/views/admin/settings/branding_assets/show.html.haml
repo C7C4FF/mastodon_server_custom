@@ -328,6 +328,14 @@
                                    pattern: '#?[0-9a-fA-F]{6}',
                                    data: { branding_color_hex: true, branding_preview_var: "--branding-preview-#{field.to_s.delete_prefix('branding_color_').tr('_', '-')}-#{scheme_name}", branding_saved_value: saved_color }
 
+  .fields-group
+    = f.input :branding_profile_field_card_opacity,
+              as: :integer,
+              input_html: { min: 0, max: 100, step: 5 },
+              label: '프로필 필드 카드 배경 불투명도',
+              hint: '0은 완전 투명, 100은 위에서 지정한 배경 색상 그대로 표시됩니다.',
+              wrapper: :with_block_label
+
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit
-    = f.button :button, 'UI 기본값으로 초기화', type: :submit, name: 'branding_assets_action', value: 'reset_theme', data: { confirm: '색상과 패널 투명도 설정을 Bluebirdlike UI 기본값으로 되돌릴까요?' }
+    = f.button :button, 'UI 기본값으로 초기화', type: :submit, name: 'branding_assets_action', value: 'reset_theme', data: { confirm: '색상과 투명도 설정을 Bluebirdlike UI 기본값으로 되돌릴까요?' }

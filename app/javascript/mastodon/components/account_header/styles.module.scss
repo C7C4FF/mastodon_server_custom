@@ -461,6 +461,16 @@ $button-fallback-breakpoint: $button-breakpoint + 55px;
   }
 }
 
+.fieldItem,
+.fieldVerified.fieldItem {
+  background-color: color-mix(
+    in srgb,
+    var(--custom-profile-field-card-background, var(--color-bg-primary))
+      var(--custom-profile-field-card-opacity, 80%),
+    transparent
+  );
+}
+
 .fieldOverflowButton {
   --default-bg-color: var(--color-bg-secondary);
   --hover-bg-color: var(--color-bg-brand-softest);
