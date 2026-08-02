@@ -94,7 +94,7 @@ export const AccountList: FC<AccountListProps> = ({
   const domain = account.acct.split('@')[1];
 
   return (
-    <Column>
+    <Column className='account-list-column'>
       <ColumnBackButton />
 
       <ScrollableList

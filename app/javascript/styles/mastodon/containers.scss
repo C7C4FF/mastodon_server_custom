@@ -312,6 +312,7 @@ body.has-custom-public-background {
   .column-header,
   .column-header__select-row,
   .column-search-header,
+  .column-back-button,
   .column-back-button--with-title,
   .detailed-status,
   .detailed-status__action-bar,
@@ -342,6 +343,7 @@ body.has-custom-public-background {
 
   .column.direct-timeline > .scrollable,
   .column.notifications-timeline > .scrollable,
+  .column.account-list-column > .scrollable,
   .column.notifications-timeline > .notification__filter-bar,
   .direct-conversation-thread,
   .item-list.scrollable.scrollable--flex.direct-conversation-thread,
@@ -350,6 +352,7 @@ body.has-custom-public-background {
   }
 
   :is(.column.direct-timeline, .column.notifications-timeline) > .scrollable :is(.empty-column-indicator, .load-more),
+  .column.account-list-column > .scrollable :is(.empty-column-indicator, .load-more),
   .direct-conversation-thread .load-more {
     background: transparent !important;
   }
