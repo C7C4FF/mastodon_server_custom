@@ -6699,9 +6699,14 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
 
 .layout-single-column
   :is(
-    .direct-conversation-thread,
+    .direct-conversation-thread:not(.direct-conversation-thread--group),
     .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct)
   )
+  .status--in-thread
+  > .status__content,
+.layout-single-column
+  .direct-conversation-thread--group
+  .status__wrapper-own
   .status--in-thread
   > .status__content {
   padding-inline-start: 0 !important;

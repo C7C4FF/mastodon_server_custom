@@ -318,13 +318,14 @@ body.has-custom-public-background {
   .empty-column-indicator,
   .load-more,
   .notification-request,
+  .scrollable--flex:has(> .simple_form.app-form),
   [class*='_comp_account_header__barWrapper'],
   [class*='_comp_tab_list__tabList'][class*='_comp_tab_list__withSpaceAndBorder'],
   .scrollable > header:has(> [class*='_feat_account_edit__profileImage']),
-  [class*='_feat_account_edit__section'],
+  [class~='_feat_account_edit__section'],
   .search__input,
   .search.active .search__input {
-    background-color: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+    background-color: color-mix(in srgb, var(--color-bg, var(--color-bg-primary)) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
     background-image: none !important;
   }
 
@@ -335,7 +336,7 @@ body.has-custom-public-background {
   .compose-form__highlightable,
   .compose-form .compose-form__highlightable,
   .compose-panel .compose-form__highlightable {
-    background-color: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+    background-color: color-mix(in srgb, var(--color-bg, var(--color-bg-primary)) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
     background-image: none !important;
   }
 
@@ -345,7 +346,12 @@ body.has-custom-public-background {
   .direct-conversation-thread,
   .item-list.scrollable.scrollable--flex.direct-conversation-thread,
   .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
-    background: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+    background: color-mix(in srgb, var(--color-bg, var(--color-bg-primary)) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+  }
+
+  :is(.column.direct-timeline, .column.notifications-timeline) > .scrollable :is(.empty-column-indicator, .load-more),
+  .direct-conversation-thread .load-more {
+    background: transparent !important;
   }
 
   ._ui_components_link_footer__wrapper,
@@ -367,7 +373,7 @@ body.has-custom-public-background {
   .status__wrapper.status__wrapper-reply,
   .status__wrapper.status__wrapper-own,
   .status__wrapper.status__wrapper-private.status__wrapper-reply.status__wrapper-own.focusable {
-    background-color: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+    background-color: color-mix(in srgb, var(--color-bg, var(--color-bg-primary)) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
     background-image: none !important;
   }
 

@@ -6211,9 +6211,14 @@ div[tabindex='-1']
 
 .layout-multiple-columns
   :is(
-    .direct-conversation-thread,
+    .direct-conversation-thread:not(.direct-conversation-thread--group),
     .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct)
   )
+  .status--in-thread
+  > .status__content,
+.layout-multiple-columns
+  .direct-conversation-thread--group
+  .status__wrapper-own
   .status--in-thread
   > .status__content {
   padding-inline-start: 0 !important;

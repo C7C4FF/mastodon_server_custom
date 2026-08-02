@@ -657,5 +657,6 @@ $button-fallback-breakpoint: $button-breakpoint + 55px;
 }
 
 .bioButtonsWrapper {
+  display: flow-root;
   padding-top: 16px;
 }
