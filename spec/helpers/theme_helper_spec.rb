@@ -159,7 +159,7 @@ RSpec.describe ThemeHelper do
     end
 
     context 'when force_color_scheme is absent' do
-      it { is_expected.to eq('auto') }
+      it { is_expected.to eq('light') }
     end
   end
 
@@ -174,6 +174,12 @@ RSpec.describe ThemeHelper do
     let(:current_user) { Fabricate(:user) }
 
     it { is_expected.to eq('light') }
+
+    context 'when signed out' do
+      let(:current_user) { nil }
+
+      it { is_expected.to eq('light') }
+    end
 
     context 'when the user is an administrator' do
       let(:current_user) { Fabricate(:admin_user, settings: { 'web.color_scheme' => 'auto' }) }
