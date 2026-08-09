@@ -3,7 +3,7 @@
 module AccountSwitcherConcern
   extend ActiveSupport::Concern
 
-  SWITCHABLE_ACCOUNT_IDS_SESSION_KEY = :switchable_account_user_ids
+  SWITCHABLE_ACCOUNT_IDS_COOKIE_KEY = :_mastodon_switchable_account_user_ids
   ADDING_SWITCHABLE_ACCOUNT_SESSION_KEY = :adding_switchable_account
   SWITCHABLE_ACCOUNT_RETURN_USER_ID_SESSION_KEY = :switchable_account_return_user_id
 
@@ -33,7 +33,7 @@ module AccountSwitcherConcern
   def remember_switchable_account(user)
     return unless user&.account_id
 
-    session[SWITCHABLE_ACCOUNT_IDS_SESSION_KEY] = [
+    self.switchable_account_user_ids = [
       user.id,
       *(switchable_account_user_ids - [user.id]),
     ]
@@ -42,11 +42,20 @@ module AccountSwitcherConcern
   def forget_switchable_account(user)
     return unless user
 
-    session[SWITCHABLE_ACCOUNT_IDS_SESSION_KEY] = switchable_account_user_ids - [user.id]
+    self.switchable_account_user_ids = switchable_account_user_ids - [user.id]
   end
 
   def switchable_account_user_ids
-    Array(session[SWITCHABLE_ACCOUNT_IDS_SESSION_KEY]).filter_map { |id| id.to_i.presence }
+    Array(cookies.encrypted[SWITCHABLE_ACCOUNT_IDS_COOKIE_KEY]).filter_map { |id| id.to_i.presence }
+  end
+
+  def switchable_account_user_ids=(ids)
+    cookies.encrypted[SWITCHABLE_ACCOUNT_IDS_COOKIE_KEY] = {
+      value: ids,
+      expires: 1.year.from_now,
+      httponly: true,
+      same_site: :lax,
+    }
   end
 
   def switchable_account_users
