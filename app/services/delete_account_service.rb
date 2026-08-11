@@ -248,6 +248,7 @@ class DeleteAccountService < BaseService
     @account.header_description  = ''
     @account.attribution_domains = []
     @account.statuses_count      = 0 unless preserve_content?
+    @account.characters_count    = 0 unless preserve_content?
     @account.followers_count     = 0
     @account.following_count     = 0
     @account.moved_to_account    = nil

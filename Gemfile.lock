@@ -1091,6 +1091,7 @@ DEPENDENCIES
   tty-prompt (~> 0.23)
   twitter-text (~> 3.1.0)
   tzinfo-data (~> 1.2023)
+  unicode-emoji (~> 4.2)
   vite_rails
   webauthn (~> 3.0)
   webmock (~> 3.18)

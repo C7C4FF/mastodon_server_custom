@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'unicode/emoji'
+
 # == Schema Information
 #
 # Table name: statuses
@@ -159,6 +161,7 @@ class Status < ApplicationRecord
   after_update_commit :trigger_update_webhooks
 
   after_create_commit  :increment_counter_caches
+  after_update_commit  :update_characters_count, if: :billable_characters_changed?
   after_destroy_commit :decrement_counter_caches
 
   after_create_commit :store_uri, if: :local?
@@ -283,6 +286,20 @@ class Status < ApplicationRecord
     fields += preloadable_poll.options unless preloadable_poll.nil?
 
     @emojis = CustomEmoji.from_text(fields.join(' '), account.domain)
+  end
+
+  def billable_character_count
+    return 0 unless local? && reblog_of_id.nil? && deleted_at.nil? && !direct_visibility?
+
+    self.class.count_billable_characters(text)
+  end
+
+  def self.count_billable_characters(text)
+    text.to_s
+      .gsub(CustomEmoji::SCAN_RE, '')
+      .gsub(Unicode::Emoji::REGEX_VALID, '')
+      .each_grapheme_cluster
+      .size
   end
 
   def ordered_media_attachments
@@ -481,6 +498,7 @@ class Status < ApplicationRecord
     return if direct_visibility?
 
     account&.increment_count!(:statuses_count, status_created_at: created_at)
+    account&.update_count!(:characters_count, billable_character_count) unless reblog?
     reblog&.increment_count!(:reblogs_count) if reblog?
     thread&.increment_count!(:replies_count) if in_reply_to_id.present?
   end
@@ -489,8 +507,32 @@ class Status < ApplicationRecord
     return if direct_visibility? || new_record?
 
     account&.decrement_count!(:statuses_count)
+    account&.update_count!(:characters_count, -billable_character_count) unless reblog?
     reblog&.decrement_count!(:reblogs_count) if reblog?
     thread&.decrement_count!(:replies_count) if in_reply_to_id.present?
+  end
+
+  def billable_characters_changed?
+    saved_change_to_text? || saved_change_to_visibility? || saved_change_to_reblog_of_id? || saved_change_to_deleted_at?
+  end
+
+  def update_characters_count
+    previous_count = billable_character_count_for(
+      text: saved_changes.fetch('text', [text]).first,
+      visibility: saved_changes.fetch('visibility', [visibility]).first,
+      reblog_of_id: saved_changes.fetch('reblog_of_id', [reblog_of_id]).first,
+      deleted_at: saved_changes.fetch('deleted_at', [deleted_at]).first
+    )
+    difference = billable_character_count - previous_count
+
+    account&.update_count!(:characters_count, difference) unless difference.zero?
+  end
+
+  def billable_character_count_for(text:, visibility:, reblog_of_id:, deleted_at:)
+    direct_visibility = visibility.to_s == 'direct' || visibility == self.class.visibilities.fetch('direct')
+    return 0 unless local? && reblog_of_id.nil? && deleted_at.nil? && !direct_visibility
+
+    self.class.count_billable_characters(text)
   end
 
   def trigger_create_webhooks

@@ -391,6 +391,25 @@ RSpec.describe Account do
     end
   end
 
+  describe '#characters_count' do
+    subject(:account) { Fabricate(:account) }
+
+    it 'tracks billable characters across creates, edits, and deletions' do
+      status = Fabricate(:status, account:, thread: Fabricate(:status), text: '가 나😀:party:', spoiler_text: 'ignored')
+      Fabricate(:status, account:, text: 'direct text', visibility: :direct)
+      Fabricate(:status, account:, reblog: Fabricate(:status))
+
+      expect(status).to be_reply
+      expect(account.characters_count).to eq 3
+
+      status.update!(text: '가나다라')
+      expect(account.characters_count).to eq 4
+
+      status.discard_with_reblogs
+      expect(account.characters_count).to eq 0
+    end
+  end
+
   describe 'MENTION_RE' do
     subject { described_class::MENTION_RE }
 
