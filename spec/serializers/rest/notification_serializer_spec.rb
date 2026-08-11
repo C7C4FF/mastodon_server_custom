@@ -27,6 +27,18 @@ RSpec.describe REST::NotificationSerializer do
     end
   end
 
+  context 'with a mention notification' do
+    let(:notification) { Fabricate(:notification, type: :mention, activity: Fabricate(:mention), account: current_user.account) }
+
+    before do
+      notification.from_account.account_stat.update!(characters_count: 123)
+    end
+
+    it 'includes the sender lifetime character count' do
+      expect(subject.dig('account', 'characters_count')).to eq(123)
+    end
+  end
+
   shared_examples 'with fallback notifications' do |type, fabricator|
     let(:notification) { Fabricate(:notification, type:, activity: Fabricate(fabricator), account: current_user.account) }
 

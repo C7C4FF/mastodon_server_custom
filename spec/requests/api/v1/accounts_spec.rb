@@ -27,6 +27,10 @@ RSpec.describe '/api/v1/accounts' do
     context 'when logged out' do
       let(:account) { Fabricate(:account) }
 
+      before do
+        account.account_stat.update!(characters_count: 123)
+      end
+
       it 'returns account entity as 200 OK', :aggregate_failures do
         get "/api/v1/accounts/#{account.id}"
 
@@ -34,6 +38,7 @@ RSpec.describe '/api/v1/accounts' do
         expect(response.content_type)
           .to start_with('application/json')
         expect(response.parsed_body[:id]).to eq(account.id.to_s)
+        expect(response.parsed_body[:characters_count]).to eq(123)
       end
     end
 

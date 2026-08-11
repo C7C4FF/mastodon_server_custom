@@ -32,7 +32,7 @@ RSpec.describe Mastodon::CLI::Cache do
       let(:account_stat) { Fabricate(:account_stat) }
 
       before do
-        account_stat.update(statuses_count: 123)
+        account_stat.update(statuses_count: 123, characters_count: 123)
       end
 
       it 're-calculates account records in the cache' do
@@ -40,6 +40,7 @@ RSpec.describe Mastodon::CLI::Cache do
           .to output_results('OK')
 
         expect(account_stat.reload.statuses_count).to be_zero
+        expect(account_stat.characters_count).to be_zero
       end
     end
 

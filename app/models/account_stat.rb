@@ -4,14 +4,15 @@
 #
 # Table name: account_stats
 #
-#  id              :bigint(8)        not null, primary key
-#  followers_count :bigint(8)        default(0), not null
-#  following_count :bigint(8)        default(0), not null
-#  last_status_at  :datetime
-#  statuses_count  :bigint(8)        default(0), not null
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  account_id      :bigint(8)        not null
+#  id               :bigint(8)        not null, primary key
+#  characters_count :bigint(8)        default(0), not null
+#  followers_count  :bigint(8)        default(0), not null
+#  following_count  :bigint(8)        default(0), not null
+#  last_status_at   :datetime
+#  statuses_count   :bigint(8)        default(0), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  account_id       :bigint(8)        not null
 #
 
 class AccountStat < ApplicationRecord
@@ -34,5 +35,9 @@ class AccountStat < ApplicationRecord
 
   def statuses_count
     [attributes['statuses_count'], 0].max
+  end
+
+  def characters_count
+    [attributes['characters_count'], 0].max
   end
 end

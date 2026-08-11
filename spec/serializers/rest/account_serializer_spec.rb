@@ -75,6 +75,16 @@ RSpec.describe REST::AccountSerializer do
     end
   end
 
+  context 'when characters_count is populated' do
+    before do
+      account.account_stat.update!(characters_count: 123)
+    end
+
+    it 'serializes the lifetime character count' do
+      expect(subject['characters_count']).to eq(123)
+    end
+  end
+
   describe '#feature_approval' do
     context 'when account is local' do
       context 'when account is discoverable' do
