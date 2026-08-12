@@ -15,7 +15,6 @@ module BrandingHelper
       body,
       body.app-body,
       body.has-public-background,
-      body.has-custom-public-background,
       body.layout-multiple-columns,
       body.layout-single-column {
         --custom-public-background-image-light: #{css_url(background_light)};
@@ -34,7 +33,8 @@ module BrandingHelper
         --custom-public-background-image: var(--custom-public-background-image-dark);
       }
 
-      .custom-public-background {
+      html[data-color-scheme='light'] body.has-custom-public-background-light .custom-public-background,
+      html[data-color-scheme='dark'] body.has-custom-public-background-dark .custom-public-background {
         position: fixed;
         inset: 0;
         z-index: 0;
@@ -45,9 +45,8 @@ module BrandingHelper
         background-attachment: fixed;
       }
 
-      body.app-body .app-holder,
-      body.layout-multiple-columns .app-holder,
-      body.layout-single-column .app-holder {
+      html[data-color-scheme='light'] body.has-custom-public-background-light .app-holder,
+      html[data-color-scheme='dark'] body.has-custom-public-background-dark .app-holder {
         position: relative;
         z-index: 1;
         background: transparent !important;
@@ -66,7 +65,12 @@ module BrandingHelper
   end
 
   def public_background_body_class
-    'has-public-background has-custom-public-background' if custom_background?
+    return unless custom_background?
+
+    classes = ['has-public-background']
+    classes << 'has-custom-public-background-light' if custom_background_url(:light).present?
+    classes << 'has-custom-public-background-dark' if custom_background_url(:dark).present?
+    classes.join(' ')
   end
 
   def custom_background_path(variant = nil)
@@ -110,9 +114,9 @@ module BrandingHelper
   def custom_background_url(variant = nil)
     upload = case variant
              when :light
-               instance_presenter.background_light || instance_presenter.background || instance_presenter.background_dark
+               instance_presenter.background_light || instance_presenter.background
              when :dark
-               instance_presenter.background_dark || instance_presenter.background || instance_presenter.background_light
+               instance_presenter.background_dark || instance_presenter.background
              else
                instance_presenter.background || instance_presenter.background_dark || instance_presenter.background_light
              end
@@ -125,6 +129,8 @@ module BrandingHelper
   end
 
   def css_url(url)
+    return 'none' if url.blank?
+
     escaped_url = url.to_s.gsub('\\', '\\\\\\').gsub('"', '\"')
     "url(\"#{escaped_url}\")"
   end

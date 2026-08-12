@@ -7059,24 +7059,25 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
   z-index: 2;
 }
 
-body.has-custom-public-background.layout-single-column .column.direct-timeline > .scrollable,
-body.has-custom-public-background.layout-single-column .column.notifications-timeline > .scrollable,
-body.has-custom-public-background.layout-single-column .column.notifications-timeline > .notification__filter-bar,
-body.has-custom-public-background.layout-single-column .direct-conversation-thread,
-body.has-custom-public-background.layout-single-column
-  .item-list.scrollable.scrollable--flex.direct-conversation-thread,
-body.has-custom-public-background.layout-single-column
-  .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
-  background: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
-}
+html[data-color-scheme='dark'] body.has-custom-public-background-dark,
+html[data-color-scheme='light'] body.has-custom-public-background-light {
+  &.layout-single-column .column.direct-timeline > .scrollable,
+  &.layout-single-column .column.notifications-timeline > .scrollable,
+  &.layout-single-column .column.notifications-timeline > .notification__filter-bar,
+  &.layout-single-column .direct-conversation-thread,
+  &.layout-single-column .item-list.scrollable.scrollable--flex.direct-conversation-thread,
+  &.layout-single-column .item-list.scrollable--flex:has(> .detailed-status__wrapper-direct) {
+    background: color-mix(in srgb, var(--color-bg) var(--custom-timeline-panel-opacity, 80%), transparent) !important;
+  }
 
-body.has-custom-public-background.layout-single-column
-  .column.notifications-timeline
-  :is(.notification-ungrouped, .notification-group)
-  :is(.status__wrapper, .status) {
-  background: transparent !important;
-  background-image: none !important;
-  backdrop-filter: none !important;
+  &.layout-single-column
+    .column.notifications-timeline
+    :is(.notification-ungrouped, .notification-group)
+    :is(.status__wrapper, .status) {
+    background: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+  }
 }
 
 @media (width <= 759px) {

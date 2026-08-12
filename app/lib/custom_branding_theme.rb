@@ -322,7 +322,8 @@ module CustomBrandingTheme
       lines << ''
     end
 
-    lines << 'body.has-custom-public-background {'
+    lines << "html[data-color-scheme='dark'] body.has-custom-public-background-dark,"
+    lines << "html[data-color-scheme='light'] body.has-custom-public-background-light {"
     lines << "  --custom-timeline-panel-opacity: #{opacity}%;"
     lines << '}'
     lines << ''
