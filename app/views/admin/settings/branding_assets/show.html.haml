@@ -20,16 +20,12 @@
       SiteUpload.find_by(var: 'background_dark'),
       @admin_settings.background,
       SiteUpload.find_by(var: 'background'),
-      @admin_settings.background_light,
-      SiteUpload.find_by(var: 'background_light'),
     ].compact.find(&:persisted?)
     preview_background_light_upload = [
       @admin_settings.background_light,
       SiteUpload.find_by(var: 'background_light'),
       @admin_settings.background,
       SiteUpload.find_by(var: 'background'),
-      @admin_settings.background_dark,
-      SiteUpload.find_by(var: 'background_dark'),
     ].compact.find(&:persisted?)
     preview_background_dark = preview_background_url.call(preview_background_dark_upload) || custom_background_path(:dark)
     preview_background_light = preview_background_url.call(preview_background_light_upload) || custom_background_path(:light)

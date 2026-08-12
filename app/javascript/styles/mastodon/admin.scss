@@ -538,7 +538,8 @@ $content-width: 840px;
   }
 }
 
-body.admin.has-public-background {
+html[data-color-scheme='dark'] body.admin.has-custom-public-background-dark,
+html[data-color-scheme='light'] body.admin.has-custom-public-background-light {
   --custom-admin-panel-bg: rgba(8, 10, 14, 70%);
   --custom-admin-field-bg: rgba(245, 245, 255, 94%);
   --custom-admin-text: rgb(245, 247, 255);
@@ -668,7 +669,7 @@ body.admin.has-public-background {
   }
 }
 
-html[data-color-scheme='light'] body.admin.has-public-background {
+html[data-color-scheme='light'] body.admin.has-custom-public-background-light {
   --custom-admin-panel-bg: rgba(255, 255, 255, 58%);
   --custom-admin-field-bg: rgba(255, 255, 255, 86%);
   --custom-admin-text: rgb(18, 21, 31);

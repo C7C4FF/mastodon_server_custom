@@ -169,7 +169,8 @@
   }
 }
 
-body.has-custom-public-background {
+html[data-color-scheme='dark'] body.has-custom-public-background-dark,
+html[data-color-scheme='light'] body.has-custom-public-background-light {
   background: #050708 !important;
 
   .custom-public-background {

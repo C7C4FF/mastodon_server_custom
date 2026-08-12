@@ -14,19 +14,23 @@ import { isDevelopment, isProduction } from './utils/environment';
 
 function setupCustomBackground() {
   const existingLayer = document.querySelector('.custom-public-background');
-  const hasAnyBackground = [background, backgroundDark, backgroundLight].some(
-    Boolean,
+  const hasLightBackground = Boolean(backgroundLight ?? background);
+  const hasDarkBackground = Boolean(backgroundDark ?? background);
+  const hasAnyBackground = hasLightBackground || hasDarkBackground;
+
+  document.body.classList.toggle(
+    'has-custom-public-background-light',
+    hasLightBackground,
+  );
+  document.body.classList.toggle(
+    'has-custom-public-background-dark',
+    hasDarkBackground,
   );
 
   if (!hasAnyBackground) {
-    if (!existingLayer) {
-      document.body.classList.remove('has-custom-public-background');
-    }
-
     return;
   }
 
-  document.body.classList.add('has-custom-public-background');
   document.documentElement.style.removeProperty(
     '--custom-public-background-image',
   );
