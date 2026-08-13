@@ -589,6 +589,7 @@ export const notificationGroupsReducer = createReducer<NotificationGroupsState>(
         updateLastReadId(state);
       })
       .addCase(unmountNotifications, (state) => {
+        commitLastReadId(state);
         state.mounted -= 1;
       })
       .addCase(focusApp, (state) => {

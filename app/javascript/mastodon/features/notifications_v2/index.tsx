@@ -104,6 +104,7 @@ export const Notifications: React.FC<{
 
     return () => {
       dispatch(unmountNotifications());
+      void dispatch(submitMarkers({ immediate: true }));
       void dispatch(updateScrollPosition({ top: false }));
     };
   }, [dispatch]);

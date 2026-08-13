@@ -119,14 +119,7 @@ export const DirectReplyComposer = ({ status, recipientAccounts, onSend }) => {
     fileInputRef.current?.click();
   }, []);
 
-  const handleSelectImage = useCallback(e => {
-    const file = e.target.files[0];
-    e.target.value = '';
-
-    if (!file) {
-      return;
-    }
-
+  const uploadImage = useCallback(file => {
     const data = new FormData();
     data.append('file', file);
 
@@ -144,6 +137,24 @@ export const DirectReplyComposer = ({ status, recipientAccounts, onSend }) => {
       setIsUploading(false);
     });
   }, [accountId, dispatch]);
+
+  const handleSelectImage = useCallback(e => {
+    const file = e.target.files[0];
+    e.target.value = '';
+
+    if (file) {
+      uploadImage(file);
+    }
+  }, [uploadImage]);
+
+  const handlePaste = useCallback(e => {
+    const file = Array.from(e.clipboardData.files).find(file => file.type.startsWith('image/'));
+
+    if (file) {
+      e.preventDefault();
+      uploadImage(file);
+    }
+  }, [uploadImage]);
 
   const handleSubmit = useCallback(() => {
     const trimmed = text.trim();
@@ -230,6 +241,7 @@ export const DirectReplyComposer = ({ status, recipientAccounts, onSend }) => {
           value={text}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           placeholder={intl.formatMessage(messages.placeholder)}
           rows={1}
         />
