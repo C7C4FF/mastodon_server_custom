@@ -580,6 +580,13 @@ html[data-color-scheme='light'] body.admin.has-custom-public-background-light {
     min-height: 100dvh;
   }
 
+  @media screen and (max-width: $no-columns-breakpoint) {
+    .sidebar {
+      backdrop-filter: none;
+      min-height: 0;
+    }
+  }
+
   .simple_form,
   .fields-group,
   .input,

@@ -392,11 +392,11 @@ html[data-color-scheme='light'] body.has-custom-public-background-light {
     background-image: none !important;
     backdrop-filter: none !important;
   }
-}
 
-@media screen and (max-width: ($no-gap-breakpoint - 1px)) {
-  .columns-area__panels__pane--navigational
-    :is(.columns-area__panels__pane__inner, .navigation-panel) {
-    background: var(--color-bg-primary) !important;
+  @media screen and (max-width: ($no-gap-breakpoint - 1px)) {
+    .columns-area__panels__pane--navigational
+      :is(.columns-area__panels__pane__inner, .navigation-panel) {
+      background: var(--color-bg-primary) !important;
+    }
   }
 }
