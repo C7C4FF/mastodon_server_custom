@@ -363,7 +363,11 @@ export const Dropdown = <Item extends object | null = MenuItem>({
 
   const handleClose = useCallback(() => {
     if (buttonRef.current) {
-      buttonRef.current.focus({ preventScroll: true });
+      if (openedViaKeyboard) {
+        buttonRef.current.focus({ preventScroll: true });
+      } else {
+        buttonRef.current.blur();
+      }
     }
 
     dispatch(
@@ -374,7 +378,7 @@ export const Dropdown = <Item extends object | null = MenuItem>({
     );
 
     dispatch(closeDropdownMenu({ id: currentId }));
-  }, [dispatch, currentId]);
+  }, [dispatch, currentId, openedViaKeyboard]);
 
   const handleItemClick = useCallback(
     (e: React.MouseEvent) => {

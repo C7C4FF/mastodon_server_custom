@@ -100,6 +100,7 @@
   .direct-conversation-thread
   .status__wrapper-direct.status__wrapper-own
   .status__action-bar
+  > :last-child
   .icon-button {
   color: var(--color-dim) !important;
 }

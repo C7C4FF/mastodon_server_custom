@@ -15,7 +15,7 @@ module CustomBrandingTheme
     },
     branding_color_base_hover: {
       default: '#2da44e',
-      css_vars: %w(--color-bg-brand-base-hover --color-accent --color-brand-mastodon-links --color-link --color-hashtag --color-mention),
+      css_vars: %w(--color-bg-brand-base-hover --color-accent --color-brand-mastodon-links --color-link --color-hashtag --color-mention --color-text-status-links),
     },
     branding_color_base_soft: {
       default: '#dff7e7',
