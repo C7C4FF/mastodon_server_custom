@@ -576,11 +576,14 @@ class Status extends ImmutablePureComponent {
   };
 
   componentDidUpdate(prevProps) {
-    const { status, descendantsIds, directMessageIds, params } = this.props;
+    const { status, ancestorsIds, descendantsIds, directMessageIds, params } = this.props;
 
     const isSameStatus = status && (prevProps.status?.get('id') === status.get('id'));
+    const isDirect = status?.get('visibility') === 'direct';
     const previousReplyIds = status?.get('visibility') === 'direct' ? prevProps.directMessageIds : prevProps.descendantsIds;
     const currentReplyIds = status?.get('visibility') === 'direct' ? directMessageIds : descendantsIds;
+    const previousContextIds = isDirect ? prevProps.directMessageIds : prevProps.ancestorsIds.concat(prevProps.descendantsIds);
+    const currentContextIds = isDirect ? directMessageIds : ancestorsIds.concat(descendantsIds);
 
     // Only highlight replies after the initial load
     if (previousReplyIds.length && isSameStatus) {
@@ -589,6 +592,13 @@ class Status extends ImmutablePureComponent {
       if (newRepliesIds.length) {
         this.setState({newRepliesIds});
       }
+    }
+
+    if (this.node && (
+      (!prevProps.status && status) ||
+      (isSameStatus && previousContextIds.length === 0 && currentContextIds.length > 0)
+    )) {
+      this.node.scrollTop = isDirect ? this.node.scrollHeight : (this.statusNode?.offsetTop ?? 0);
     }
 
     if (params.statusId && prevProps.params.statusId !== params.statusId) {

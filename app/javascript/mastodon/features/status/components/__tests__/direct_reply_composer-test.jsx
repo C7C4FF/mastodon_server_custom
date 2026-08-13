@@ -156,6 +156,26 @@ describe('<DirectReplyComposer />', () => {
     });
   });
 
+  it('uploads an image pasted into the message field', async () => {
+    post.mockResolvedValueOnce({ data: { id: 'media-1', preview_url: '/pasted.png' } });
+
+    const { container } = render(
+      <IntlProvider locale='en'>
+        <DirectReplyComposer recipientAccounts={[]} />
+      </IntlProvider>,
+    );
+
+    fireEvent.paste(screen.getByPlaceholderText('Write a message'), {
+      clipboardData: {
+        files: [new File(['image'], 'pasted.png', { type: 'image/png' })],
+      },
+    });
+
+    await waitFor(() => {
+      expect(container.querySelector('.direct-reply-composer__preview img')?.getAttribute('src')).toBe('/pasted.png');
+    });
+  });
+
   it('starts a direct conversation without a reply target', async () => {
     const response = { id: 'new-status', account: { acct: 'me' } };
     const onSend = vi.fn();
