@@ -166,12 +166,24 @@ const updateContext = (state: Draft<State>, status: ApiStatusJSON): void => {
     return;
   }
 
-  const siblings = (state.replies[status.in_reply_to_id] ??= []);
+  const inReplyToId = status.in_reply_to_id;
+  const siblings = (state.replies[inReplyToId] ??= []);
 
-  state.inReplyTos[status.id] = status.in_reply_to_id;
+  state.inReplyTos[status.id] = inReplyToId;
 
   if (!siblings.includes(status.id)) {
     siblings.push(status.id);
+  }
+
+  if (status.visibility === 'direct') {
+    Object.values(state.directMessages).forEach((messages) => {
+      if (
+        messages.includes(inReplyToId) &&
+        !messages.includes(status.id)
+      ) {
+        messages.push(status.id);
+      }
+    });
   }
 };
 
