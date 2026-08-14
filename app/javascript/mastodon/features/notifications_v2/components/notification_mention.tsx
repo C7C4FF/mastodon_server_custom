@@ -36,7 +36,8 @@ const privateReplyLabelRenderer: LabelRenderer = () => (
 export const NotificationMention: React.FC<{
   notification: NotificationGroupMention;
   unread: boolean;
-}> = ({ notification, unread }) => {
+  onDismiss?: () => void;
+}> = ({ notification, unread, onDismiss }) => {
   const [isDirect, isReply] = useAppSelector((state) => {
     const status = notification.statusId
       ? state.statuses.get(notification.statusId)
@@ -66,6 +67,7 @@ export const NotificationMention: React.FC<{
       statusId={notification.statusId}
       labelRenderer={labelRenderer}
       unread={unread}
+      onDismiss={onDismiss}
     />
   );
 };

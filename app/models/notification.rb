@@ -4,16 +4,17 @@
 #
 # Table name: notifications
 #
-#  id              :bigint(8)        not null, primary key
-#  activity_type   :string           not null
-#  filtered        :boolean          default(FALSE), not null
-#  group_key       :string
-#  type            :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  account_id      :bigint(8)        not null
-#  activity_id     :bigint(8)        not null
-#  from_account_id :bigint(8)        not null
+#  id                                 :bigint(8)        not null, primary key
+#  activity_type                      :string           not null
+#  dismissed_from_pending_mentions_at :datetime
+#  filtered                           :boolean          default(FALSE), not null
+#  group_key                          :string
+#  type                               :string
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
+#  account_id                         :bigint(8)        not null
+#  activity_id                        :bigint(8)        not null
+#  from_account_id                    :bigint(8)        not null
 #
 
 class Notification < ApplicationRecord
@@ -142,6 +143,13 @@ class Notification < ApplicationRecord
   validates :type, inclusion: { in: TYPES }
 
   scope :without_suspended, -> { joins(:from_account).merge(Account.without_suspended) }
+  scope :pending_mentions_for, lambda { |account_id|
+    joins(mention: :status)
+      .where(type: :mention, dismissed_from_pending_mentions_at: nil)
+      .where.not(statuses: { visibility: Status.visibilities[:direct] })
+      .where.not(Favourite.where(account_id: account_id).where(Favourite.arel_table[:status_id].eq(Mention.arel_table[:status_id])).select(1).arel.exists)
+      .where.not(Status.where(account_id: account_id).where(Status.arel_table[:in_reply_to_id].eq(Mention.arel_table[:status_id])).select(1).arel.exists)
+  }
 
   def type
     @type ||= (super || LEGACY_TYPE_CLASS_MAP[activity_type]).to_sym

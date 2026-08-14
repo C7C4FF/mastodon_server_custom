@@ -393,6 +393,7 @@ namespace :api, format: false do
 
       member do
         post :dismiss
+        post :dismiss_pending_mention
       end
 
       resources :accounts, only: [:index], module: :notifications

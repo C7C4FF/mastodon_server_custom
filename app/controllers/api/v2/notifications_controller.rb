@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V2::NotificationsController < Api::BaseController
-  before_action -> { doorkeeper_authorize! :read, :'read:notifications' }, except: [:clear, :dismiss]
-  before_action -> { doorkeeper_authorize! :write, :'write:notifications' }, only: [:clear, :dismiss]
+  before_action -> { doorkeeper_authorize! :read, :'read:notifications' }, except: [:clear, :dismiss, :dismiss_pending_mention]
+  before_action -> { doorkeeper_authorize! :write, :'write:notifications' }, only: [:clear, :dismiss, :dismiss_pending_mention]
   before_action :require_user!
   after_action :insert_pagination_headers, only: :index
 
@@ -61,6 +61,11 @@ class Api::V2::NotificationsController < Api::BaseController
     render_empty
   end
 
+  def dismiss_pending_mention
+    current_account.notifications.by_group_key(params[:group_key]).where(type: :mention).update_all(dismissed_from_pending_mentions_at: Time.current)
+    render_empty
+  end
+
   private
 
   def load_notifications
@@ -106,11 +111,13 @@ class Api::V2::NotificationsController < Api::BaseController
   end
 
   def browserable_account_notifications
-    current_account.notifications.without_suspended.browserable(
+    notifications = current_account.notifications.without_suspended.browserable(
       types: Array(browserable_params[:types]),
       exclude_types: Array(browserable_params[:exclude_types]),
       include_filtered: truthy_param?(:include_filtered)
     )
+
+    truthy_param?(:pending_mentions) ? notifications.pending_mentions_for(current_account.id) : notifications
   end
 
   def notification_marker
@@ -134,12 +141,12 @@ class Api::V2::NotificationsController < Api::BaseController
   end
 
   def browserable_params
-    params.slice(:include_filtered, :types, :exclude_types, :grouped_types).permit(:include_filtered, types: [], exclude_types: [], grouped_types: [])
+    params.slice(:include_filtered, :pending_mentions, :types, :exclude_types, :grouped_types).permit(:include_filtered, :pending_mentions, types: [], exclude_types: [], grouped_types: [])
   end
 
   def pagination_params(core_params)
-    params.slice(:limit, :include_filtered, :types, :exclude_types, :grouped_types, :supported_types)
-      .permit(:limit, :include_filtered, types: [], exclude_types: [], grouped_types: [], supported_types: [])
+    params.slice(:limit, :include_filtered, :pending_mentions, :types, :exclude_types, :grouped_types, :supported_types)
+      .permit(:limit, :include_filtered, :pending_mentions, types: [], exclude_types: [], grouped_types: [], supported_types: [])
       .merge(core_params)
   end
 

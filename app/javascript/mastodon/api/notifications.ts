@@ -33,6 +33,7 @@ export const apiFetchNotificationGroups = async (params?: {
   url?: string;
   grouped_types?: string[];
   exclude_types?: string[];
+  pending_mentions?: boolean;
   max_id?: string;
   since_id?: string;
 }) => {
@@ -54,6 +55,11 @@ export const apiFetchNotificationGroups = async (params?: {
 
 export const apiClearNotifications = () =>
   apiRequest<undefined>('POST', 'v1/notifications/clear');
+
+export const apiDismissPendingMention = (groupKey: string) =>
+  apiRequestPost(
+    `v2/notifications/${encodeURIComponent(groupKey)}/dismiss_pending_mention`,
+  );
 
 export const apiFetchNotificationRequests = async (
   params?: {

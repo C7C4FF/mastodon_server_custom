@@ -10,6 +10,10 @@ export function Notifications () {
   return import('../../notifications_v2');
 }
 
+export function PendingMentions () {
+  return import('../../pending_mentions');
+}
+
 export function HomeTimeline () {
   return import('../../home_timeline');
 }
