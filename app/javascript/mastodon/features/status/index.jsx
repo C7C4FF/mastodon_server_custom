@@ -694,6 +694,7 @@ class Status extends ImmutablePureComponent {
           <ColumnHeader
             showBackButton
             multiColumn={multiColumn}
+            onClick={isGroupDirectMessage ? undefined : () => this.props.history.push(`/@${headerAccount.get('acct')}`)}
             title={(
               <span className='direct-conversation-header'>
                 <Avatar account={headerAccount} size={36} className='direct-conversation-header__avatar' />

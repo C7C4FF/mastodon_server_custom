@@ -50,6 +50,7 @@ const NewConversation = ({ multiColumn }) => {
       <ColumnHeader
         showBackButton
         multiColumn={multiColumn}
+        onClick={isGroup ? undefined : () => history.push(`/@${headerAccount.get('acct')}`)}
         title={(
           <span className='direct-conversation-header'>
             <Avatar account={headerAccount} size={36} className='direct-conversation-header__avatar' />
