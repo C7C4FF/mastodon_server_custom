@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { navigateToProfile } from 'mastodon/actions/accounts';
 import { mentionComposeById } from 'mastodon/actions/compose';
 import { Hotkeys } from 'mastodon/components/hotkeys';
 import type { NotificationGroup as NotificationGroupModel } from 'mastodon/models/notification_group';
-import { useAppSelector, useAppDispatch } from 'mastodon/store';
+import { useAppDispatch } from 'mastodon/store';
 
 import { NotificationAdminReport } from './notification_admin_report';
 import { NotificationAdminSignUp } from './notification_admin_sign_up';
@@ -24,21 +24,13 @@ import { NotificationStatus } from './notification_status';
 import { NotificationUpdate } from './notification_update';
 
 export const NotificationGroup: React.FC<{
-  notificationGroupId: NotificationGroupModel['group_key'];
+  notificationGroup: NotificationGroupModel;
   unread: boolean;
-}> = ({ notificationGroupId, unread }) => {
-  const notificationGroup = useAppSelector((state) =>
-    state.notificationGroups.groups.find(
-      (item) => item.type !== 'gap' && item.group_key === notificationGroupId,
-    ),
-  );
-
+  onDismiss?: (groupKey: string) => void;
+}> = ({ notificationGroup, unread, onDismiss }) => {
   const dispatch = useAppDispatch();
 
-  const accountId =
-    notificationGroup?.type === 'gap'
-      ? undefined
-      : notificationGroup?.sampleAccountIds[0];
+  const accountId = notificationGroup.sampleAccountIds[0];
 
   const handlers = useMemo(
     () => ({
@@ -53,7 +45,9 @@ export const NotificationGroup: React.FC<{
     [dispatch, accountId],
   );
 
-  if (!notificationGroup || notificationGroup.type === 'gap') return null;
+  const handleDismiss = useCallback(() => {
+    onDismiss?.(notificationGroup.group_key);
+  }, [notificationGroup.group_key, onDismiss]);
 
   let content;
 
@@ -81,7 +75,11 @@ export const NotificationGroup: React.FC<{
       break;
     case 'mention':
       content = (
-        <NotificationMention unread={unread} notification={notificationGroup} />
+        <NotificationMention
+          unread={unread}
+          notification={notificationGroup}
+          onDismiss={onDismiss ? handleDismiss : undefined}
+        />
       );
       break;
     case 'quote':

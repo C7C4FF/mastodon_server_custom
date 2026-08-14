@@ -5077,6 +5077,10 @@ a.status-card {
   }
 }
 
+.column-link .icon-chat-bubble path {
+  display: block !important;
+}
+
 .column-header__buttons {
   height: 48px;
   display: flex;

@@ -27,6 +27,7 @@ export const NotificationWithStatus: React.FC<{
   count: number;
   labelRenderer: LabelRenderer;
   unread: boolean;
+  onDismiss?: () => void;
 }> = ({
   icon,
   iconId,
@@ -36,6 +37,7 @@ export const NotificationWithStatus: React.FC<{
   labelRenderer,
   type,
   unread,
+  onDismiss,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -112,6 +114,7 @@ export const NotificationWithStatus: React.FC<{
           id={statusId}
           contextType='notifications'
           withDismiss
+          onDismissPendingMention={onDismiss}
           skipPrepend
           avatarSize={40}
           unfocusable

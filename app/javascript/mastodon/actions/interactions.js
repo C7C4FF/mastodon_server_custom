@@ -6,6 +6,7 @@ import { fetchRelationships } from './accounts';
 import { importFetchedAccounts, importFetchedStatus } from './importer';
 import { unreblog, reblog } from './interactions_typed';
 import { openModal } from './modal';
+import { removePendingMentionByStatus } from './pending_mentions';
 import {
   insertPinnedStatusIntoTimelines,
   removePinnedStatusFromTimelines,
@@ -60,6 +61,7 @@ export function favourite(status) {
     api().post(`/api/v1/statuses/${status.get('id')}/favourite`).then(function (response) {
       dispatch(importFetchedStatus(response.data));
       dispatch(favouriteSuccess(status, response.data));
+      dispatch(removePendingMentionByStatus({ statusId: status.get('id') }));
     }).catch(function (error) {
       dispatch(favouriteFail(status, error));
     });

@@ -195,7 +195,7 @@ export const Notifications: React.FC<{
       ) : (
         <NotificationGroup
           key={item.group_key}
-          notificationGroupId={item.group_key}
+          notificationGroup={item}
           unread={
             lastReadId !== '0' &&
             !!item.page_max_id &&

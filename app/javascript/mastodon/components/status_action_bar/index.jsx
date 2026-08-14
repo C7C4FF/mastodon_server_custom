@@ -64,6 +64,7 @@ const messages = defineMessages({
   openOriginalPage: { id: 'account.open_original_page', defaultMessage: 'Open original page' },
   revokeQuote: { id: 'status.revoke_quote', defaultMessage: 'Remove my post from @{name}’s post' },
   quotePolicyChange: { id: 'status.quote_policy_change', defaultMessage: 'Change who can quote' },
+  dismissPendingMention: { id: 'pending_mentions.dismiss', defaultMessage: 'Remove from pending mentions' },
 });
 
 const mapStateToProps = (state, { status }) => {
@@ -104,6 +105,7 @@ class StatusActionBar extends ImmutablePureComponent {
     onFilter: PropTypes.func,
     onAddFilter: PropTypes.func,
     onInteractionModal: PropTypes.func,
+    onDismissPendingMention: PropTypes.func,
     withDismiss: PropTypes.bool,
     withCounters: PropTypes.bool,
     scrollKey: PropTypes.string,
@@ -250,7 +252,7 @@ class StatusActionBar extends ImmutablePureComponent {
   };
 
   render () {
-    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, scrollKey } = this.props;
+    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, scrollKey, onDismissPendingMention } = this.props;
     const { signedIn, permissions } = this.props.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
@@ -294,6 +296,11 @@ class StatusActionBar extends ImmutablePureComponent {
 
     if (signedIn) {
       menu.push(null);
+
+      if (onDismissPendingMention) {
+        menu.push({ text: intl.formatMessage(messages.dismissPendingMention), action: onDismissPendingMention });
+        menu.push(null);
+      }
 
       if (writtenByMe && pinnableStatus) {
         menu.push({ text: intl.formatMessage(status.get('pinned') ? messages.unpin : messages.pin), action: this.handlePinClick });

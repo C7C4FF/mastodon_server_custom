@@ -13,6 +13,8 @@ import BookmarksActiveIcon from '@/material-icons/400-24px/bookmarks-fill.svg?re
 import BookmarksIcon from '@/material-icons/400-24px/bookmarks.svg?react';
 import HomeActiveIcon from '@/material-icons/400-24px/home-fill.svg?react';
 import HomeIcon from '@/material-icons/400-24px/home.svg?react';
+import ChatBubbleActiveIcon from '@/material-icons/400-24px/chat_bubble-fill.svg?react';
+import ChatBubbleIcon from '@/material-icons/400-24px/chat_bubble.svg?react';
 import MailActiveIcon from '@/material-icons/400-24px/mail-fill.svg?react';
 import MailIcon from '@/material-icons/400-24px/mail.svg?react';
 import NotificationsActiveIcon from '@/material-icons/400-24px/notifications-fill.svg?react';
@@ -39,8 +41,8 @@ import { selectUnreadConversationsCount } from 'mastodon/reducers/conversations'
 import { selectUnreadNotificationGroupsCount } from 'mastodon/selectors/notifications';
 import { useAppSelector, useAppDispatch } from 'mastodon/store';
 
-import { DisabledAccountBanner } from './components/disabled_account_banner';
 import { AccountSwitcher } from './components/account_switcher';
+import { DisabledAccountBanner } from './components/disabled_account_banner';
 import { MoreLink } from './components/more_link';
 import { SignInBanner } from './components/sign_in_banner';
 
@@ -49,6 +51,10 @@ const messages = defineMessages({
   notifications: {
     id: 'tabs_bar.notifications',
     defaultMessage: 'Notifications',
+  },
+  pendingMentions: {
+    id: 'navigation_bar.pending_mentions',
+    defaultMessage: 'Pending mentions',
   },
   main: {
     id: 'navigation_bar.main',
@@ -286,6 +292,17 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
           <>
             <li>
               <NotificationsLink />
+            </li>
+
+            <li>
+              <ColumnLink
+                transparent
+                to='/pending_mentions'
+          icon='chat-bubble'
+          iconComponent={ChatBubbleIcon}
+          activeIconComponent={ChatBubbleActiveIcon}
+                text={intl.formatMessage(messages.pendingMentions)}
+              />
             </li>
 
             <li>

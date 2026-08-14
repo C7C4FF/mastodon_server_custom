@@ -25,6 +25,7 @@
   /mutes
   /notifications_v2/(*any)
   /notifications/(*any)
+  /pending_mentions
   /pinned
   /profile/(*any)
   /public

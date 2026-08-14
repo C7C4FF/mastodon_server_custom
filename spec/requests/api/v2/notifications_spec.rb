@@ -262,6 +262,33 @@ RSpec.describe 'Notifications' do
       end
     end
 
+    context 'with pending_mentions param' do
+      let(:params) { { pending_mentions: true } }
+      let(:pending_status) { PostStatusService.new.call(bob.account, text: 'Pending @alice') }
+
+      before do
+        user.account.notifications.destroy_all
+
+        pending_status
+        favourited_status = PostStatusService.new.call(bob.account, text: 'Favorited @alice')
+        replied_status = PostStatusService.new.call(bob.account, text: 'Replied @alice')
+        dismissed_status = PostStatusService.new.call(bob.account, text: 'Dismissed @alice')
+        PostStatusService.new.call(bob.account, text: 'Direct @alice', visibility: :direct)
+
+        FavouriteService.new.call(user.account, favourited_status)
+        PostStatusService.new.call(user.account, text: 'Reply', thread: replied_status)
+        user.account.notifications.joins(:mention).find_by!(mentions: { status_id: dismissed_status.id }).update!(dismissed_from_pending_mentions_at: Time.current)
+      end
+
+      it 'returns only mentions without a reply, favorite, or dismissal' do
+        expect { subject }
+          .to_not change(user.account.notifications, :count)
+
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body[:statuses].pluck(:id)).to eq [pending_status.id.to_s]
+      end
+    end
+
     context 'with limit param' do
       let(:params) { { limit: 3 } }
       let(:notifications) { user.account.notifications.reorder(id: :desc) }
@@ -429,6 +456,28 @@ RSpec.describe 'Notifications' do
         expect(response.content_type)
           .to start_with('application/json')
       end
+    end
+  end
+
+  describe 'POST /api/v2/notifications/:id/dismiss_pending_mention', :inline_jobs do
+    subject do
+      post "/api/v2/notifications/ungrouped-#{notification.id}/dismiss_pending_mention", headers: headers
+    end
+
+    let(:status) { PostStatusService.new.call(Fabricate(:account), text: "Hello @#{user.account.username}") }
+    let!(:notification) do
+      status
+      user.account.notifications.joins(:mention).find_by!(mentions: { status_id: status.id })
+    end
+
+    it_behaves_like 'forbidden for wrong scope', 'read read:notifications'
+
+    it 'marks the mention without deleting the notification' do
+      expect { subject }
+        .to change { notification.reload.dismissed_from_pending_mentions_at }.from(nil)
+        .and not_change(Notification, :count)
+
+      expect(response).to have_http_status(200)
     end
   end
 
