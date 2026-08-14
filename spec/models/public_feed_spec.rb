@@ -98,6 +98,14 @@ RSpec.describe PublicFeed do
       context 'with a viewer' do
         let(:viewer) { Fabricate(:account, username: 'viewer') }
 
+        it 'does not include statuses beginning with a mention' do
+          leading_mention = Fabricate(:status, account: local_account, text: '@someone hello')
+          inline_mention = Fabricate(:status, account: local_account, text: 'hello @someone')
+
+          expect(subject).to_not include(leading_mention.id)
+          expect(subject).to include(inline_mention.id)
+        end
+
         it 'does not include remote instances statuses' do
           expect(subject).to include(local_status.id)
           expect(subject).to_not include(remote_status.id)
