@@ -75,6 +75,13 @@ const PendingMentions: React.FC<{ multiColumn?: boolean }> = ({
         multiColumn={multiColumn}
       />
 
+      <div className='notification__filter-bar' style={{ padding: 15 }}>
+        <FormattedMessage
+          id='pending_mentions.hint'
+          defaultMessage="Reply, favorite, or select 'Remove from pending mentions' from the ··· menu to remove it from this list."
+        />
+      </div>
+
       <ScrollableList
         scrollKey='pending-mentions'
         isLoading={isLoading}

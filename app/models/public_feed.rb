@@ -100,7 +100,7 @@ class PublicFeed
   end
 
   def local_only_scope
-    Status.local
+    Status.local.where.not("statuses.text LIKE '@%'")
   end
 
   def remote_only_scope
