@@ -3,8 +3,8 @@ import type {
   ApiStatusJSON,
 } from 'mastodon/api_types/statuses';
 
+import { CONVERSATIONS_UPDATE } from '../actions/conversations';
 import { fetchContext } from '../actions/statuses';
-import { TIMELINE_UPDATE } from '../actions/timelines';
 
 import { contextsReducer } from './contexts';
 
@@ -30,7 +30,7 @@ describe('contextsReducer', () => {
     expect(state.directMessages['2']).toEqual(['1', '2', '3']);
   });
 
-  it('adds a streamed direct message to its open thread', () => {
+  it('adds a streamed conversation message to its open thread', () => {
     const context = {
       ancestors: [status('1')],
       descendants: [status('3')],
@@ -45,14 +45,14 @@ describe('contextsReducer', () => {
     );
 
     const state = contextsReducer(initialState, {
-      type: TIMELINE_UPDATE,
-      timeline: 'direct',
-      status: {
-        id: '4',
-        in_reply_to_id: '3',
-        visibility: 'direct',
-      } as ApiStatusJSON,
-      usePendingItems: false,
+      type: CONVERSATIONS_UPDATE,
+      conversation: {
+        last_status: {
+          id: '4',
+          in_reply_to_id: '3',
+          visibility: 'direct',
+        } as ApiStatusJSON,
+      },
     });
 
     expect(state.directMessages['2']).toEqual(['1', '2', '3', '4']);
