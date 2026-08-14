@@ -13,6 +13,7 @@ import type {
 import type { Status } from 'mastodon/models/status';
 
 import { blockAccountSuccess, muteAccountSuccess } from '../actions/accounts';
+import { CONVERSATIONS_UPDATE } from '../actions/conversations';
 import {
   fetchContext,
   completeContextRefresh,
@@ -26,6 +27,10 @@ interface TimelineUpdateAction extends UnknownAction {
   timeline: string;
   status: ApiStatusJSON;
   usePendingItems: boolean;
+}
+
+interface ConversationUpdateAction extends UnknownAction {
+  conversation: { last_status?: ApiStatusJSON | null };
 }
 
 interface State {
@@ -248,6 +253,15 @@ export const contextsReducer = createReducer(initialState, (builder) => {
         action.type === TIMELINE_UPDATE,
       (state, action) => {
         updateContext(state, action.status);
+      },
+    )
+    .addMatcher(
+      (action: UnknownAction): action is ConversationUpdateAction =>
+        action.type === CONVERSATIONS_UPDATE,
+      (state, action) => {
+        if (action.conversation.last_status) {
+          updateContext(state, action.conversation.last_status);
+        }
       },
     );
 });
