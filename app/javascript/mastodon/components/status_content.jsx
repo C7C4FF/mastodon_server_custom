@@ -10,6 +10,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 
 import ChevronRightIcon from '@/material-icons/400-24px/chevron_right.svg?react';
+import KeyboardArrowUpIcon from '@/material-icons/400-24px/keyboard_arrow_up.svg?react';
 import { Icon }  from 'mastodon/components/icon';
 import { Poll } from 'mastodon/components/poll';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
@@ -20,7 +21,7 @@ import { injectIntl } from './intl';
 import { HandledLink } from './status/handled_link';
 import { compareUrls } from '../utils/compare_urls';
 
-const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
+const MAX_HEIGHT = 220;
 
 /**
  *
@@ -73,6 +74,8 @@ const mapStateToProps = state => ({
 });
 
 class StatusContent extends PureComponent {
+  state = { expanded: false };
+
   static propTypes = {
     identity: identityContextPropShape,
     status: ImmutablePropTypes.map.isRequired,
@@ -150,6 +153,16 @@ class StatusContent extends PureComponent {
     this.props.onTranslate();
   };
 
+  handleReadMore = () => {
+    this.setState({ expanded: true });
+    this.props.onCollapsedToggle(false);
+  };
+
+  handleShowLess = () => {
+    this.setState({ expanded: false });
+    this.props.onCollapsedToggle(true);
+  };
+
   setRef = (c) => {
     this.node = c;
   };
@@ -209,7 +222,7 @@ class StatusContent extends PureComponent {
   render () {
     const { status, intl, statusContent } = this.props;
 
-    const renderReadMore = this.props.onClick && status.get('collapsed');
+    const renderReadMore = this.props.onClick && this.props.onCollapsedToggle && status.get('collapsed');
     const contentLocale = intl.locale.replace(/[_-].*/, '');
     const targetLanguages = this.props.languages?.[status.get('language') || 'und'];
     const renderTranslate = this.props.onTranslate && this.props.identity.signedIn && ['public', 'unlisted'].includes(status.get('visibility')) && status.get('search_index').trim().length > 0 && targetLanguages?.includes(contentLocale);
@@ -222,8 +235,14 @@ class StatusContent extends PureComponent {
     });
 
     const readMoreButton = renderReadMore && (
-      <button className='status__content__read-more-button' onClick={this.props.onClick} key='read-more'>
+      <button type='button' className='status__content__read-more-button' aria-expanded='false' onClick={this.handleReadMore} key='read-more'>
         <FormattedMessage id='status.read_more' defaultMessage='Read more' /><Icon id='angle-right' icon={ChevronRightIcon} />
+      </button>
+    );
+
+    const showLessButton = this.state.expanded && (
+      <button type='button' className='status__content__read-more-button' aria-expanded='true' onClick={this.handleShowLess}>
+        <FormattedMessage id='block_modal.show_less' defaultMessage='Show less' /><Icon id='angle-up' icon={KeyboardArrowUpIcon} />
       </button>
     );
 
@@ -253,6 +272,8 @@ class StatusContent extends PureComponent {
               onElement={this.handleElement}
               onAttribute={this.handleAttribute}
             />
+
+            {showLessButton}
 
             {poll}
             {translateButton}
