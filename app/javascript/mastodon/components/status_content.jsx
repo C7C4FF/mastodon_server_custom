@@ -21,7 +21,7 @@ import { injectIntl } from './intl';
 import { HandledLink } from './status/handled_link';
 import { compareUrls } from '../utils/compare_urls';
 
-const MAX_HEIGHT = 220;
+const MAX_HEIGHT = 176;
 
 /**
  *
