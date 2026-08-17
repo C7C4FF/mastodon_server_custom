@@ -13,7 +13,7 @@ import { showAlert, showAlertForError } from './alerts';
 import { useEmoji } from './emojis';
 import { importFetchedAccounts, importFetchedStatus } from './importer';
 import { openModal } from './modal';
-import { removePendingMentionByStatus } from './pending_mentions';
+import { fetchPendingMentions, removePendingMentionByStatus } from './pending_mentions';
 import { updateTimeline } from './timelines';
 
 /** @type {AbortController | undefined} */
@@ -284,6 +284,7 @@ export function submitCompose(successCallback) {
       dispatch(submitComposeSuccess({ ...response.data }));
       if (response.data.in_reply_to_id) {
         dispatch(removePendingMentionByStatus({ statusId: response.data.in_reply_to_id }));
+        if (getState().pendingMentions.loaded) dispatch(fetchPendingMentions());
       }
       if (typeof successCallback === 'function') {
         successCallback(response.data);

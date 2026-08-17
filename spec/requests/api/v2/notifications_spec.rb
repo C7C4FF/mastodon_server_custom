@@ -287,6 +287,18 @@ RSpec.describe 'Notifications' do
         expect(response).to have_http_status(200)
         expect(response.parsed_body[:statuses].pluck(:id)).to eq [pending_status.id.to_s]
       end
+
+      it 'treats same-author mention ancestors as replied to' do
+        first_mention = PostStatusService.new.call(bob.account, text: 'First @alice')
+        latest_mention = PostStatusService.new.call(bob.account, text: 'Latest @alice', thread: first_mention)
+        PostStatusService.new.call(user.account, text: 'Reply', thread: latest_mention)
+
+        subject
+
+        returned_ids = response.parsed_body[:statuses].pluck(:id)
+        expect(returned_ids).to include(pending_status.id.to_s)
+        expect(returned_ids).to_not include(first_mention.id.to_s, latest_mention.id.to_s)
+      end
     end
 
     context 'with limit param' do

@@ -144,11 +144,29 @@ class Notification < ApplicationRecord
 
   scope :without_suspended, -> { joins(:from_account).merge(Account.without_suspended) }
   scope :pending_mentions_for, lambda { |account_id|
+    # ponytail: cap pathological reply chains at 100; raise this if real threads reach the limit.
     joins(mention: :status)
       .where(type: :mention, dismissed_from_pending_mentions_at: nil)
       .where.not(statuses: { visibility: Status.visibilities[:direct] })
       .where.not(Favourite.where(account_id: account_id).where(Favourite.arel_table[:status_id].eq(Mention.arel_table[:status_id])).select(1).arel.exists)
-      .where.not(Status.where(account_id: account_id).where(Status.arel_table[:in_reply_to_id].eq(Mention.arel_table[:status_id])).select(1).arel.exists)
+      .where.not(<<~SQL.squish, account_id: account_id)
+        EXISTS (
+          WITH RECURSIVE replied_chain(id, in_reply_to_id, account_id, path) AS (
+            SELECT target.id, target.in_reply_to_id, target.account_id, ARRAY[target.id]
+            FROM statuses AS replies
+            JOIN statuses AS target ON target.id = replies.in_reply_to_id
+            WHERE replies.account_id = :account_id
+            UNION ALL
+            SELECT parent.id, parent.in_reply_to_id, parent.account_id, replied_chain.path || parent.id
+            FROM replied_chain
+            JOIN statuses AS parent ON parent.id = replied_chain.in_reply_to_id
+            WHERE parent.account_id = replied_chain.account_id
+              AND NOT parent.id = ANY(replied_chain.path)
+              AND cardinality(replied_chain.path) < 100
+          )
+          SELECT 1 FROM replied_chain WHERE replied_chain.id = mentions.status_id
+        )
+      SQL
   }
 
   def type
