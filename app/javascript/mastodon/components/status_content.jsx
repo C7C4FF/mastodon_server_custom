@@ -107,6 +107,7 @@ class StatusContent extends PureComponent {
       const collapsed =
           collapsible
           && onClick
+          && status.get('visibility') !== 'direct'
           && (node.clientHeight > MAX_HEIGHT || (text !== null && text.scrollWidth > text.clientWidth))
           && status.get('spoiler_text').length === 0;
 
