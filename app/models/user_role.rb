@@ -41,6 +41,7 @@ class UserRole < ApplicationRecord
     view_feeds: (1 << 20),
     invite_bypass_approval: (1 << 21),
     manage_email_subscriptions: (1 << 22),
+    manage_branding_assets: (1 << 23),
   }.freeze
 
   EVERYONE_ROLE_ID = -99
@@ -83,6 +84,7 @@ class UserRole < ApplicationRecord
 
       administration: %i(
         manage_settings
+        manage_branding_assets
         manage_rules
         manage_roles
         manage_webhooks

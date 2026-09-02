@@ -12,4 +12,8 @@ class SettingsPolicy < ApplicationPolicy
   def destroy?
     role.can?(:manage_settings)
   end
+
+  def manage_branding_assets?
+    role.can?(:manage_settings) && role.can?(:manage_branding_assets)
+  end
 end

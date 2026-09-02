@@ -21,4 +21,13 @@ RSpec.describe SettingsPolicy do
       end
     end
   end
+
+  permissions :manage_branding_assets? do
+    let(:settings_only) do
+      Fabricate(:user, role: Fabricate(:user_role, permissions: UserRole::FLAGS[:manage_settings])).account
+    end
+
+    it { is_expected.to permit(admin, Settings) }
+    it { is_expected.to_not permit(settings_only, Settings) }
+  end
 end

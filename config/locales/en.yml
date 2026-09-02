@@ -874,6 +874,8 @@ en:
         invite_users_description: Allows users to invite new people to the server
         manage_announcements: Manage Announcements
         manage_announcements_description: Allows users to manage announcements on the server
+        manage_branding_assets: Manage Branding Assets
+        manage_branding_assets_description: Allows users to change branding images, colors, and transparency
         manage_appeals: Manage Appeals
         manage_appeals_description: Allows users to review appeals against moderation actions
         manage_blocks: Manage Blocks

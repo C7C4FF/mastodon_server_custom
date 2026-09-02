@@ -22,6 +22,7 @@ admin:
     - manage_taxonomies
     - manage_federation
     - manage_settings
+    - manage_branding_assets
     - manage_blocks
     - manage_appeals
     - manage_rules

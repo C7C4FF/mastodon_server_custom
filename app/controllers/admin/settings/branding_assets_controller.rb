@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Admin::Settings::BrandingAssetsController < Admin::SettingsController
+  before_action -> { authorize :settings, :manage_branding_assets? }
+
   def update
     authorize :settings, :update?
 

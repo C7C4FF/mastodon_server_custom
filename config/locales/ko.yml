@@ -846,6 +846,8 @@ ko:
         invite_users_description: 사용자가 다른 사람들을 서버에 초대할 수 있도록 허용
         manage_announcements: 공지 관리
         manage_announcements_description: 사용자가 서버의 공지사항을 관리할 수 있도록 허용
+        manage_branding_assets: 브랜딩 에셋 관리
+        manage_branding_assets_description: 사용자가 브랜딩 이미지, 색상 및 투명도를 수정할 수 있도록 허용
         manage_appeals: 이의제기 관리
         manage_appeals_description: 사용자가 중재에 대한 이의제기를 리뷰할 수 있도록 허용
         manage_blocks: 차단 관리
