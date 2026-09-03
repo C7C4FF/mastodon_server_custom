@@ -320,6 +320,8 @@ html[data-color-scheme='light'] body.has-custom-public-background-light {
   .empty-column-indicator,
   .load-more,
   .notification-request,
+  .item-list > article > .account,
+  .item-list > article:has([class*='_feat_account_timeline__pinnedViewAllButton']),
   .scrollable--flex:has(> .simple_form.app-form),
   [class*='_comp_account_header__barWrapper'],
   [class*='_comp_tab_list__tabList'][class*='_comp_tab_list__withSpaceAndBorder'],
